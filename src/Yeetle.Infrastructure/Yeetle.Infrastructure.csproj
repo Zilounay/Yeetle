@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Yeetle.Application\Yeetle.Application.csproj" />
+    <ProjectReference Include="..\Yeetle.Domain\Yeetle.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
