@@ -11,9 +11,10 @@ using LibVLCSharp.Shared;
 
 namespace VlcBaseline;
 
-// Throwaway POC code for issue #3: everything lives in code-behind on purpose.
+// Throwaway POC code for issues #3 and #4: everything lives in code-behind on purpose.
 //
 // Usage: VlcBaseline.exe [folder] [--preload] [--benchmark] [:vlc-option=value ...]
+//   --frames     option B (#4): VLC frames drawn by Avalonia, so buttons can overlay the video
 //   --preload    keep the next clip loaded and paused on its first frame in a hidden second view
 //   --benchmark  open every clip in turn, save the timings to a CSV next to the exe, then exit
 //   :option      extra per-clip VLC options, e.g. :file-caching=50 or :no-audio
@@ -24,6 +25,7 @@ public partial class MainWindow : Window
     private static readonly string[] Args = Environment.GetCommandLineArgs();
     private static readonly string[] MediaOptions = Args.Where(a => a.StartsWith(':')).ToArray();
     private static readonly bool Preload = Args.Contains("--preload");
+    private static readonly bool Frames = Args.Contains("--frames");
 
     private readonly LibVLC _vlc;
     private readonly List<Measurement> _results = [];
@@ -54,9 +56,9 @@ public partial class MainWindow : Window
 
         Core.Initialize();
         _vlc = new LibVLC();
-        _current = CreateSlot(VideoA);
-        _next = CreateSlot(VideoB);
-        VideoB.IsVisible = false;
+        _current = CreateSlot(CreateView());
+        _next = CreateSlot(CreateView());
+        _next.View.IsVisible = false;
 
         foreach (var speed in Speeds)
         {
@@ -97,14 +99,23 @@ public partial class MainWindow : Window
             _vlc.Dispose();
         };
 
-        Mode.Text = Preload ? "Mode: preload next" : "Mode: single player";
+        Mode.Text = $"{(Frames ? "B: frames drawn by Avalonia" : "A: native VLC window")}, " +
+                    $"{(Preload ? "preload next" : "single player")}";
+        StartPerfMeter();
         Status.Text = $"LibVLC {_vlc.Version} {string.Join(' ', MediaOptions)}";
     }
 
-    private Slot CreateSlot(NativeVideoView view)
+    private Control CreateView()
+    {
+        Control view = Frames ? new FrameVideoView() : new NativeVideoView();
+        VideoHost.Children.Add(view);
+        return view;
+    }
+
+    private Slot CreateSlot(Control view)
     {
         var slot = new Slot(new MediaPlayer(_vlc), view);
-        view.MediaPlayer = slot.Player;
+        ((IVideoSurface)view).MediaPlayer = slot.Player;
         slot.Player.Playing += (_, _) => { if (slot == _current) OnPlaying(); };
         slot.Player.Paused += (_, _) => { if (slot == _next) slot.Ready.TrySetResult(); };
         slot.Player.Vout += (_, e) =>
@@ -444,6 +455,45 @@ public partial class MainWindow : Window
         return t.TotalHours >= 1 ? t.ToString(@"h\:mm\:ss") : t.ToString(@"m\:ss");
     }
 
+    // Once a second: this process's CPU use (100% = all cores busy) and VLC's displayed and
+    // lost frames; in option B also the frames Avalonia actually drew.
+    private void StartPerfMeter()
+    {
+        var process = Process.GetCurrentProcess();
+        var lastCpu = process.TotalProcessorTime;
+        var wall = Stopwatch.StartNew();
+        int lastShown = 0, lastLost = 0;
+        new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background, (_, _) =>
+        {
+            process.Refresh();
+            var cpu = process.TotalProcessorTime;
+            var percent = (cpu - lastCpu).TotalMilliseconds / wall.Elapsed.TotalMilliseconds
+                          / Environment.ProcessorCount * 100;
+            lastCpu = cpu;
+            wall.Restart();
+            var drawn = _current.View is FrameVideoView frames ? $", Avalonia drew {frames.TakeFramesShown()} fps" : "";
+            var player = _current.Player;
+            Task.Run(() =>
+            {
+                var stats = player.Media?.Statistics;
+                var shown = stats?.DisplayedPictures ?? 0;
+                var lost = stats?.LostPictures ?? 0;
+                var text = $"CPU {percent:F1}% of {Environment.ProcessorCount} threads, " +
+                           $"VLC shown {Math.Max(0, shown - lastShown)} fps, lost {Math.Max(0, lost - lastLost)}{drawn}";
+                (lastShown, lastLost) = (shown, lost);
+                Console.WriteLine(text);
+                Post(() => Perf.Text = text);
+            });
+        }).Start();
+    }
+
+    // Overlay buttons (#4): only reachable when Avalonia draws the video (option B).
+    private void OnOverlayKeep(object? sender, RoutedEventArgs e) =>
+        Status.Text = $"Keep clicked on the video overlay at {DateTime.Now:HH:mm:ss}";
+
+    private void OnOverlayYeet(object? sender, RoutedEventArgs e) =>
+        Status.Text = $"Yeet clicked on the video overlay at {DateTime.Now:HH:mm:ss}";
+
     private void TogglePause()
     {
         var player = _current.Player;
@@ -563,10 +613,10 @@ public partial class MainWindow : Window
                $"max {v[^1]:F0} ms; {v.Count(x => x < 150)}/{v.Length} under 150 ms";
     }
 
-    private sealed class Slot(MediaPlayer player, NativeVideoView view)
+    private sealed class Slot(MediaPlayer player, Control view)
     {
         public MediaPlayer Player { get; } = player;
-        public NativeVideoView View { get; } = view;
+        public Control View { get; } = view;
         public string? Path { get; set; }
         public TaskCompletionSource Ready { get; set; } = new();
     }

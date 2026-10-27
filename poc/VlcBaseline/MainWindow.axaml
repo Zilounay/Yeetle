@@ -6,8 +6,27 @@
         WindowStartupLocation="CenterScreen"
         Title="POC A: VLC native view">
     <Grid RowDefinitions="*,Auto,Auto,Auto">
-        <local:NativeVideoView x:Name="VideoA" Grid.Row="0" />
-        <local:NativeVideoView x:Name="VideoB" Grid.Row="0" />
+        <!-- The two video views are created in code: NativeVideoView (A) or FrameVideoView (B). -->
+        <Panel x:Name="VideoHost" Grid.Row="0" Background="Black" />
+
+        <!-- Overlay test (#4): Avalonia controls over the video. In option A the native VLC
+             window covers them; in option B they show on top of the playing clip. -->
+        <Panel Grid.Row="0">
+            <Border HorizontalAlignment="Left" VerticalAlignment="Top" Margin="12" Padding="8,4"
+                    CornerRadius="4" Background="#99000000">
+                <TextBlock x:Name="OverlayLabel" Foreground="White" Text="Overlay" />
+            </Border>
+            <Border HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,16"
+                    Padding="8" CornerRadius="8" Background="#99000000">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <Button Content="◀" Click="OnPrev" />
+                    <Button Content="⏯" Click="OnPause" />
+                    <Button Content="▶" Click="OnNext" />
+                    <Button Content="Keep" Click="OnOverlayKeep" Background="#2E7D32" Foreground="White" />
+                    <Button Content="Yeet" Click="OnOverlayYeet" Background="#C62828" Foreground="White" />
+                </StackPanel>
+            </Border>
+        </Panel>
 
         <Grid Grid.Row="1" Margin="8,4,8,0" ColumnDefinitions="Auto,*,Auto">
             <TextBlock x:Name="ClipTime" Grid.Column="0" Text="0:00" VerticalAlignment="Center"
@@ -44,6 +63,7 @@
         <StackPanel Grid.Row="3" Margin="8,4,8,8" Spacing="2">
             <TextBlock x:Name="NowPlaying" FontWeight="SemiBold" Text="No folder open. Keys: ← → switch, Space pause, 1–6 speed, B audio track, M mute." />
             <TextBlock x:Name="AudioState" FontFamily="Consolas,monospace" FontSize="12" />
+            <TextBlock x:Name="Perf" FontFamily="Consolas,monospace" FontSize="12" />
             <TextBlock x:Name="Status" FontFamily="Consolas,monospace" FontSize="12" TextWrapping="Wrap" />
         </StackPanel>
     </Grid>

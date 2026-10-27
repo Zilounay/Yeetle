@@ -7,7 +7,7 @@ namespace VlcBaseline;
 // Hosts VLC's video output in a child HWND inside the Avalonia window (option A).
 // Replaces LibVLCSharp.Avalonia's VideoView, which is built against Avalonia 11: on
 // Avalonia 12 its HWND hand-off doesn't happen, so VLC opened its own top-level window.
-public sealed class NativeVideoView : NativeControlHost
+public sealed class NativeVideoView : NativeControlHost, IVideoSurface
 {
     private MediaPlayer? _mediaPlayer;
     private IPlatformHandle? _handle;
