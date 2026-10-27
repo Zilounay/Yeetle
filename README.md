@@ -1,5 +1,7 @@
 # Yeetle
 
+[![Build](https://github.com/Zilounay/Yeetle/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/Zilounay/Yeetle/actions/workflows/build.yml)
+
 **Keep it or yeet it.** Yeetle is a free, open-source Windows app that helps streamers and video creators get through the pile of clips left after a stream: watch each clip, tag it, keep or yeet it, then find it again later and drag it straight into Premiere Pro, DaVinci Resolve or any other app.
 
 > **Status: pre-alpha.** The spec is done and the technical proof of concept is next. Nothing is ready to download yet.
