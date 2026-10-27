@@ -33,7 +33,7 @@ jobs:
         run: dotnet build Yeetle.slnx --configuration Release --no-restore -warnaserror
 
       - name: Test
-        run: dotnet test --solution Yeetle.slnx --configuration Release --no-build --report-trx --results-directory TestResults
+        run: dotnet test --solution Yeetle.slnx --configuration Release --no-build --report-xunit-trx --results-directory TestResults
 
       - name: Upload test results
         if: always()
