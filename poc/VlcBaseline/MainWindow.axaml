@@ -1,0 +1,50 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="using:VlcBaseline"
+        x:Class="VlcBaseline.MainWindow"
+        Width="1280" Height="800"
+        WindowStartupLocation="CenterScreen"
+        Title="POC A: VLC native view">
+    <Grid RowDefinitions="*,Auto,Auto,Auto">
+        <local:NativeVideoView x:Name="VideoA" Grid.Row="0" />
+        <local:NativeVideoView x:Name="VideoB" Grid.Row="0" />
+
+        <Grid Grid.Row="1" Margin="8,4,8,0" ColumnDefinitions="Auto,*,Auto">
+            <TextBlock x:Name="ClipTime" Grid.Column="0" Text="0:00" VerticalAlignment="Center"
+                       FontFamily="Consolas,monospace" MinWidth="44" />
+            <Slider x:Name="SeekBar" Grid.Column="1" Minimum="0" Maximum="1" Margin="8,0"
+                    Focusable="False"
+                    ValueChanged="OnSeekBarChanged" />
+            <TextBlock x:Name="ClipLength" Grid.Column="2" Text="0:00" VerticalAlignment="Center"
+                       FontFamily="Consolas,monospace" MinWidth="44" TextAlignment="Right" />
+        </Grid>
+
+        <WrapPanel Grid.Row="2" Margin="8,4,8,0" Orientation="Horizontal">
+            <Button Content="Open folder…" Click="OnOpenFolder" Margin="0,0,8,4" />
+            <Button Content="◀ Prev" Click="OnPrev" Margin="0,0,4,4" />
+            <Button Content="Next ▶" Click="OnNext" Margin="0,0,4,4" />
+            <Button Content="Pause" Click="OnPause" Margin="0,0,12,4" />
+            <ItemsControl x:Name="SpeedButtons" Margin="0,0,12,4">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="2" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+            <TextBlock Text="Audio" VerticalAlignment="Center" Margin="0,0,4,4" />
+            <ComboBox x:Name="AudioTracks" MinWidth="220" Margin="0,0,12,4"
+                      SelectionChanged="OnAudioTrackChanged" />
+            <TextBlock Text="Output" VerticalAlignment="Center" Margin="0,0,4,4" />
+            <ComboBox x:Name="AudioDevices" MinWidth="260" Margin="0,0,12,4"
+                      SelectionChanged="OnAudioDeviceChanged" />
+            <Button Content="Run benchmark" Click="OnBenchmark" Margin="0,0,12,4" />
+            <TextBlock x:Name="Mode" VerticalAlignment="Center" Margin="0,0,4,4" />
+        </WrapPanel>
+
+        <StackPanel Grid.Row="3" Margin="8,4,8,8" Spacing="2">
+            <TextBlock x:Name="NowPlaying" FontWeight="SemiBold" Text="No folder open. Keys: ← → switch, Space pause, 1–6 speed, B audio track, M mute." />
+            <TextBlock x:Name="AudioState" FontFamily="Consolas,monospace" FontSize="12" />
+            <TextBlock x:Name="Status" FontFamily="Consolas,monospace" FontSize="12" TextWrapping="Wrap" />
+        </StackPanel>
+    </Grid>
+</Window>
