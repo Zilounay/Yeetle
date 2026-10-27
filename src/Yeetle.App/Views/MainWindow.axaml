@@ -3,10 +3,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:Yeetle.App.ViewModels"
+        xmlns:views="using:Yeetle.App.Views"
+        xmlns:res="using:Yeetle.App.Resources"
         mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
         x:Class="Yeetle.App.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Width="1280" Height="720"
+        Width="1280" Height="800"
         WindowStartupLocation="CenterScreen"
-        Title="Yeetle">
+        Title="{x:Static res:Strings.AppTitle}">
+    <views:PlayerView x:Name="Player" DataContext="{Binding Player}" />
 </Window>

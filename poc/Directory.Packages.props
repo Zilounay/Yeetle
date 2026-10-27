@@ -1,8 +1,4 @@
 <Project>
-  <!-- POC packages stay out of the main solution's version list. -->
+  <!-- POC projects use the main solution's package versions. -->
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Packages.props', '$(MSBuildThisFileDirectory)../'))" />
-  <ItemGroup>
-    <PackageVersion Include="LibVLCSharp" Version="3.10.2" />
-    <PackageVersion Include="VideoLAN.LibVLC.Windows" Version="3.0.24" />
-  </ItemGroup>
 </Project>

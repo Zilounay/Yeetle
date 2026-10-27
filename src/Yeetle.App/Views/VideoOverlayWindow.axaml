@@ -1,0 +1,184 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:Yeetle.App.ViewModels"
+        xmlns:playback="using:Yeetle.Application.Playback"
+        xmlns:res="using:Yeetle.App.Resources"
+        mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
+        x:Class="Yeetle.App.Views.VideoOverlayWindow"
+        x:DataType="vm:PlayerViewModel"
+        Title="{x:Static res:Strings.AppTitle}"
+        WindowDecorations="None"
+        Background="Transparent"
+        TransparencyLevelHint="Transparent"
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        CanResize="False"
+        RequestedThemeVariant="Dark">
+    <Window.Resources>
+        <!-- Panels: a dark tint, about 70% opaque, readable over any picture. -->
+        <SolidColorBrush x:Key="BlockBrush" Color="#B8101216" />
+        <CornerRadius x:Key="BlockCornerRadius">10</CornerRadius>
+        <!-- Decision colours: green keeps, red yeets, slate skips; each a shade lighter on hover. -->
+        <SolidColorBrush x:Key="KeepBrush" Color="#2E7D32" />
+        <SolidColorBrush x:Key="KeepHoverBrush" Color="#388E3C" />
+        <SolidColorBrush x:Key="YeetBrush" Color="#C62828" />
+        <SolidColorBrush x:Key="YeetHoverBrush" Color="#D32F2F" />
+        <SolidColorBrush x:Key="SkipBrush" Color="#CC37474F" />
+        <SolidColorBrush x:Key="SkipHoverBrush" Color="#455A64" />
+        <x:Double x:Key="SecondaryTextOpacity">0.75</x:Double>
+        <x:Double x:Key="DisabledOpacity">0.4</x:Double>
+    </Window.Resources>
+
+    <Window.Styles>
+        <Style Selector="Border.block">
+            <Setter Property="Background" Value="{StaticResource BlockBrush}" />
+            <Setter Property="CornerRadius" Value="{StaticResource BlockCornerRadius}" />
+            <Setter Property="Padding" Value="12,8" />
+        </Style>
+        <!-- Buttons are for the mouse; keys are hotkeys. A focused button would also react to
+             Space or Enter and fight the hotkey. -->
+        <Style Selector="Button, ComboBox, Slider">
+            <Setter Property="Focusable" Value="False" />
+        </Style>
+        <Style Selector="TextBlock.label">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Opacity" Value="{StaticResource SecondaryTextOpacity}" />
+        </Style>
+        <Style Selector="TextBlock.time">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="Consolas,monospace" />
+            <Setter Property="MinWidth" Value="48" />
+        </Style>
+        <!-- The speed button that matches the current speed. -->
+        <Style Selector="Button.current /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColor}" />
+        </Style>
+
+        <!-- Keep / Skip / Yeet: the review decisions, large and coloured. -->
+        <Style Selector="Button.decision">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="MinWidth" Value="132" />
+            <Setter Property="Padding" Value="20,10" />
+            <Setter Property="CornerRadius" Value="{StaticResource BlockCornerRadius}" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button.decision /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.keep /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource KeepBrush}" />
+        </Style>
+        <Style Selector="Button.keep:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource KeepHoverBrush}" />
+        </Style>
+        <Style Selector="Button.yeet /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource YeetBrush}" />
+        </Style>
+        <Style Selector="Button.yeet:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource YeetHoverBrush}" />
+        </Style>
+        <Style Selector="Button.skip /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource SkipBrush}" />
+        </Style>
+        <Style Selector="Button.skip:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource SkipHoverBrush}" />
+        </Style>
+        <Style Selector="Button.decision:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Opacity" Value="{StaticResource DisabledOpacity}" />
+        </Style>
+    </Window.Styles>
+
+    <Panel Margin="12">
+        <!-- Top left: what is playing, and any message. -->
+        <Border Classes="block" HorizontalAlignment="Left" VerticalAlignment="Top" MaxWidth="640">
+            <StackPanel Spacing="2">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock FontWeight="Bold" Text="{Binding ClipCounter}"
+                               IsVisible="{Binding ClipCounter, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    <TextBlock FontWeight="SemiBold" Text="{Binding ClipName}" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+                <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Opacity="{StaticResource SecondaryTextOpacity}"
+                           IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            </StackPanel>
+        </Border>
+
+        <!-- Top right: where clips come from, and how they sound. -->
+        <Border Classes="block" HorizontalAlignment="Right" VerticalAlignment="Top">
+            <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="6">
+                <Button Grid.ColumnSpan="2" HorizontalAlignment="Right" Content="{x:Static res:Strings.OpenFolder}"
+                        Command="{Binding PickFolderCommand}" />
+                <TextBlock Grid.Row="1" Classes="label" Text="{x:Static res:Strings.AudioTrack}" />
+                <ComboBox Grid.Row="1" Grid.Column="1" Width="240" ItemsSource="{Binding AudioTracks}"
+                          SelectedItem="{Binding SelectedAudioTrack}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="playback:AudioTrack">
+                            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <TextBlock Grid.Row="2" Classes="label" Text="{x:Static res:Strings.AudioOutput}" />
+                <ComboBox Grid.Row="2" Grid.Column="1" Width="240" ItemsSource="{Binding AudioDevices}"
+                          SelectedItem="{Binding SelectedAudioDevice}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="playback:AudioDevice">
+                            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </Grid>
+        </Border>
+
+        <StackPanel VerticalAlignment="Bottom" Spacing="12">
+            <!-- The decision for this clip. -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12">
+                <Button Classes="decision yeet" Content="{x:Static res:Strings.Yeet}" Command="{Binding YeetCommand}"
+                        ToolTip.Tip="{x:Static res:Strings.YeetTip}" />
+                <Button Classes="decision skip" Content="{x:Static res:Strings.Skip}" Command="{Binding NextCommand}"
+                        ToolTip.Tip="{x:Static res:Strings.SkipTip}" />
+                <Button Classes="decision keep" Content="{x:Static res:Strings.Keep}" Command="{Binding KeepCommand}"
+                        ToolTip.Tip="{x:Static res:Strings.KeepTip}" />
+            </StackPanel>
+
+            <!-- Playback: position, then navigation, speed and volume. -->
+            <Border Classes="block">
+                <StackPanel Spacing="4">
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <TextBlock Grid.Column="0" Classes="time" Text="{Binding PositionText}" />
+                        <Slider x:Name="SeekBar" Grid.Column="1" Margin="10,0" Minimum="0"
+                                Maximum="{Binding DurationSeconds}" Value="{Binding PositionSeconds}" />
+                        <TextBlock Grid.Column="2" Classes="time" TextAlignment="Right" Text="{Binding DurationText}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto,*">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
+                            <Button Content="{x:Static res:Strings.Previous}" Command="{Binding PreviousCommand}" />
+                            <Button Content="{Binding PlayPauseLabel}" Command="{Binding TogglePauseCommand}" MinWidth="80" />
+                            <Button Content="{x:Static res:Strings.Next}" Command="{Binding NextCommand}" />
+                        </StackPanel>
+                        <ItemsControl Grid.Column="1" ItemsSource="{Binding Speeds}" Margin="12,0">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="2" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:SpeedOptionViewModel">
+                                    <Button Content="{Binding Label}" Classes.current="{Binding IsCurrent}"
+                                            Command="{Binding $parent[ItemsControl].((vm:PlayerViewModel)DataContext).SetSpeedCommand}"
+                                            CommandParameter="{Binding Speed}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                            <Button Content="{Binding MuteLabel}" Command="{Binding ToggleMuteCommand}" MinWidth="80" />
+                            <Slider Width="120" Minimum="0" Maximum="100" VerticalAlignment="Center"
+                                    Value="{Binding Volume}" ToolTip.Tip="{x:Static res:Strings.Volume}" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Panel>
+</Window>

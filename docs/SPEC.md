@@ -285,7 +285,7 @@ Settings are reachable at any time, including during a session; anything configu
 | Library | Source folders (add, remove, include subfolders), supported extensions, Rescan |
 | Tags | Opens the Tag Manager |
 | Hotkeys | Every action and tag hotkey, rejects duplicates (one key = one action), restore defaults |
-| Player | Default speed, default volume, theatre mode, background preparation of neighbouring clips (on/off, for low-memory PCs) |
+| Player | Default speed, default volume, seek steps (default 5 s, and 30 s with Ctrl), volume step (default 5), theatre mode, background preparation of neighbouring clips (on/off, for low-memory PCs) |
 | Review | Sticky tags on/off, marker offset (default 1 s before the key press) |
 | Library view | Default filters, grid or list |
 | Data | Backup counts per pool, open the data folder, restore a backup, clear the thumbnail cache |
@@ -351,6 +351,8 @@ Outside C#, only Qt 6 (C++ or Python) would be a serious alternative. Electron/T
 **Solution structure.**
 
 ```
+Yeetle.Desktop         the executable: composes every layer below (dependency injection), starts the app
+   | uses
 Yeetle.App             Avalonia: session screen, Explorer, Tag Manager, Settings, view models
    | uses
 Yeetle.Application     scanner, session service, file operations, library queries,
@@ -363,7 +365,7 @@ filters, rename        FFmpeg, Velopack, telemetry
 builder; no deps
 ```
 
-The domain project holds every rule (tags and boxes, session state, filters, filename building) with no dependencies, so it is tested first and without a UI. The UI talks only to the application layer, which reaches SQLite, the file system, FFmpeg and the player through interfaces.
+The domain project holds every rule (tags and boxes, session state, filters, filename building) with no dependencies, so it is tested first and without a UI. The UI talks only to the application layer, which reaches SQLite, the file system, FFmpeg and the player through interfaces. Only `Yeetle.Desktop` knows the implementations: it registers them and hands the app its view models.
 
 ## 14. Default hotkeys
 
@@ -377,12 +379,13 @@ Playback keys follow VLC where they do not clash with review actions; every key 
 | Previous clip | Shift+Left | |
 | Undo | Ctrl+Z | Repeatable |
 | Play / pause | Space | VLC |
-| Seek back / forward | Left / Right | VLC |
-| Long seek back / forward | Ctrl+Left / Ctrl+Right | VLC |
+| Seek back / forward | Left / Right | VLC keys; 5 s by default |
+| Long seek back / forward | Ctrl+Left / Ctrl+Right | VLC keys; 30 s by default |
 | Volume up / down | Up / Down, mouse wheel | |
 | Mute | M | VLC |
 | Next audio track | B | VLC |
 | Slower / faster / normal speed | [ / ] / = | VLC |
+| Speed 1x, 1.25x, 1.5x, 2x, 3x, 4x | 1–6 (number row) | Matched by key position, so the same keys on AZERTY. Clashes with the tag shortcuts below: to settle before #15 |
 | Next frame | E | VLC |
 | Theatre mode | F | Replaces VLC full screen |
 | Add marker | K | M is taken by Mute |

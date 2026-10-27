@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The executable: composes the layers and starts the Avalonia app. No logic of its own. -->
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>Yeetle</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Only the 64-bit Windows build of LibVLC is copied; other architectures come with the installer work (#22). -->
+    <VlcWindowsX86Enabled>false</VlcWindowsX86Enabled>
+    <VlcWindowsArm64Enabled>false</VlcWindowsArm64Enabled>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Desktop" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="VideoLAN.LibVLC.Windows" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Yeetle.App\Yeetle.App.csproj" />
+    <ProjectReference Include="..\Yeetle.Application\Yeetle.Application.csproj" />
+    <ProjectReference Include="..\Yeetle.Infrastructure\Yeetle.Infrastructure.csproj" />
+    <ProjectReference Include="..\Yeetle.Media\Yeetle.Media.csproj" />
+  </ItemGroup>
+
+</Project>
