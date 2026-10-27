@@ -2,6 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/Yeetle.App/Yeetle.App.csproj" />
     <Project Path="src/Yeetle.Application/Yeetle.Application.csproj" />
+    <Project Path="src/Yeetle.Desktop/Yeetle.Desktop.csproj" />
     <Project Path="src/Yeetle.Domain/Yeetle.Domain.csproj" />
     <Project Path="src/Yeetle.Infrastructure/Yeetle.Infrastructure.csproj" />
     <Project Path="src/Yeetle.Media/Yeetle.Media.csproj" />

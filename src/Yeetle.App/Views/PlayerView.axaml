@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:Yeetle.App.ViewModels"
+             xmlns:controls="using:Yeetle.App.Controls"
+             xmlns:playback="using:Yeetle.Application.Playback"
+             mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
+             x:Class="Yeetle.App.Views.PlayerView"
+             x:DataType="vm:PlayerViewModel">
+    <!-- The video fills the view. One native window per player screen, stacked; the player keeps
+         the current one on top. The controls are in VideoOverlayWindow, laid over this area. -->
+    <ItemsControl x:Name="VideoArea" Background="Black" ItemsSource="{Binding Screens}">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <Panel />
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="playback:IVideoScreen">
+                <controls:VideoScreenHost Screen="{Binding}" />
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+</UserControl>

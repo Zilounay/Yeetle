@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppTitle" xml:space="preserve">
+    <value>Yeetle</value>
+  </data>
+  <data name="OpenFolder" xml:space="preserve">
+    <value>Ouvrir un dossier…</value>
+  </data>
+  <data name="PickFolderTitle" xml:space="preserve">
+    <value>Dossier contenant les clips</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>◀ Précédent</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Suivant ▶</value>
+  </data>
+  <data name="Play" xml:space="preserve">
+    <value>Lecture</value>
+  </data>
+  <data name="Pause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="Mute" xml:space="preserve">
+    <value>Couper le son</value>
+  </data>
+  <data name="Unmute" xml:space="preserve">
+    <value>Remettre le son</value>
+  </data>
+  <data name="Volume" xml:space="preserve">
+    <value>Volume</value>
+  </data>
+  <data name="AudioTrack" xml:space="preserve">
+    <value>Piste audio</value>
+  </data>
+  <data name="AudioOutput" xml:space="preserve">
+    <value>Sortie</value>
+  </data>
+  <data name="SpeedFormat" xml:space="preserve">
+    <value>{0}x</value>
+  </data>
+  <data name="ClipCounterFormat" xml:space="preserve">
+    <value>{0} / {1}</value>
+  </data>
+  <data name="NoFolderOpen" xml:space="preserve">
+    <value>Ouvrez un dossier pour lire ses clips.</value>
+  </data>
+  <data name="NoClipsInFolder" xml:space="preserve">
+    <value>Aucune vidéo dans {0}.</value>
+  </data>
+  <data name="FolderUnreadable" xml:space="preserve">
+    <value>Impossible de lire {0} : {1}</value>
+  </data>
+  <data name="PlaybackError" xml:space="preserve">
+    <value>Ce clip n’a pas pu être lu.</value>
+  </data>
+  <data name="SettingsProblem" xml:space="preserve">
+    <value>Réglages ({0}) : {1}. Les valeurs par défaut sont utilisées si besoin.</value>
+  </data>
+  <data name="HotkeyUnknownAction" xml:space="preserve">
+    <value>action inconnue &quot;{0}&quot;</value>
+  </data>
+  <data name="HotkeyInvalidKey" xml:space="preserve">
+    <value>&quot;{0}&quot; pour {1} n’est pas une touche</value>
+  </data>
+  <data name="HotkeyUsedTwice" xml:space="preserve">
+    <value>&quot;{0}&quot; est utilisé par {1} et {2} ; {1} le garde</value>
+  </data>
+  <data name="Keep" xml:space="preserve">
+    <value>Garder</value>
+  </data>
+  <data name="Yeet" xml:space="preserve">
+    <value>Yeet</value>
+  </data>
+  <data name="Skip" xml:space="preserve">
+    <value>Passer</value>
+  </data>
+  <data name="KeepTip" xml:space="preserve">
+    <value>Garder et passer au clip suivant (Entrée)</value>
+  </data>
+  <data name="YeetTip" xml:space="preserve">
+    <value>Yeeter et passer au clip suivant (Suppr)</value>
+  </data>
+  <data name="SkipTip" xml:space="preserve">
+    <value>Clip suivant sans décider (Maj+→)</value>
+  </data>
+</root>
