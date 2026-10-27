@@ -324,14 +324,14 @@ License notices for all of them ship with the app.
 
 ## 13. Tech stack and architecture
 
-C# on .NET 10 with Avalonia 12 is confirmed after review; the only open technical choice is the video player, settled by the POC.
+C# on .NET 10 with Avalonia 12 is confirmed after review, and the POC settled the video player (option A, decided 2026-10-28, #8).
 
 | Part | Choice | Why |
 | --- | --- | --- |
 | Language and runtime | C# on .NET 10 LTS | Supported until November 2028 |
 | UI | Avalonia 12, MVVM with CommunityToolkit.Mvvm | Free and open source, good Rider support, easy custom styling, supports dragging files out to other apps. WPF would gain nothing: same video limits, weaker Rider designer. |
 | Database | SQLite via Microsoft.Data.Sqlite + Dapper | Local file, no server. Numbered SQL migration scripts, WAL mode, foreign-key checks turned on (off by default in SQLite). |
-| Playback | Decided by the POC (below) | VLC as a native window is the baseline; mpv or VLC frames drawn by Avalonia if buttons must sit over the video |
+| Playback | LibVLCSharp drawing into native child windows (option A) | Lowest CPU use (about 0.5% against 8% for option B at 1080p60); controls sit over the video in a transparent overlay window |
 | Thumbnails and metadata | ffmpeg.exe / ffprobe.exe run as separate processes | Simple, robust, no native bindings |
 | Installer and updates | Velopack + GitHub Releases | One-click updates, no admin rights |
 | Code, tickets, CI | Public GitHub repo, GitHub Issues, GitHub Actions | One place; commits close tickets |
@@ -347,6 +347,8 @@ C# on .NET 10 with Avalonia 12 is confirmed after review; the only open technica
 | C. libmpv drawn through OpenGL inside Avalonia | Yes | Medium to high | C# wrapper is an early beta; we may write a small one |
 
 Outside C#, only Qt 6 (C++ or Python) would be a serious alternative. Electron/Tauri (no audio-track switching in browser video) and WinUI 3 (HEVC needs a paid codec on many PCs) are ruled out. If neither B nor C feels right, Yeetle uses A with buttons in a bottom bar and side area, which is acceptable.
+
+**Decision (2026-10-28, #8).** Option A. Option B worked but cost about 15 times the CPU; option C was dropped. Buttons still sit over the video: they live in a separate transparent window kept over the video area, the same approach as LibVLCSharp's WPF player. Clip switches stay under 150 ms by preloading the next clip in a second native window behind the current one.
 
 **Solution structure.**
 
@@ -474,7 +476,7 @@ No product question blocks the start; these are decided at the step noted (each 
 
 - [ ] Screen layouts for the session screen, Explorer and Tag Manager — designed together after the POC.
 - [ ] Which chips show by default during review (hotkeyed, carried over, most used) — tuned in beta.
-- [ ] Player choice (A, B or C) — POC gate.
+- [x] Player choice (A, B or C) — POC gate. Option A, see section 13.
 - [ ] Service that receives usage statistics (Aptabase or a small own endpoint) — before MVP slice 12.
 - [ ] PayPal donation link to use in the app — before MVP slice 12.
 - [ ] SignPath Foundation eligibility for free signing — before v1.0.

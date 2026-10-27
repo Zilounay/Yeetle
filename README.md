@@ -4,7 +4,7 @@
 
 **Keep it or yeet it.** Yeetle is a free, open-source Windows app that helps streamers and video creators get through the pile of clips left after a stream: watch each clip, tag it, keep or yeet it, then find it again later and drag it straight into Premiere Pro, DaVinci Resolve or any other app.
 
-> **Status: pre-alpha.** The spec is done and the technical proof of concept is next. Nothing is ready to download yet.
+> **Status: pre-alpha.** The spec is done, the player proof of concept is settled, and the MVP is being built. Nothing is ready to download yet.
 
 ## What it will do
 
@@ -17,7 +17,7 @@
 
 ## Tech
 
-C# on .NET 10, Avalonia 12, SQLite, FFmpeg and a VLC- or mpv-based player (chosen during the proof of concept). Windows first.
+C# on .NET 10, Avalonia 12, SQLite, FFmpeg and a VLC-based player. Windows first.
 
 The full product and technical specification is in [`docs/SPEC.md`](docs/SPEC.md). Work is tracked in [GitHub Issues](https://github.com/Zilounay/Yeetle/issues), grouped by milestone.
 
