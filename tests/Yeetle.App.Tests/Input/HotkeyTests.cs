@@ -66,7 +66,8 @@ public class HotkeyTests
         var map = new HotkeyMap(defaults, defaults.Keys.ToHashSet());
 
         Assert.Empty(map.Problems);
-        Assert.Equal(HotkeyActions.Speed(1), map.Find(KeyModifiers.None, PhysicalKey.Digit1, "&"));
+        Assert.Equal(HotkeyActions.Faster, map.Find(KeyModifiers.None, PhysicalKey.NumPadAdd, "+"));
+        Assert.Null(map.Find(KeyModifiers.None, PhysicalKey.Digit1, "&")); // the number row is for tags
         Assert.Equal(HotkeyActions.NextClip, map.Find(KeyModifiers.Shift, PhysicalKey.ArrowRight, null));
         Assert.Equal(HotkeyActions.SeekForward, map.Find(KeyModifiers.None, PhysicalKey.ArrowRight, null));
     }

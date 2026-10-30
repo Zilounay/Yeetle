@@ -1,6 +1,6 @@
 namespace Yeetle.Application.Settings;
 
-// The default keys (spec §14, plus speeds on the number row as asked by ZiL).
+// The default keys (spec §14).
 //
 // A key is written one of two ways:
 // - a character, like "M", "[" or "=": the key that types it on the current layout;
@@ -24,15 +24,16 @@ public static class HotkeyDefaults
         [HotkeyActions.VolumeDown] = ["ArrowDown"],
         [HotkeyActions.Mute] = ["M"],
         [HotkeyActions.NextAudioTrack] = ["B"],
-        [HotkeyActions.Slower] = ["["],
-        [HotkeyActions.Faster] = ["]"],
-        [HotkeyActions.NormalSpeed] = ["="],
-        [HotkeyActions.Speed(1)] = ["Digit1"],
-        [HotkeyActions.Speed(2)] = ["Digit2"],
-        [HotkeyActions.Speed(3)] = ["Digit3"],
-        [HotkeyActions.Speed(4)] = ["Digit4"],
-        [HotkeyActions.Speed(5)] = ["Digit5"],
-        [HotkeyActions.Speed(6)] = ["Digit6"],
+        [HotkeyActions.Slower] = ["NumPadSubtract"],
+        [HotkeyActions.Faster] = ["NumPadAdd"],
+        // No default key: the number row and F-keys belong to tags (spec §14).
+        [HotkeyActions.NormalSpeed] = [],
+        [HotkeyActions.Speed(1)] = [],
+        [HotkeyActions.Speed(2)] = [],
+        [HotkeyActions.Speed(3)] = [],
+        [HotkeyActions.Speed(4)] = [],
+        [HotkeyActions.Speed(5)] = [],
+        [HotkeyActions.Speed(6)] = [],
     };
 }
 

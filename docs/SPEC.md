@@ -98,7 +98,14 @@ A session runs through every New clip, oldest recording first, one clip at a tim
 
 **Starting.** The home screen shows how many New clips are waiting and a Start button. A skipped clip stays New and is the first one shown next time, until it is decided. The Explorer is unavailable while a session runs; Settings and the Tag Manager stay reachable.
 
-**The screen.** The current clip plays automatically from 0:00 and loops. Below it, a clip strip shows 2 previous clips, the current one (highlighted) and 2 next ones; the user can scroll back to the first clip of the session. Each card shows a shortened filename, the recording date and a decision badge (kept, yeeted, skipped), with no thumbnail image (thumbnails are a later feature, section 2). A progress counter shows the position, e.g. 17 / 43. Tags and markers sit in a compact side area. The final layout is designed after the POC (section 17).
+**The screen.** The current clip plays automatically from 0:00 and loops. Below it, a clip strip shows 2 previous clips, the current one (highlighted) and 2 next ones; the user can scroll back to the first clip of the session. Each card shows a shortened filename, the recording date and a decision badge (kept, yeeted, skipped), with no thumbnail image (thumbnails are a later feature, section 2). A progress counter shows the position, e.g. 17 / 43. Tags and markers sit in a compact side area.
+
+**Layout (decided in #9).** Dark theme throughout; Keep is green, Yeet red, Skip grey.
+
+- Top bar: the Yeetle name, the Session / Explorer / Tag Manager tabs (Explorer greyed out during a session), the counter with a progress bar, the Stop session button (Esc) and Settings.
+- Left, taking most of the width: the video at 16:9. Over it, in the transparent overlay window (section 13): the position and filename with the recording date at top left, the audio-track picker at top right, and at the bottom the Yeet / Skip / Keep buttons above a control block (seek bar with marker ticks, previous / play-pause / next, Add marker, speed buttons, mute, volume, theatre mode). Each button shows its key.
+- Under the video: the clip strip, five cards between two scroll arrows.
+- Right column: a Tags panel (the Type a tag button, then one group per visible box with its rules, e.g. "Counter-Strike 2 › Map · pick one · required", and its chips with their hotkeys) and a Markers panel (time and label, with inline editing). Carried-over tags have a dashed outline, a carried-over icon and a remove cross. An empty required box that blocked Keep is outlined red with "Press Keep again to keep anyway."
 
 **Deciding.** Enter keeps, Del yeets, Shift+Right moves on without deciding (a skip), Shift+Left goes back. Keep and Yeet move to the next clip. Any decision can be changed until the session ends. Ctrl+Z undoes the last actions (decisions, tags, markers) step by step.
 
@@ -126,6 +133,8 @@ Session ends (Stop, or last clip reached)
 ```
 
 Discarding drops every decision, tag and marker made in the session; the clips stay New.
+
+**Summary and prompt layouts (decided in #9).** The summary is a centred page: four count cards (Reviewed, Kept, Yeeted, Skipped), then collapsible Kept / Yeeted / Skipped lists (name, tags, marker count), then Discard session and Commit N decisions. The delete prompt states the file count and total size, the Recycle Bin warning and the file list, with "Keep the files" as the safe choice next to "Delete N files". The rename prompt shows a current name → new name table with notes for shortened or numbered names, warns that editing projects will show renamed files as offline, and offers "Keep current names" or "Rename N files".
 
 ## 6. Tagging model
 
@@ -169,6 +178,8 @@ Boxes (in brackets) are never put on a clip or in a filename; everything else is
 
 **Tag Manager.** Reachable from Settings and from the main screens, even during a session. It shows the whole vocabulary visually as nested boxes and chips, with fast creation, rename, delete, colour, hotkey, pick one/many and Required. Its order is the order used in renamed filenames.
 
+**Tag Manager layout (decided in #9).** On the left, the vocabulary as nested cards: each box card has a drag handle, its name, a Pick one / Pick many switch and a Required checkbox, then its tag chips (colour dot and hotkey) and a "+ Tag" button. Boxes under a tag are indented below that tag, with "+ Box under <tag>"; collapsed tags show "N boxes below" and Expand. A "+ New top-level box" button ends the list. On the right, a panel for the selected tag: its path, name, colour, hotkey (press a key to change), how many clips it is on, its filename form, and Delete tag.
+
 **Names and filenames.** Tag names can use any characters and alphabets, Cyrillic included. Only when renaming files does Yeetle build a filename-safe version: it removes the characters Windows forbids (`\ / : * ? " < > |`), control characters and trailing dots or spaces, avoids reserved names such as CON or NUL, and keeps letters as they are. Box names never appear in filenames. Case-insensitive search is done in C#, since SQLite only folds A–Z.
 
 ## 7. Player and markers
@@ -178,7 +189,7 @@ The same player is used in sessions and when a clip is opened from the Explorer;
 **Player.**
 
 - Play/pause, seek bar, volume slider, mute, theatre mode (no full screen).
-- Speeds 1x, 1.25x, 1.5x, 2x, 3x, 4x.
+- Speeds 1x, 1.25x, 1.5x, 2x, 3x, 4x, stepped with numpad + and − or picked with the speed buttons.
 - Every clip starts at 0:00 and loops at the end; there is no auto-advance.
 - Audio: the first track in the file plays by default. Switching is one key (B cycles tracks, as in VLC) or a small always-visible picker (dropdown or scroll wheel), never a right-click menu. Typical OBS setup: game mix, mic, Discord on separate tracks.
 - Frame stepping exists as a hotkey but is not a focus.
@@ -209,6 +220,8 @@ The Explorer is the second half of Yeetle: a virtual library of every clip in th
 **Why custom.** Windows can embed a real Explorer view, but only for real folders; showing Yeetle's filtered results inside it would need a native shell extension, which is fragile and can crash Explorer itself. So the view is built in Avalonia and reuses the real Windows pieces where possible. Estimated effort: 1–2 weeks.
 
 **View.** A list, newest recording first. Each row shows the shortened name, recording date, duration and tags. Sorting by date, duration or name. The list is virtualized. A thumbnail grid is a later feature (section 2).
+
+**Layout (decided in #9).** The top bar holds the tabs (Session shows how many clips are New), a search box over filenames and marker labels, Rescan and Settings. A filter column on the left lists the tag boxes as nested checkboxes, then Decision, File state and Incomplete. The main area has a selection toolbar (count, Open, Show in folder, Set Kept, Set Yeeted, Markers, Rename by tags, Restore names, Wipe data, Delete), the Name / Recording date / Duration / Tags table (Missing or Offline clips dimmed with a state badge), and a footer with the match count and a drag-out hint. The marker window is a small window with the text block and a Copy all button.
 
 **Filters.** Tag filters (same box = OR, different boxes = AND, a parent tag matches clips tagged with its children). A decision filter: Kept by default, plus New, Yeeted. A file-state filter: Missing, Offline, Deleted, Needs attention. A text search over filenames and marker labels. An "incomplete" filter lists clips with an empty required box.
 
@@ -387,15 +400,14 @@ Playback keys follow VLC where they do not clash with review actions; every key 
 | Volume up / down | Up / Down, mouse wheel | |
 | Mute | M | VLC |
 | Next audio track | B | VLC |
-| Slower / faster / normal speed | [ / ] / = | VLC |
-| Speed 1x, 1.25x, 1.5x, 2x, 3x, 4x | 1–6 (number row) | Matched by key position, so the same keys on AZERTY. Clashes with the tag shortcuts below: to settle before #15 |
+| Slower / faster speed | Numpad − / Numpad + | One step through the speed list; no key sets a speed directly (decided in #9) |
 | Next frame | E | VLC |
 | Theatre mode | F | Replaces VLC full screen |
 | Add marker | K | M is taken by Mute |
 | Type-to-tag box | T | |
-| Tag shortcuts | 1–9, F1–F12 | Assigned per tag in the Tag Manager |
+| Tag shortcuts | 1–9 and 0 (number row), F1–F12 | Assigned per tag in the Tag Manager; number keys matched by key position, so the same keys on AZERTY |
 | Stop session | Esc | Opens the Save / Discard / Cancel prompt |
-| Rescan | F5 | |
+| Rescan | Ctrl+R | F5 is a tag shortcut |
 | Marker window (Explorer) | Ctrl+M | |
 | Settings | Ctrl+, | |
 
@@ -475,7 +487,7 @@ Rules are tested automatically from the first slice; file safety is tested again
 
 No product question blocks the start; these are decided at the step noted (each is a GitHub issue labelled `type: decision`).
 
-- [ ] Screen layouts for the session screen, Explorer and Tag Manager — designed together after the POC.
+- [x] Screen layouts for the session screen, Explorer and Tag Manager — decided in #9 (sections 5, 6, 8); tags own the number row and F-keys, speed moved to numpad + / − (section 14).
 - [ ] Which chips show by default during review (hotkeyed, carried over, most used) — tuned in beta.
 - [x] Player choice (A, B or C) — POC gate. Option A, see section 13.
 - [ ] Service that receives usage statistics (Aptabase or a small own endpoint) — before MVP slice 12.
