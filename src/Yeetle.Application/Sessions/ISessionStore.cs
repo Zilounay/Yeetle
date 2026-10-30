@@ -46,5 +46,5 @@ public interface ISessionStore
 
 public interface ITagStore
 {
-    TagVocabulary LoadVocabulary();
+    TagCatalog LoadCatalog();
 }

@@ -53,6 +53,7 @@ internal static class Composition
             .AddSingleton<IDialogs>(s => new WindowDialogs(s.GetRequiredService<SourceFoldersViewModel>))
             .AddTransient<SourceFoldersViewModel>()
             .AddSingleton<PlayerViewModel>()
+            .AddSingleton<TagPanelViewModel>()
             .AddSingleton<SessionViewModel>()
             .AddSingleton<MainWindowViewModel>()
             .AddTransient<RecoveryViewModel>()

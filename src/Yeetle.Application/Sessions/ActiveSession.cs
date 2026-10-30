@@ -12,15 +12,20 @@ public sealed class ActiveSession
     private readonly Action<SessionSnapshot> _journal;
     private readonly Dictionary<ClipId, SessionClip> _clips;
 
-    internal ActiveSession(long id, ReviewSession review, IEnumerable<SessionClip> clips, Action<SessionSnapshot> journal)
+    internal ActiveSession(long id, ReviewSession review, IEnumerable<SessionClip> clips, TagCatalog catalog,
+        Action<SessionSnapshot> journal)
     {
         Id = id;
         _review = review;
         _journal = journal;
         _clips = clips.ToDictionary(c => c.Id);
+        Catalog = catalog;
     }
 
     public long Id { get; }
+
+    // The tags as they were when the session started.
+    public TagCatalog Catalog { get; }
 
     public IReadOnlyList<ClipReview> Reviews => _review.Clips;
 

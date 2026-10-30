@@ -55,12 +55,14 @@ public sealed partial class SessionViewModel : ViewModelBase
     [ObservableProperty]
     private string _notice = string.Empty;
 
-    public SessionViewModel(SessionService sessions, ClipNavigator navigator, PlayerViewModel player, IDialogs dialogs)
+    public SessionViewModel(SessionService sessions, ClipNavigator navigator, PlayerViewModel player, IDialogs dialogs,
+        TagPanelViewModel tags)
     {
         _sessions = sessions;
         _navigator = navigator;
         _player = player;
         _dialogs = dialogs;
+        Tags = tags;
         Actions = new Dictionary<string, ICommand>
         {
             [HotkeyActions.Keep] = KeepCommand,
@@ -69,8 +71,11 @@ public sealed partial class SessionViewModel : ViewModelBase
             [HotkeyActions.PreviousClip] = BackCommand,
             [HotkeyActions.Undo] = UndoCommand,
             [HotkeyActions.StopSession] = StopCommand,
+            [HotkeyActions.TypeTag] = tags.OpenTypeTagCommand,
         };
     }
+
+    public TagPanelViewModel Tags { get; }
 
     public bool IsHome => !IsActive;
 
@@ -142,9 +147,12 @@ public sealed partial class SessionViewModel : ViewModelBase
     {
         if (_session?.Current is null)
             return;
-        // A refused Keep (empty required box) changes nothing; the tag panel shows why (#15).
+        // A refused Keep (empty required box) changes nothing; the tag panel shows why, and the
+        // next Keep goes through (spec §5).
         if (_session.Keep() == KeepOutcome.Kept)
             await AfterMoveAsync();
+        else
+            Tags.ShowRequiredWarning();
     }
 
     [RelayCommand(CanExecute = nameof(IsActive))]
@@ -189,6 +197,7 @@ public sealed partial class SessionViewModel : ViewModelBase
     {
         _session = session;
         session.Changed += OnSessionChanged;
+        Tags.Attach(session);
         _navigator.Load(session.Reviews.Select(r => session.Clip(r.Clip).FullPath).ToList(), session.Position);
         IsActive = true;
         OnSessionChanged(session, EventArgs.Empty);
@@ -222,6 +231,7 @@ public sealed partial class SessionViewModel : ViewModelBase
             return false;
         session.Changed -= OnSessionChanged;
         _session = null;
+        Tags.Attach(null);
         IsActive = false;
         Strip.Clear();
         Counter = ClipName = ClipDate = string.Empty;
@@ -269,6 +279,8 @@ public sealed partial class SessionViewModel : ViewModelBase
         ClipDate = string.Format(Strings.ClipDateFormat, clip.RecordedAt);
         _stripCentre = shown;
         FillStrip();
+        Tags.ClearRequiredWarning();
+        Tags.Refresh();
         UndoCommand.NotifyCanExecuteChanged();
         Changed?.Invoke(this, EventArgs.Empty);
     }
