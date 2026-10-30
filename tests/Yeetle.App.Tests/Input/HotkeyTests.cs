@@ -52,6 +52,15 @@ public class HotkeyTests
     [Fact]
     public void Rejects_an_empty_key() => Assert.Null(Hotkey.Parse(string.Empty));
 
+    [Fact]
+    public void A_letter_position_is_written_as_on_the_web()
+    {
+        var rescan = Hotkey.Parse("Ctrl+KeyR")!;
+
+        Assert.Equal(PhysicalKey.R, rescan.Position);
+        Assert.True(rescan.Matches(KeyModifiers.Control, PhysicalKey.R, null));
+    }
+
     [Theory]
     [InlineData("Hyper+A")]
     [InlineData("NotAKey")]

@@ -144,4 +144,100 @@ Close any program that may be using it, then start Yeetle again.</value>
   <data name="BackupItemFormat" xml:space="preserve">
     <value>{0:g} · {1}</value>
   </data>
+  <data name="Folders" xml:space="preserve">
+    <value>Folders…</value>
+  </data>
+  <data name="SourceFoldersTitle" xml:space="preserve">
+    <value>Source folders</value>
+  </data>
+  <data name="AddFolder" xml:space="preserve">
+    <value>Add folder…</value>
+  </data>
+  <data name="PickSourceFolderTitle" xml:space="preserve">
+    <value>Choose a folder with clips</value>
+  </data>
+  <data name="RemoveFolder" xml:space="preserve">
+    <value>Remove…</value>
+  </data>
+  <data name="IncludeSubfolders" xml:space="preserve">
+    <value>Include subfolders</value>
+  </data>
+  <data name="Rescan" xml:space="preserve">
+    <value>Rescan</value>
+  </data>
+  <data name="RescanTip" xml:space="preserve">
+    <value>Look for new, changed and missing clips (Ctrl+R)</value>
+  </data>
+  <data name="FolderOffline" xml:space="preserve">
+    <value>Offline</value>
+  </data>
+  <data name="FolderScanStopped" xml:space="preserve">
+    <value>Not scanned</value>
+  </data>
+  <data name="FolderHidden" xml:space="preserve">
+    <value>Hidden</value>
+  </data>
+  <data name="ResumeScanning" xml:space="preserve">
+    <value>Scan again</value>
+  </data>
+  <data name="FolderAlreadyAdded" xml:space="preserve">
+    <value>{0} is already a source folder.</value>
+  </data>
+  <data name="NoSourceFolders" xml:space="preserve">
+    <value>No source folders yet. Add the folder where OBS saves your clips.</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Continue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="RemoveFolderTitle" xml:space="preserve">
+    <value>Remove a source folder</value>
+  </data>
+  <data name="RemoveFolderMessage" xml:space="preserve">
+    <value>{0} has {1} clips in Yeetle. What should happen to them? The files on disk are never touched.</value>
+  </data>
+  <data name="HideClips" xml:space="preserve">
+    <value>Hide its clips</value>
+  </data>
+  <data name="StopScanningKeepClips" xml:space="preserve">
+    <value>Keep them visible, stop scanning</value>
+  </data>
+  <data name="FirstScanTitle" xml:space="preserve">
+    <value>New clips folder</value>
+  </data>
+  <data name="FirstScanMessage" xml:space="preserve">
+    <value>Yeetle found {0} clips in {1}, recorded from {2:d} to {3:d}. What should it do with them?</value>
+  </data>
+  <data name="FirstScanReviewAll" xml:space="preserve">
+    <value>Review all of them</value>
+  </data>
+  <data name="FirstScanKeepAll" xml:space="preserve">
+    <value>Mark them all Kept, straight to the library</value>
+  </data>
+  <data name="FirstScanReviewFrom" xml:space="preserve">
+    <value>Review only clips recorded from this date; keep the older ones</value>
+  </data>
+  <data name="ScanAdded" xml:space="preserve">
+    <value>{0} new clips</value>
+  </data>
+  <data name="ScanChanged" xml:space="preserve">
+    <value>{0} changed: {1}</value>
+  </data>
+  <data name="ScanMissing" xml:space="preserve">
+    <value>{0} missing</value>
+  </data>
+  <data name="StillRecordingOne" xml:space="preserve">
+    <value>1 file looks like it is still recording.</value>
+  </data>
+  <data name="StillRecordingMany" xml:space="preserve">
+    <value>{0} files look like they are still recording.</value>
+  </data>
+  <data name="ScanOffline" xml:space="preserve">
+    <value>Offline: {0}</value>
+  </data>
 </root>
