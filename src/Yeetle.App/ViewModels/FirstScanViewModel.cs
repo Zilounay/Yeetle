@@ -16,9 +16,10 @@ public sealed partial class FirstScanViewModel(PendingFirstScan pending) : ViewM
     [ObservableProperty]
     private bool _reviewFrom;
 
-    // Starts at the newest clip's day, so by default only that day is reviewed.
+    // Starts at the newest clip's day, so by default only that day is reviewed. DateTime, as
+    // CalendarDatePicker.SelectedDate is one in Avalonia 12.
     [ObservableProperty]
-    private DateTimeOffset? _fromDate = pending.Newest.Date;
+    private DateTime? _fromDate = pending.Newest.Date;
 
     public string Message { get; } = string.Format(Strings.FirstScanMessage,
         pending.ClipCount, pending.Folder.Path, pending.Oldest, pending.Newest);
