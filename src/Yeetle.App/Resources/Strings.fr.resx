@@ -15,18 +15,6 @@
   <data name="AppTitle" xml:space="preserve">
     <value>Yeetle</value>
   </data>
-  <data name="OpenFolder" xml:space="preserve">
-    <value>Ouvrir un dossier…</value>
-  </data>
-  <data name="PickFolderTitle" xml:space="preserve">
-    <value>Dossier contenant les clips</value>
-  </data>
-  <data name="Previous" xml:space="preserve">
-    <value>◀ Précédent</value>
-  </data>
-  <data name="Next" xml:space="preserve">
-    <value>Suivant ▶</value>
-  </data>
   <data name="Play" xml:space="preserve">
     <value>Lecture</value>
   </data>
@@ -53,15 +41,6 @@
   </data>
   <data name="ClipCounterFormat" xml:space="preserve">
     <value>{0} / {1}</value>
-  </data>
-  <data name="NoFolderOpen" xml:space="preserve">
-    <value>Ouvrez un dossier pour lire ses clips.</value>
-  </data>
-  <data name="NoClipsInFolder" xml:space="preserve">
-    <value>Aucune vidéo dans {0}.</value>
-  </data>
-  <data name="FolderUnreadable" xml:space="preserve">
-    <value>Impossible de lire {0} : {1}</value>
   </data>
   <data name="PlaybackError" xml:space="preserve">
     <value>Ce clip n’a pas pu être lu.</value>
@@ -239,5 +218,104 @@ Fermez tout programme qui pourrait l'utiliser, puis relancez Yeetle.</value>
   </data>
   <data name="ScanOffline" xml:space="preserve">
     <value>Hors ligne : {0}</value>
+  </data>
+  <data name="HomeNewClips" xml:space="preserve">
+    <value>{0} nouveaux clips en attente</value>
+  </data>
+  <data name="HomeNoNewClips" xml:space="preserve">
+    <value>Aucun nouveau clip à passer en revue. Ajoutez un dossier source, ou enregistrez-en !</value>
+  </data>
+  <data name="StartSession" xml:space="preserve">
+    <value>Commencer la session</value>
+  </data>
+  <data name="StopSession" xml:space="preserve">
+    <value>Arrêter la session</value>
+  </data>
+  <data name="StopSessionTip" xml:space="preserve">
+    <value>Terminer la session (Échap)</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Retour</value>
+  </data>
+  <data name="BackTip" xml:space="preserve">
+    <value>Clip précédent (Maj+←)</value>
+  </data>
+  <data name="Undo" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="UndoTip" xml:space="preserve">
+    <value>Annuler la dernière modification (Ctrl+Z)</value>
+  </data>
+  <data name="BadgeKept" xml:space="preserve">
+    <value>Gardé</value>
+  </data>
+  <data name="BadgeYeeted" xml:space="preserve">
+    <value>Yeeté</value>
+  </data>
+  <data name="BadgeSkipped" xml:space="preserve">
+    <value>Passé</value>
+  </data>
+  <data name="BadgeNew" xml:space="preserve">
+    <value>Nouveau</value>
+  </data>
+  <data name="BadgePlaying" xml:space="preserve">
+    <value>En lecture</value>
+  </data>
+  <data name="StripEarlier" xml:space="preserve">
+    <value>Clips précédents</value>
+  </data>
+  <data name="StripLater" xml:space="preserve">
+    <value>Clips suivants</value>
+  </data>
+  <data name="EndSessionTitle" xml:space="preserve">
+    <value>Terminer la session</value>
+  </data>
+  <data name="EndSessionMessage" xml:space="preserve">
+    <value>{0} gardés, {1} yeetés, {2} passés. Enregistrer ces décisions ? Les clips passés restent Nouveaux et passent en premier la prochaine fois.</value>
+  </data>
+  <data name="SaveSession" xml:space="preserve">
+    <value>Enregistrer</value>
+  </data>
+  <data name="DiscardSession" xml:space="preserve">
+    <value>Abandonner</value>
+  </data>
+  <data name="CloseDuringSessionTitle" xml:space="preserve">
+    <value>Une session est en cours</value>
+  </data>
+  <data name="CloseDuringSessionMessage" xml:space="preserve">
+    <value>{0} gardés, {1} yeetés, {2} passés jusqu'ici. Enregistrer ces décisions avant de quitter ?</value>
+  </data>
+  <data name="SaveAndLeave" xml:space="preserve">
+    <value>Enregistrer et quitter</value>
+  </data>
+  <data name="DiscardAndLeave" xml:space="preserve">
+    <value>Abandonner et quitter</value>
+  </data>
+  <data name="InterruptedTitle" xml:space="preserve">
+    <value>Session inachevée</value>
+  </data>
+  <data name="InterruptedMessage" xml:space="preserve">
+    <value>Une session commencée le {0:g} n'a pas été terminée ({1} clips décidés). Que faut-il en faire ?</value>
+  </data>
+  <data name="Resume" xml:space="preserve">
+    <value>Reprendre</value>
+  </data>
+  <data name="Commit" xml:space="preserve">
+    <value>Valider</value>
+  </data>
+  <data name="Discard" xml:space="preserve">
+    <value>Abandonner</value>
+  </data>
+  <data name="SessionSaved" xml:space="preserve">
+    <value>Session enregistrée : {0} gardés, {1} yeetés.</value>
+  </data>
+  <data name="SessionDiscarded" xml:space="preserve">
+    <value>Session abandonnée ; ses clips restent Nouveaux.</value>
+  </data>
+  <data name="SessionSaveFailed" xml:space="preserve">
+    <value>La session n'a pas pu être enregistrée : {0}. Elle reste dans le journal et sera proposée à nouveau au prochain démarrage.</value>
+  </data>
+  <data name="ClipDateFormat" xml:space="preserve">
+    <value>{0:g}</value>
   </data>
 </root>

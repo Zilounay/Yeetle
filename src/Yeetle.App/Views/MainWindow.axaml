@@ -10,6 +10,117 @@
         x:DataType="vm:MainWindowViewModel"
         Width="1280" Height="800"
         WindowStartupLocation="CenterScreen"
+        RequestedThemeVariant="Dark"
         Title="{x:Static res:Strings.AppTitle}">
-    <views:PlayerView x:Name="Player" DataContext="{Binding Player}" />
+    <Window.Resources>
+        <!-- The session screen layout decided in #9: dark page, a slightly lighter top bar. -->
+        <SolidColorBrush x:Key="PageBrush" Color="#0E1013" />
+        <SolidColorBrush x:Key="BarBrush" Color="#13161A" />
+        <SolidColorBrush x:Key="LineBrush" Color="#23272E" />
+        <SolidColorBrush x:Key="CardBrush" Color="#171A1F" />
+        <SolidColorBrush x:Key="CurrentCardBrush" Color="#2F6FD6" />
+        <SolidColorBrush x:Key="KeptBadgeBrush" Color="#2E7D32" />
+        <SolidColorBrush x:Key="YeetedBadgeBrush" Color="#C62828" />
+        <SolidColorBrush x:Key="SkippedBadgeBrush" Color="#37474F" />
+        <x:Double x:Key="SecondaryTextOpacity">0.7</x:Double>
+        <x:Double x:Key="OtherCardOpacity">0.8</x:Double>
+        <CornerRadius x:Key="CardCornerRadius">10</CornerRadius>
+    </Window.Resources>
+
+    <Window.Styles>
+        <!-- Keys are hotkeys; a focused button would also react to Enter or Space. -->
+        <Style Selector="Button">
+            <Setter Property="Focusable" Value="False" />
+        </Style>
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="{StaticResource CardBrush}" />
+            <Setter Property="CornerRadius" Value="{StaticResource CardCornerRadius}" />
+            <Setter Property="Padding" Value="12,10" />
+            <Setter Property="Margin" Value="5,0" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Opacity" Value="{StaticResource OtherCardOpacity}" />
+        </Style>
+        <Style Selector="Border.card.current">
+            <Setter Property="BorderBrush" Value="{StaticResource CurrentCardBrush}" />
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+        <Style Selector="Border.badge">
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="7,2" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
+        <Style Selector="Border.badge.current">
+            <Setter Property="Background" Value="{StaticResource CurrentCardBrush}" />
+        </Style>
+        <Style Selector="Border.badge.kept">
+            <Setter Property="Background" Value="{StaticResource KeptBadgeBrush}" />
+        </Style>
+        <Style Selector="Border.badge.yeeted">
+            <Setter Property="Background" Value="{StaticResource YeetedBadgeBrush}" />
+        </Style>
+        <Style Selector="Border.badge.skipped">
+            <Setter Property="Background" Value="{StaticResource SkippedBadgeBrush}" />
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto,*,Auto" Background="{StaticResource PageBrush}">
+        <!-- Top bar: name, progress, library actions, Stop. -->
+        <Border Background="{StaticResource BarBrush}" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1"
+                Padding="20,10">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
+                <TextBlock FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Text="{x:Static res:Strings.AppTitle}" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right"
+                            VerticalAlignment="Center" IsVisible="{Binding Session.IsActive}">
+                    <TextBlock FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding Session.Counter}" />
+                    <ProgressBar Width="140" Minimum="0" Maximum="1" Value="{Binding Session.Progress}" VerticalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                    <Button Content="{x:Static res:Strings.Rescan}" ToolTip.Tip="{x:Static res:Strings.RescanTip}"
+                            Command="{Binding RescanCommand}" />
+                    <Button Content="{x:Static res:Strings.Folders}" Command="{Binding OpenFoldersCommand}" />
+                    <Button Content="{x:Static res:Strings.StopSession}" ToolTip.Tip="{x:Static res:Strings.StopSessionTip}"
+                            Command="{Binding Session.StopCommand}" IsVisible="{Binding Session.IsActive}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- The video; its controls are in VideoOverlayWindow, laid over it. -->
+        <views:PlayerView x:Name="Player" Grid.Row="1" Margin="16,16,16,0" DataContext="{Binding Player}" />
+
+        <!-- Clip strip: two clips before and after the current one (spec §5). -->
+        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" Margin="16,14,16,16" IsVisible="{Binding Session.IsActive}">
+            <Button Content="‹" VerticalAlignment="Stretch" ToolTip.Tip="{x:Static res:Strings.StripEarlier}"
+                    Command="{Binding Session.StripEarlierCommand}" />
+            <ItemsControl Grid.Column="1" ItemsSource="{Binding Session.Strip}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="1" Columns="5" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ClipCardViewModel">
+                        <Border Classes="card" Classes.current="{Binding IsCurrent}">
+                            <StackPanel Spacing="6">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock FontFamily="Consolas,monospace" FontSize="12"
+                                               Opacity="{StaticResource SecondaryTextOpacity}" Text="{Binding Number}" />
+                                    <Border Grid.Column="1" Classes="badge" Classes.current="{Binding IsCurrent}"
+                                            Classes.kept="{Binding IsKept}" Classes.yeeted="{Binding IsYeeted}"
+                                            Classes.skipped="{Binding IsSkipped}">
+                                        <TextBlock FontSize="11" FontWeight="Bold" Text="{Binding BadgeText}" />
+                                    </Border>
+                                </Grid>
+                                <TextBlock FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Text="{Binding Name}"
+                                           ToolTip.Tip="{Binding Name}" />
+                                <TextBlock FontSize="12" Opacity="{StaticResource SecondaryTextOpacity}" Text="{Binding Date}" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Button Grid.Column="2" Content="›" VerticalAlignment="Stretch" ToolTip.Tip="{x:Static res:Strings.StripLater}"
+                    Command="{Binding Session.StripLaterCommand}" />
+        </Grid>
+    </Grid>
 </Window>

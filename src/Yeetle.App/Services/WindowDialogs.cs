@@ -23,10 +23,12 @@ public sealed class WindowDialogs(Func<SourceFoldersViewModel> createSourceFolde
     }
 
     public Task<FolderRemoval?> AskFolderRemovalAsync(string folder, int clipCount) =>
-        ShowAsync<FolderRemoval?>(new ChoiceWindow(
-            Strings.RemoveFolderTitle,
-            string.Format(Strings.RemoveFolderMessage, folder, clipCount),
-            [(Strings.HideClips, FolderRemoval.HideClips), (Strings.StopScanningKeepClips, FolderRemoval.StopScanning)]));
+        ChooseAsync(Strings.RemoveFolderTitle, string.Format(Strings.RemoveFolderMessage, folder, clipCount),
+            [(Strings.HideClips, FolderRemoval.HideClips), (Strings.StopScanningKeepClips, FolderRemoval.StopScanning)]);
+
+    public Task<T?> ChooseAsync<T>(string title, string message, IReadOnlyList<(string Label, T Value)> choices)
+        where T : struct =>
+        ShowAsync<T?>(new ChoiceWindow(title, message, choices.Select(c => (c.Label, (object)c.Value))));
 
     public Task<FirstScanChoice?> AskFirstScanAsync(PendingFirstScan pending) =>
         ShowAsync<FirstScanChoice?>(new FirstScanWindow { DataContext = new FirstScanViewModel(pending) });

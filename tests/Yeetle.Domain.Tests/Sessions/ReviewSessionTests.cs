@@ -149,6 +149,19 @@ public class ReviewSessionTests
     }
 
     [Fact]
+    public void A_restored_session_continues_where_it_stopped()
+    {
+        var before = Start();
+        TagAndKeep(before);
+
+        var restored = new ReviewSession(new TagRules(Create()), before.Clips, before.Position);
+
+        Assert.Equal(before.Clips, restored.Clips);
+        Assert.Equal(1, restored.Position);
+        Assert.False(restored.CanUndo);
+    }
+
+    [Fact]
     public void Undoing_a_keep_also_undoes_the_carried_over_tags()
     {
         var session = Start();

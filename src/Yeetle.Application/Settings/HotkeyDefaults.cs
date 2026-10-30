@@ -13,8 +13,10 @@ public static class HotkeyDefaults
     {
         [HotkeyActions.Keep] = ["Enter"],
         [HotkeyActions.Yeet] = ["Delete"],
-        // The R key position, since Ctrl changes the character a key types.
+        // Letter positions with Ctrl, since Ctrl changes the character a key types.
         [HotkeyActions.Rescan] = ["Ctrl+KeyR"],
+        [HotkeyActions.Undo] = ["Ctrl+KeyZ"],
+        [HotkeyActions.StopSession] = ["Escape"],
         [HotkeyActions.TogglePause] = ["Space"],
         [HotkeyActions.NextClip] = ["Shift+ArrowRight"],
         [HotkeyActions.PreviousClip] = ["Shift+ArrowLeft"],
@@ -44,6 +46,8 @@ public static class HotkeyActions
     public const string Keep = "Keep";
     public const string Yeet = "Yeet";
     public const string Rescan = "Rescan";
+    public const string Undo = "Undo";
+    public const string StopSession = "StopSession";
     public const string TogglePause = "TogglePause";
     public const string NextClip = "NextClip";
     public const string PreviousClip = "PreviousClip";

@@ -2,16 +2,14 @@ using System.Windows.Input;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Yeetle.App.Input;
 using Yeetle.App.Resources;
-using Yeetle.App.Services;
-using Yeetle.Application.Clips;
 using Yeetle.Application.Playback;
 using Yeetle.Application.Settings;
 
 namespace Yeetle.App.ViewModels;
 
-// The player: the clips of one folder, one at a time, with playback and audio controls.
+// Playback of the clip the navigator shows: position, speed and audio. Which clip that is, and
+// what the user decides about it, belongs to the session (SessionViewModel).
 public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
 {
     // How often the seek bar and time follow playback: often enough to look smooth.
@@ -21,27 +19,14 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
 
     private readonly IClipPlayer _player;
     private readonly ClipNavigator _navigator;
-    private readonly IClipFolderReader _folderReader;
-    private readonly IFolderPicker _folderPicker;
     private readonly DispatcherTimer _positionTimer;
     private readonly PlayerSettings _settings;
-    private string? _settingsProblem; // stays visible until the settings file is fixed
 
     // True while values are copied from the player, so their change handlers don't send them back.
     private bool _syncing;
 
     [ObservableProperty]
-    private string _clipName = string.Empty;
-
-    [ObservableProperty]
-    private string _clipCounter = string.Empty;
-
-    [ObservableProperty]
-    private string _message = Strings.NoFolderOpen;
-
-    // What the last scan found, e.g. files still recording.
-    [ObservableProperty]
-    private string _notice = string.Empty;
+    private string _message = string.Empty;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(PlayPauseLabel))]
@@ -78,13 +63,10 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
     [ObservableProperty]
     private AudioDevice? _selectedAudioDevice;
 
-    public PlayerViewModel(IClipPlayer player, ClipNavigator navigator, IClipFolderReader folderReader,
-        IFolderPicker folderPicker, LoadedSettings settings)
+    public PlayerViewModel(IClipPlayer player, ClipNavigator navigator, LoadedSettings settings)
     {
         _player = player;
         _navigator = navigator;
-        _folderReader = folderReader;
-        _folderPicker = folderPicker;
         _settings = settings.Values.Player;
         Speeds = PlaybackSpeeds.All.Select(s => new SpeedOptionViewModel(s)).ToList();
         Actions = CreateActions();
@@ -114,20 +96,11 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
     // Set by the view while the user drags the seek bar, so playback doesn't move it meanwhile.
     public bool IsScrubbing { get; set; }
 
-    public async Task OpenFolderAsync(string folder)
+    // Leaves the current picture on screen without sound, e.g. when a session ends.
+    public void Pause()
     {
-        IReadOnlyList<string> clips;
-        try
-        {
-            clips = await _folderReader.ListClipsAsync(folder);
-        }
-        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
-        {
-            Message = string.Format(Strings.FolderUnreadable, folder, e.Message);
-            return;
-        }
-        Message = clips.Count == 0 ? string.Format(Strings.NoClipsInFolder, folder) : _settingsProblem ?? string.Empty;
-        _navigator.Load(clips);
+        if (IsPlaying)
+            _player.TogglePause();
     }
 
     public void Stop()
@@ -143,31 +116,6 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
         _player.AudioChanged -= OnPlayerAudioChanged;
         _navigator.CurrentChanged -= OnCurrentClipChanged;
     }
-
-    [RelayCommand]
-    private async Task PickFolderAsync()
-    {
-        if (await _folderPicker.PickFolderAsync(Strings.PickFolderTitle) is { } folder)
-            await OpenFolderAsync(folder);
-    }
-
-    [RelayCommand(CanExecute = nameof(CanGoNext))]
-    private void Next() => _navigator.Next();
-
-    private bool CanGoNext() => _navigator.CanGoNext;
-
-    [RelayCommand(CanExecute = nameof(CanGoPrevious))]
-    private void Previous() => _navigator.Previous();
-
-    private bool CanGoPrevious() => _navigator.CanGoPrevious;
-
-    // Keep and Yeet move on to the next clip (spec §5). The decision itself is recorded once
-    // review sessions exist (#14); until then they only move on, like Skip.
-    [RelayCommand(CanExecute = nameof(CanGoNext))]
-    private void Keep() => _navigator.Next();
-
-    [RelayCommand(CanExecute = nameof(CanGoNext))]
-    private void Yeet() => _navigator.Next();
 
     [RelayCommand]
     private void TogglePause() => _player.TogglePause();
@@ -191,11 +139,7 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
     {
         var actions = new Dictionary<string, ICommand>
         {
-            [HotkeyActions.Keep] = KeepCommand,
-            [HotkeyActions.Yeet] = YeetCommand,
             [HotkeyActions.TogglePause] = TogglePauseCommand,
-            [HotkeyActions.NextClip] = NextCommand,
-            [HotkeyActions.PreviousClip] = PreviousCommand,
             [HotkeyActions.SeekForward] = new RelayCommand(() => SeekBy(_settings.SeekSeconds)),
             [HotkeyActions.SeekBack] = new RelayCommand(() => SeekBy(-_settings.SeekSeconds)),
             [HotkeyActions.LongSeekForward] = new RelayCommand(() => SeekBy(_settings.LongSeekSeconds)),
@@ -224,7 +168,7 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
 
     // The settings file could not be fully read; shown until it is fixed.
     public void ShowSettingsProblem(string location, IEnumerable<string> problems) =>
-        Message = _settingsProblem = string.Format(Strings.SettingsProblem, location, string.Join(ProblemSeparator, problems));
+        Message = string.Format(Strings.SettingsProblem, location, string.Join(ProblemSeparator, problems));
 
     [RelayCommand]
     private void CycleAudioTrack()
@@ -267,18 +211,7 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
 
     private void OnPlayerAudioChanged(object? sender, EventArgs e) => Dispatcher.UIThread.Post(SyncAudio);
 
-    private void OnCurrentClipChanged(object? sender, EventArgs e)
-    {
-        ClipName = Path.GetFileName(_navigator.Current) ?? string.Empty;
-        ClipCounter = _navigator.Current is not null
-            ? string.Format(Strings.ClipCounterFormat, _navigator.Number, _navigator.Clips.Count)
-            : string.Empty;
-        NextCommand.NotifyCanExecuteChanged();
-        KeepCommand.NotifyCanExecuteChanged();
-        YeetCommand.NotifyCanExecuteChanged();
-        PreviousCommand.NotifyCanExecuteChanged();
-        SyncPosition();
-    }
+    private void OnCurrentClipChanged(object? sender, EventArgs e) => SyncPosition();
 
     private void SyncState()
     {

@@ -62,9 +62,6 @@ public partial class App : Avalonia.Application
         var window = new MainWindow { DataContext = viewModel };
         desktop.MainWindow = window;
         window.Show();
-        // Development shortcut until source folders exist (#12): Yeetle.exe "D:\clips"
-        if (desktop.Args is [var folder, ..] && Directory.Exists(folder))
-            _ = viewModel.Player.OpenFolderAsync(folder);
     }
 
     private static void BringForward(Window? window)

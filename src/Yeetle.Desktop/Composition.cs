@@ -1,11 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Yeetle.App.Services;
 using Yeetle.App.ViewModels;
-using Yeetle.Application.Clips;
 using Yeetle.Application.Data;
 using Yeetle.Application.Diagnostics;
 using Yeetle.Application.Library;
 using Yeetle.Application.Playback;
+using Yeetle.Application.Sessions;
 using Yeetle.Application.Settings;
 using Yeetle.Application.Shell;
 using Yeetle.Infrastructure;
@@ -34,6 +34,7 @@ internal static class Composition
             .AddSingleton<LibraryScanner>()
             .AddSingleton<ScanScheduler>()
             .AddSingleton<SourceFolders>()
+            .AddSingleton<SessionService>()
             // Infrastructure
             .AddSingleton<ILog, FileLog>()
             .AddSingleton<SqliteConnectionFactory>()
@@ -43,7 +44,8 @@ internal static class Composition
             .AddSingleton<ILibraryStore, SqliteLibraryStore>()
             .AddSingleton<IClipFiles, FileSystemClipFiles>()
             .AddSingleton<IRecorderCheck, ObsRecorderCheck>()
-            .AddSingleton<IClipFolderReader, FileSystemClipFolderReader>()
+            .AddSingleton<ISessionStore, SqliteSessionStore>()
+            .AddSingleton<ITagStore, SqliteTagStore>()
             // Media
             .AddSingleton<IClipPlayer, VlcClipPlayer>()
             // App
@@ -51,6 +53,7 @@ internal static class Composition
             .AddSingleton<IDialogs>(s => new WindowDialogs(s.GetRequiredService<SourceFoldersViewModel>))
             .AddTransient<SourceFoldersViewModel>()
             .AddSingleton<PlayerViewModel>()
+            .AddSingleton<SessionViewModel>()
             .AddSingleton<MainWindowViewModel>()
             .AddTransient<RecoveryViewModel>()
             .BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });

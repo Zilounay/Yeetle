@@ -30,11 +30,19 @@ public sealed class ReviewSession
     private bool _requiredWarningShown;
 
     public ReviewSession(TagRules rules, IEnumerable<ClipId> clips)
+        : this(rules, clips.Select(c => new ClipReview(c, Decision.New, [], [], Visited: false)), position: 0)
+    {
+    }
+
+    // Starts from given states: clips that already carry tags, or a session restored from its
+    // journal after a crash. The undo history starts empty.
+    public ReviewSession(TagRules rules, IEnumerable<ClipReview> clips, int position)
     {
         _rules = rules;
-        _clips = clips.Select(c => new ClipReview(c, Decision.New, [], [], Visited: false)).ToImmutableList();
-        if (_clips.Count > 0)
-            _clips = _clips.SetItem(0, _clips[0] with { Visited = true });
+        _clips = clips.ToImmutableList();
+        Position = Math.Clamp(position, 0, _clips.Count);
+        if (!IsAtEnd)
+            _clips = _clips.SetItem(Position, _clips[Position] with { Visited = true });
     }
 
     public IReadOnlyList<ClipReview> Clips => _clips;
