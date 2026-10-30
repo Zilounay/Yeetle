@@ -267,15 +267,6 @@ Fermez tout programme qui pourrait l'utiliser, puis relancez Yeetle.</value>
   <data name="StripLater" xml:space="preserve">
     <value>Clips suivants</value>
   </data>
-  <data name="EndSessionTitle" xml:space="preserve">
-    <value>Terminer la session</value>
-  </data>
-  <data name="EndSessionMessage" xml:space="preserve">
-    <value>{0} gardés, {1} yeetés, {2} passés. Enregistrer ces décisions ? Les clips passés restent Nouveaux et passent en premier la prochaine fois.</value>
-  </data>
-  <data name="SaveSession" xml:space="preserve">
-    <value>Enregistrer</value>
-  </data>
   <data name="DiscardSession" xml:space="preserve">
     <value>Abandonner</value>
   </data>
@@ -501,5 +492,164 @@ Fermez tout programme qui pourrait l'utiliser, puis relancez Yeetle.</value>
   </data>
   <data name="DeleteMarkerTip" xml:space="preserve">
     <value>Supprimer ce marqueur</value>
+  </data>
+  <data name="SessionSummaryTitle" xml:space="preserve">
+    <value>Résumé de la session</value>
+  </data>
+  <data name="SessionSummaryHint" xml:space="preserve">
+    <value>Rien n'est encore enregistré. Valider enregistre ces décisions, tags et marqueurs ; Abandonner les efface et les clips restent Nouveaux.</value>
+  </data>
+  <data name="ReviewedLabel" xml:space="preserve">
+    <value>Vus</value>
+  </data>
+  <data name="KeptLabel" xml:space="preserve">
+    <value>Gardés</value>
+  </data>
+  <data name="YeetedLabel" xml:space="preserve">
+    <value>Yeetés</value>
+  </data>
+  <data name="SkippedLabel" xml:space="preserve">
+    <value>Passés</value>
+  </data>
+  <data name="KeptListTitle" xml:space="preserve">
+    <value>Gardés ({0})</value>
+  </data>
+  <data name="YeetedListTitle" xml:space="preserve">
+    <value>Yeetés ({0})</value>
+  </data>
+  <data name="SkippedListTitle" xml:space="preserve">
+    <value>Passés ({0})</value>
+  </data>
+  <data name="NoTagsOnClip" xml:space="preserve">
+    <value>Aucun tag</value>
+  </data>
+  <data name="MarkerCount" xml:space="preserve">
+    <value>{0} marqueur(s)</value>
+  </data>
+  <data name="BackToSession" xml:space="preserve">
+    <value>Retour à la session</value>
+  </data>
+  <data name="CommitDecisions" xml:space="preserve">
+    <value>Valider {0} décision(s)</value>
+  </data>
+  <data name="DeletePromptTitle" xml:space="preserve">
+    <value>Supprimer {0} fichier(s) yeeté(s) ?</value>
+  </data>
+  <data name="DeletePromptMessage" xml:space="preserve">
+    <value>{0} fichier(s) ont été yeetés dans cette session ({1}). Les supprimer aussi du disque ?</value>
+  </data>
+  <data name="RecycleBinWarning" xml:space="preserve">
+    <value>Les fichiers vont à la Corbeille quand c'est possible. Les lecteurs réseau, les clés USB et les très gros fichiers ne passent pas par la Corbeille et sont supprimés définitivement. Ne continuez que si vous êtes prêt à perdre ces fichiers.</value>
+  </data>
+  <data name="FileListTitle" xml:space="preserve">
+    <value>Les {0} fichier(s)</value>
+  </data>
+  <data name="KeepTheFiles" xml:space="preserve">
+    <value>Garder les fichiers</value>
+  </data>
+  <data name="DeleteFiles" xml:space="preserve">
+    <value>Supprimer {0} fichier(s)</value>
+  </data>
+  <data name="RenamePromptTitle" xml:space="preserve">
+    <value>Renommer {0} fichier(s) gardé(s) selon leurs tags ?</value>
+  </data>
+  <data name="RenamePromptMessage" xml:space="preserve">
+    <value>Les nouveaux noms sont les tags dans l'ordre du gestionnaire de tags, puis la date et l'heure d'enregistrement. Les noms d'origine sont conservés et peuvent être restaurés.</value>
+  </data>
+  <data name="RenameEditorWarning" xml:space="preserve">
+    <value>Les projets de montage qui utilisent ces fichiers (dans Premiere, par exemple) les afficheront comme hors ligne après le renommage.</value>
+  </data>
+  <data name="CurrentNameHeader" xml:space="preserve">
+    <value>Nom actuel</value>
+  </data>
+  <data name="NewNameHeader" xml:space="preserve">
+    <value>Nouveau nom</value>
+  </data>
+  <data name="RenameShortened" xml:space="preserve">
+    <value>Tags raccourcis pour tenir dans la limite de chemin de Windows</value>
+  </data>
+  <data name="RenameNumbered" xml:space="preserve">
+    <value>Numéroté : un autre fichier porte déjà ce nom</value>
+  </data>
+  <data name="RenameDoesNotFit" xml:space="preserve">
+    <value>Non renommé : le chemin du dossier est trop long pour un nouveau nom</value>
+  </data>
+  <data name="KeepCurrentNames" xml:space="preserve">
+    <value>Garder les noms actuels</value>
+  </data>
+  <data name="RenameFiles" xml:space="preserve">
+    <value>Renommer {0} fichier(s)</value>
+  </data>
+  <data name="DeleteResultsTitle" xml:space="preserve">
+    <value>Résultat de la suppression</value>
+  </data>
+  <data name="RenameResultsTitle" xml:space="preserve">
+    <value>Résultat du renommage</value>
+  </data>
+  <data name="RestoreResultsTitle" xml:space="preserve">
+    <value>Résultat de la restauration</value>
+  </data>
+  <data name="AllFilesDone" xml:space="preserve">
+    <value>Les {0} fichier(s) sont traités.</value>
+  </data>
+  <data name="SomeFilesFailed" xml:space="preserve">
+    <value>{0} fichier(s) sur {1} n'ont pas pu être traités et sont restés tels quels :</value>
+  </data>
+  <data name="RestoreOriginalNames" xml:space="preserve">
+    <value>Restaurer les noms d'origine</value>
+  </data>
+  <data name="RestoreOriginalNamesTip" xml:space="preserve">
+    <value>Redonne aux fichiers renommés le nom qu'ils avaient quand Yeetle les a trouvés</value>
+  </data>
+  <data name="ProblemGone" xml:space="preserve">
+    <value>Le fichier n'est plus là.</value>
+  </data>
+  <data name="ProblemInUse" xml:space="preserve">
+    <value>Une autre application utilise le fichier. Fermez-la et réessayez.</value>
+  </data>
+  <data name="ProblemAccessDenied" xml:space="preserve">
+    <value>Windows a refusé l'accès : le fichier est peut-être en lecture seule ou protégé.</value>
+  </data>
+  <data name="ProblemDriveMissing" xml:space="preserve">
+    <value>Le lecteur n'est pas connecté.</value>
+  </data>
+  <data name="ProblemNameTaken" xml:space="preserve">
+    <value>Un fichier porte déjà ce nom.</value>
+  </data>
+  <data name="ProblemPathTooLong" xml:space="preserve">
+    <value>Le nouveau nom serait trop long pour Windows.</value>
+  </data>
+  <data name="ProblemInterrupted" xml:space="preserve">
+    <value>Yeetle s'est fermé avant la fin ; le fichier est resté tel quel.</value>
+  </data>
+  <data name="ProblemOther" xml:space="preserve">
+    <value>Windows n'a pas pu le faire.</value>
+  </data>
+  <data name="FilesDeleted" xml:space="preserve">
+    <value>{0} fichier(s) supprimé(s).</value>
+  </data>
+  <data name="FilesRenamed" xml:space="preserve">
+    <value>{0} fichier(s) renommé(s).</value>
+  </data>
+  <data name="NamesRestored" xml:space="preserve">
+    <value>{0} nom(s) d'origine restauré(s).</value>
+  </data>
+  <data name="FileOperationsFailed" xml:space="preserve">
+    <value>Les fichiers n'ont pas pu être traités : {0}</value>
+  </data>
+  <data name="UnitBytes" xml:space="preserve">
+    <value>o</value>
+  </data>
+  <data name="UnitKilobytes" xml:space="preserve">
+    <value>Ko</value>
+  </data>
+  <data name="UnitMegabytes" xml:space="preserve">
+    <value>Mo</value>
+  </data>
+  <data name="UnitGigabytes" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="UnitTerabytes" xml:space="preserve">
+    <value>To</value>
   </data>
 </root>

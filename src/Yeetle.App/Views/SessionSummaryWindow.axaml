@@ -1,0 +1,106 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Yeetle.App.ViewModels"
+        xmlns:res="using:Yeetle.App.Resources"
+        x:Class="Yeetle.App.Views.SessionSummaryWindow"
+        x:DataType="vm:SessionSummaryViewModel"
+        Title="{x:Static res:Strings.SessionSummaryTitle}"
+        Width="760" Height="640" MinWidth="560" MinHeight="420"
+        ShowInTaskbar="False" WindowStartupLocation="CenterOwner"
+        RequestedThemeVariant="Dark" Background="#0E1013">
+    <!-- Layout decided in #9 (spec §5): count cards, collapsible lists, then Discard or Commit. -->
+    <Window.Resources>
+        <SolidColorBrush x:Key="CardBrush" Color="#15181D" />
+        <SolidColorBrush x:Key="KeepBrush" Color="#2E7D32" />
+        <SolidColorBrush x:Key="YeetBrush" Color="#C62828" />
+        <SolidColorBrush x:Key="SkipBrush" Color="#37474F" />
+        <x:Double x:Key="SecondaryTextOpacity">0.7</x:Double>
+    </Window.Resources>
+
+    <Window.Styles>
+        <Style Selector="Border.count">
+            <Setter Property="Background" Value="{StaticResource CardBrush}" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="14,10" />
+            <Setter Property="Margin" Value="0,0,10,0" />
+            <Setter Property="BorderThickness" Value="0,0,0,3" />
+        </Style>
+        <Style Selector="TextBlock.number">
+            <Setter Property="FontSize" Value="26" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+        <Style Selector="TextBlock.secondary">
+            <Setter Property="Opacity" Value="{StaticResource SecondaryTextOpacity}" />
+        </Style>
+        <Style Selector="Button.commit /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource KeepBrush}" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+    </Window.Styles>
+
+    <Window.DataTemplates>
+        <DataTemplate DataType="vm:SummaryClipViewModel" x:DataType="vm:SummaryClipViewModel">
+            <Grid ColumnDefinitions="*,Auto" Margin="0,4">
+                <StackPanel>
+                    <TextBlock FontWeight="SemiBold" Text="{Binding FileName}" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Classes="secondary" FontSize="12" Text="{Binding Tags}" TextWrapping="Wrap" />
+                </StackPanel>
+                <TextBlock Grid.Column="1" Classes="secondary" FontSize="12" VerticalAlignment="Center" Text="{Binding Markers}" />
+            </Grid>
+        </DataTemplate>
+    </Window.DataTemplates>
+
+    <DockPanel Margin="24">
+        <StackPanel DockPanel.Dock="Top" Spacing="4" Margin="0,0,0,16">
+            <TextBlock FontSize="20" FontWeight="Bold" Text="{x:Static res:Strings.SessionSummaryTitle}" />
+            <TextBlock Classes="secondary" TextWrapping="Wrap" Text="{x:Static res:Strings.SessionSummaryHint}" />
+        </StackPanel>
+
+        <UniformGrid DockPanel.Dock="Top" Columns="4" Margin="0,0,0,16">
+            <Border Classes="count">
+                <StackPanel>
+                    <TextBlock Classes="number" Text="{Binding Reviewed}" />
+                    <TextBlock Classes="secondary" Text="{x:Static res:Strings.ReviewedLabel}" />
+                </StackPanel>
+            </Border>
+            <Border Classes="count" BorderBrush="{StaticResource KeepBrush}">
+                <StackPanel>
+                    <TextBlock Classes="number" Text="{Binding KeptCount}" />
+                    <TextBlock Classes="secondary" Text="{x:Static res:Strings.KeptLabel}" />
+                </StackPanel>
+            </Border>
+            <Border Classes="count" BorderBrush="{StaticResource YeetBrush}">
+                <StackPanel>
+                    <TextBlock Classes="number" Text="{Binding YeetedCount}" />
+                    <TextBlock Classes="secondary" Text="{x:Static res:Strings.YeetedLabel}" />
+                </StackPanel>
+            </Border>
+            <Border Classes="count" BorderBrush="{StaticResource SkipBrush}" Margin="0">
+                <StackPanel>
+                    <TextBlock Classes="number" Text="{Binding SkippedCount}" />
+                    <TextBlock Classes="secondary" Text="{x:Static res:Strings.SkippedLabel}" />
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8" Margin="0,16,0,0">
+            <Button x:Name="BackButton" Content="{x:Static res:Strings.BackToSession}" IsCancel="True" />
+            <Button x:Name="DiscardButton" Grid.Column="2" Content="{x:Static res:Strings.DiscardSession}" />
+            <Button x:Name="CommitButton" Grid.Column="3" Classes="commit" Content="{Binding CommitLabel}" IsDefault="True" />
+        </Grid>
+
+        <ScrollViewer>
+            <StackPanel Spacing="8">
+                <Expander Header="{Binding KeptTitle}" HorizontalAlignment="Stretch" IsExpanded="True">
+                    <ItemsControl ItemsSource="{Binding Kept}" />
+                </Expander>
+                <Expander Header="{Binding YeetedTitle}" HorizontalAlignment="Stretch">
+                    <ItemsControl ItemsSource="{Binding Yeeted}" />
+                </Expander>
+                <Expander Header="{Binding SkippedTitle}" HorizontalAlignment="Stretch">
+                    <ItemsControl ItemsSource="{Binding Skipped}" />
+                </Expander>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

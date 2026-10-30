@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Yeetle.App.Resources;
 using Yeetle.App.Services;
+using Yeetle.Application.Files;
 using Yeetle.Application.Playback;
 using Yeetle.Application.Sessions;
 using Yeetle.Application.Settings;
@@ -26,6 +27,7 @@ public sealed partial class SessionViewModel : ViewModelBase
     private readonly PlayerViewModel _player;
     private readonly IDialogs _dialogs;
     private readonly TagManager _tagManager;
+    private readonly FileOperations _files;
     private ActiveSession? _session;
     private int _stripCentre;
 
@@ -58,9 +60,10 @@ public sealed partial class SessionViewModel : ViewModelBase
     private string _notice = string.Empty;
 
     public SessionViewModel(SessionService sessions, ClipNavigator navigator, PlayerViewModel player, IDialogs dialogs,
-        TagPanelViewModel tags, MarkersPanelViewModel markers, TagManager tagManager)
+        TagPanelViewModel tags, MarkersPanelViewModel markers, TagManager tagManager, FileOperations files)
     {
         Markers = markers;
+        _files = files;
         _tagManager = tagManager;
         _tagManager.Changed += (_, _) => _ = ReloadTagsAsync();
         _sessions = sessions;
@@ -119,7 +122,8 @@ public sealed partial class SessionViewModel : ViewModelBase
                 Begin(await _sessions.ResumeAsync(unfinished));
                 break;
             case Ending.Save:
-                await SaveAsync(unfinished.Id, unfinished.Snapshot.Clips);
+                if (await SaveAsync(unfinished.Id, unfinished.Snapshot.Clips))
+                    await OfferFileOperationsAsync(unfinished.Snapshot.Clips);
                 break;
             case Ending.Discard:
                 await DiscardAsync(unfinished.Id);
@@ -230,15 +234,21 @@ public sealed partial class SessionViewModel : ViewModelBase
             await AskEndAsync(session);
     }
 
-    // Reached by Stop or by passing the last clip. Cancel goes on reviewing.
+    // Reached by Stop or by passing the last clip: the read-only summary, then Commit or Discard
+    // (spec §5). Going back carries on reviewing.
     private async Task AskEndAsync(ActiveSession session)
     {
-        var choice = await _dialogs.ChooseAsync(Strings.EndSessionTitle, Summary(Strings.EndSessionMessage, session),
-            [(Strings.SaveSession, Ending.Save), (Strings.DiscardSession, Ending.Discard)]);
+        var choice = await _dialogs.ShowSessionSummaryAsync(SessionSummary.From(session));
         if (choice is { } ending)
-            await EndAsync(ending);
+        {
+            var reviews = session.Reviews;
+            if (await EndAsync(ending == SummaryChoice.Commit ? Ending.Save : Ending.Discard) && ending == SummaryChoice.Commit)
+                await OfferFileOperationsAsync(reviews);
+        }
         else if (session.IsAtEnd)
+        {
             session.Back();
+        }
     }
 
     private async Task<bool> EndAsync(Ending ending)
@@ -257,10 +267,49 @@ public sealed partial class SessionViewModel : ViewModelBase
         IsActive = false;
         Strip.Clear();
         Counter = ClipName = ClipDate = string.Empty;
-        _player.Pause();
+        // The player lets go of the session's files, which may be deleted or renamed next.
+        await _player.ReleaseFilesAsync();
         await RefreshHomeAsync();
         Changed?.Invoke(this, EventArgs.Empty);
         return true;
+    }
+
+    // After a commit, two separate opt-in prompts (spec §5): delete the yeeted files, then rename
+    // the kept ones by their tags.
+    private async Task OfferFileOperationsAsync(IReadOnlyList<ClipReview> reviews)
+    {
+        try
+        {
+            var yeeted = reviews.Where(r => r.Decision == Decision.Yeeted).Select(r => r.Clip).ToList();
+            if (yeeted.Count > 0 && await _files.PlanDeleteAsync(yeeted) is { Items.Count: > 0 } plan
+                                 && await _dialogs.ConfirmDeleteAsync(plan))
+            {
+                var outcomes = await _files.DeleteAsync(plan);
+                if (outcomes.Any(o => !o.Succeeded))
+                    await _dialogs.ShowFileResultsAsync(Strings.DeleteResultsTitle, outcomes, canRestoreNames: false);
+                Notice = string.Format(Strings.FilesDeleted, outcomes.Count(o => o.Succeeded));
+            }
+            var kept = reviews.Where(r => r.Decision == Decision.Kept).Select(r => r.Clip).ToList();
+            if (kept.Count > 0 && await _files.PlanRenameAsync(kept) is { ToRename.Count: > 0 } preview
+                               && await _dialogs.ConfirmRenameAsync(preview))
+            {
+                var outcomes = await _files.RenameAsync(preview);
+                var renamed = outcomes.Where(o => o.Succeeded).Select(o => o.Clip).ToList();
+                Notice = string.Format(Strings.FilesRenamed, renamed.Count);
+                // The original names are stored, so the rename can be undone right here (spec §9).
+                if (await _dialogs.ShowFileResultsAsync(Strings.RenameResultsTitle, outcomes, canRestoreNames: renamed.Count > 0))
+                {
+                    var restored = await _files.RestoreNamesAsync(renamed);
+                    await _dialogs.ShowFileResultsAsync(Strings.RestoreResultsTitle, restored, canRestoreNames: false);
+                    Notice = string.Format(Strings.NamesRestored, restored.Count(o => o.Succeeded));
+                }
+            }
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or InvalidOperationException
+                                      or System.Data.Common.DbException)
+        {
+            Notice = string.Format(Strings.FileOperationsFailed, e.Message);
+        }
     }
 
     private async Task<bool> SaveAsync(long sessionId, IReadOnlyList<ClipReview> reviews)

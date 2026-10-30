@@ -3,6 +3,7 @@ using Yeetle.App.Services;
 using Yeetle.App.ViewModels;
 using Yeetle.Application.Data;
 using Yeetle.Application.Diagnostics;
+using Yeetle.Application.Files;
 using Yeetle.Application.Library;
 using Yeetle.Application.Playback;
 using Yeetle.Application.Sessions;
@@ -13,6 +14,7 @@ using Yeetle.Infrastructure;
 using Yeetle.Infrastructure.Clips;
 using Yeetle.Infrastructure.Data;
 using Yeetle.Infrastructure.Diagnostics;
+using Yeetle.Infrastructure.Files;
 using Yeetle.Infrastructure.Shell;
 using Yeetle.Media.Vlc;
 
@@ -36,6 +38,7 @@ internal static class Composition
             .AddSingleton<ScanScheduler>()
             .AddSingleton<SourceFolders>()
             .AddSingleton<SessionService>()
+            .AddSingleton<FileOperations>()
             .AddSingleton<TagManager>()
             // Infrastructure
             .AddSingleton<ILog, FileLog>()
@@ -50,6 +53,8 @@ internal static class Composition
             .AddSingleton<SqliteTagStore>()
             .AddSingleton<ITagStore>(s => s.GetRequiredService<SqliteTagStore>())
             .AddSingleton<ITagEditor>(s => s.GetRequiredService<SqliteTagStore>())
+            .AddSingleton<IFileOperationStore, SqliteFileOperationStore>()
+            .AddSingleton<IFileSystem, WindowsFileSystem>()
             // Media
             .AddSingleton<IClipPlayer, VlcClipPlayer>()
             // App
