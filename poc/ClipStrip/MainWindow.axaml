@@ -1,0 +1,82 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ClipStrip.ViewModels"
+        xmlns:local="using:ClipStrip"
+        xmlns:views="using:Yeetle.App.Views"
+        x:Class="ClipStrip.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Width="1280" Height="900"
+        WindowStartupLocation="CenterScreen"
+        Title="Yeetle POC #5: clip strip">
+    <Window.Styles>
+        <Style Selector="Border.card">
+            <Setter Property="Width" Value="{x:Static local:StripLayout.CardWidth}" />
+            <Setter Property="Padding" Value="4" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Background" Value="#1E2228" />
+            <Setter Property="Opacity" Value="0.7" />
+        </Style>
+        <Style Selector="Border.card.current">
+            <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}" />
+            <Setter Property="Background" Value="#2A3038" />
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+        <Style Selector="Border.card.failed">
+            <Setter Property="BorderBrush" Value="#C62828" />
+        </Style>
+        <Style Selector="TextBlock.small">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Opacity" Value="0.75" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="*,Auto">
+        <!-- The app's player, as is. Its controls float over it in their own window. -->
+        <views:PlayerView x:Name="Player" DataContext="{Binding Player}" />
+
+        <!-- Below the video, never over it: the native video window would cover it. -->
+        <Border Grid.Row="1" Background="#121418" Padding="8,6,8,8">
+            <StackPanel Spacing="6">
+                <TextBlock Classes="small" Text="{Binding Strip.Summary}" />
+                <ScrollViewer x:Name="StripScroller" HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Disabled">
+                    <ItemsControl x:Name="Strip" ItemsSource="{Binding Strip.Cards}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ClipCardViewModel">
+                                <Border Classes="card" Classes.current="{Binding IsCurrent}"
+                                        Classes.failed="{Binding IsFailed}"
+                                        Margin="{x:Static local:StripLayout.CardMargin}"
+                                        ToolTip.Tip="{Binding Path}">
+                                    <StackPanel Spacing="2">
+                                        <Panel Height="{x:Static local:StripLayout.ThumbnailHeight}" Background="Black">
+                                            <Image Source="{Binding Thumbnail}" Stretch="Uniform" />
+                                        </Panel>
+                                        <TextBlock FontSize="12" FontWeight="SemiBold" Text="{Binding FileName}"
+                                                   TextTrimming="CharacterEllipsis" />
+                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                            <TextBlock Classes="small" Text="{Binding Recorded}" />
+                                            <!-- "file": read from the video; "mtime": fallback to last-modified. -->
+                                            <TextBlock Classes="small" Text="file" IsVisible="{Binding IsDateFromFile}"
+                                                       Foreground="#81C784" />
+                                            <TextBlock Classes="small" Text="mtime" Foreground="#FFB74D"
+                                                       IsVisible="{Binding !IsDateFromFile}" />
+                                        </StackPanel>
+                                        <TextBlock Classes="small" Text="{Binding Status}" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
