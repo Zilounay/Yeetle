@@ -96,4 +96,52 @@
   <data name="SkipTip" xml:space="preserve">
     <value>Clip suivant sans décider (Maj+→)</value>
   </data>
+  <data name="RecoveryTitle" xml:space="preserve">
+    <value>Yeetle n'a pas pu ouvrir votre bibliothèque</value>
+  </data>
+  <data name="DatabaseDamaged" xml:space="preserve">
+    <value>La base de la bibliothèque a échoué à son contrôle de sécurité, Yeetle ne l'a donc pas ouverte. Rien n'a été supprimé ni réinitialisé.
+Restaurez une sauvegarde ci-dessous. Le fichier endommagé est conservé à côté, renommé.
+Pour aider à trouver la cause, vous pouvez envoyer le fichier endommagé (yeetle.db dans le dossier de données) au développeur. Il contient les chemins de vos clips et vos tags.</value>
+  </data>
+  <data name="DatabaseNewer" xml:space="preserve">
+    <value>Cette bibliothèque a été enregistrée par une version plus récente de Yeetle (schéma {0} ; cette version lit jusqu'au {1}). Yeetle ne l'a pas ouverte, elle reste donc intacte. Mettez Yeetle à jour pour l'ouvrir.</value>
+  </data>
+  <data name="DatabaseUnavailable" xml:space="preserve">
+    <value>Yeetle n'a pas pu ouvrir sa base de bibliothèque : {0}
+Fermez tout programme qui pourrait l'utiliser, puis relancez Yeetle.</value>
+  </data>
+  <data name="Backups" xml:space="preserve">
+    <value>Sauvegardes</value>
+  </data>
+  <data name="NoBackups" xml:space="preserve">
+    <value>Aucune sauvegarde trouvée.</value>
+  </data>
+  <data name="RestoreBackup" xml:space="preserve">
+    <value>Restaurer cette sauvegarde</value>
+  </data>
+  <data name="RestoreFailed" xml:space="preserve">
+    <value>La sauvegarde n'a pas pu être restaurée : {0}</value>
+  </data>
+  <data name="RestoredButNotReady" xml:space="preserve">
+    <value>La sauvegarde a été restaurée, mais la bibliothèque ne peut toujours pas être ouverte : {0}</value>
+  </data>
+  <data name="OpenDataFolder" xml:space="preserve">
+    <value>Ouvrir le dossier de données</value>
+  </data>
+  <data name="Quit" xml:space="preserve">
+    <value>Quitter</value>
+  </data>
+  <data name="BackupPoolSession" xml:space="preserve">
+    <value>Après une session</value>
+  </data>
+  <data name="BackupPoolDaily" xml:space="preserve">
+    <value>Quotidienne</value>
+  </data>
+  <data name="BackupPoolSafety" xml:space="preserve">
+    <value>Avant une opération risquée</value>
+  </data>
+  <data name="BackupItemFormat" xml:space="preserve">
+    <value>{0:g} · {1}</value>
+  </data>
 </root>

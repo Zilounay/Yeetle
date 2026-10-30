@@ -96,4 +96,52 @@
   <data name="SkipTip" xml:space="preserve">
     <value>Next clip without deciding (Shift+→)</value>
   </data>
+  <data name="RecoveryTitle" xml:space="preserve">
+    <value>Yeetle could not open your library</value>
+  </data>
+  <data name="DatabaseDamaged" xml:space="preserve">
+    <value>The library database failed its safety check, so Yeetle did not open it. Nothing was deleted or reset.
+Restore a backup below. The damaged file is kept next to it, renamed.
+To help find the cause, you can send the damaged file (yeetle.db in the data folder) to the developer. It contains your clip file paths and tags.</value>
+  </data>
+  <data name="DatabaseNewer" xml:space="preserve">
+    <value>This library was saved by a newer version of Yeetle (schema {0}; this version reads up to {1}). Yeetle did not open it, so it stays undamaged. Update Yeetle to open it.</value>
+  </data>
+  <data name="DatabaseUnavailable" xml:space="preserve">
+    <value>Yeetle could not open its library database: {0}
+Close any program that may be using it, then start Yeetle again.</value>
+  </data>
+  <data name="Backups" xml:space="preserve">
+    <value>Backups</value>
+  </data>
+  <data name="NoBackups" xml:space="preserve">
+    <value>No backups found.</value>
+  </data>
+  <data name="RestoreBackup" xml:space="preserve">
+    <value>Restore this backup</value>
+  </data>
+  <data name="RestoreFailed" xml:space="preserve">
+    <value>The backup could not be restored: {0}</value>
+  </data>
+  <data name="RestoredButNotReady" xml:space="preserve">
+    <value>The backup was restored, but the library still cannot be opened: {0}</value>
+  </data>
+  <data name="OpenDataFolder" xml:space="preserve">
+    <value>Open data folder</value>
+  </data>
+  <data name="Quit" xml:space="preserve">
+    <value>Quit</value>
+  </data>
+  <data name="BackupPoolSession" xml:space="preserve">
+    <value>After a session</value>
+  </data>
+  <data name="BackupPoolDaily" xml:space="preserve">
+    <value>Daily</value>
+  </data>
+  <data name="BackupPoolSafety" xml:space="preserve">
+    <value>Before a risky change</value>
+  </data>
+  <data name="BackupItemFormat" xml:space="preserve">
+    <value>{0:g} · {1}</value>
+  </data>
 </root>

@@ -9,6 +9,8 @@
     <PackageVersion Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageVersion Include="Dapper" Version="2.1.89" />
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.14" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
   </ItemGroup>
   <ItemGroup Label="Player">
