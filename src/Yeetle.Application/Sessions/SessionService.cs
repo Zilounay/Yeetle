@@ -30,7 +30,10 @@ public sealed class SessionService(
         if (clips.Count == 0)
             return null;
         var review = new ReviewSession(new TagRules(catalog.Vocabulary),
-            clips.Select(c => new ClipReview(c.Id, Domain.Clips.Decision.New, c.Tags, [], Visited: false)), position: 0);
+            clips.Select(c => new ClipReview(c.Id, Domain.Clips.Decision.New, c.Tags, [], Visited: false)
+            {
+                Markers = c.Markers,
+            }), position: 0);
         var session = Create(id, review, clips, catalog);
         Journal(id, session.Snapshot());
         log.Info($"Session {id} started with {clips.Count} clips.");

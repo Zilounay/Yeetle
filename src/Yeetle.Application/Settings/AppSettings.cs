@@ -13,6 +13,8 @@ public sealed class AppSettings
 
     public BackupSettings Backups { get; set; } = new();
 
+    public ReviewSettings Review { get; set; } = new();
+
     // Action name to the keys that trigger it; see HotkeyDefaults for how keys are written.
     public Dictionary<string, List<string>> Hotkeys { get; set; } = HotkeyDefaults.Create();
 }
@@ -34,6 +36,13 @@ public sealed class PlayerSettings
 public sealed class LibrarySettings
 {
     public List<string> VideoExtensions { get; set; } = [.. VideoFileTypes.DefaultExtensions];
+}
+
+// Defaults from spec §11.
+public sealed class ReviewSettings
+{
+    // A marker lands this long before K is pressed, since the moment has just happened.
+    public double MarkerOffsetSeconds { get; set; } = 1;
 }
 
 // How many backups each pool keeps (spec §10).

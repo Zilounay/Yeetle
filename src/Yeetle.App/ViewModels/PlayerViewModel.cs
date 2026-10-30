@@ -96,6 +96,17 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
     // Set by the view while the user drags the seek bar, so playback doesn't move it meanwhile.
     public bool IsScrubbing { get; set; }
 
+    public TimeSpan Position => _player.Position;
+
+    // Used by markers: their "move here" and clicking a marker's time.
+    public void SeekTo(TimeSpan position)
+    {
+        if (_navigator.Current is null)
+            return;
+        _player.Seek(position > _player.Duration ? _player.Duration : position);
+        SyncPosition();
+    }
+
     // Leaves the current picture on screen without sound, e.g. when a session ends.
     public void Pause()
     {

@@ -60,6 +60,7 @@ internal static class Composition
             .AddTransient<SourceFoldersViewModel>()
             .AddSingleton<PlayerViewModel>()
             .AddSingleton<TagPanelViewModel>()
+            .AddSingleton<MarkersPanelViewModel>()
             .AddSingleton<SessionViewModel>()
             .AddSingleton<MainWindowViewModel>()
             .AddTransient<RecoveryViewModel>()

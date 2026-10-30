@@ -179,6 +179,39 @@ public class ReviewSessionTests
     }
 
     [Fact]
+    public void Markers_are_numbered_kept_in_order_and_undoable()
+    {
+        var session = Start();
+        string Name(int n) => $"Marker {n}";
+
+        session.AddMarker(TimeSpan.FromSeconds(30), Name);
+        session.AddMarker(TimeSpan.FromSeconds(10), Name);
+        session.RenameMarker(1, "Smoke kill");
+        session.MoveMarker(2, TimeSpan.FromSeconds(-3));
+
+        Assert.Equal([new Marker(2, TimeSpan.Zero, "Marker 2"), new Marker(1, TimeSpan.FromSeconds(30), "Smoke kill")],
+            session.Current!.Markers);
+        session.DeleteMarker(2);
+        Assert.Equal(2, session.AddMarker(TimeSpan.FromSeconds(5), Name).Number);
+        session.Undo();
+        session.Undo();
+        Assert.Equal(2, session.Current!.Markers.Count);
+    }
+
+    [Fact]
+    public void Markers_stay_on_their_clip()
+    {
+        var session = Start();
+        session.SelectTag(Dota2);
+        session.AddMarker(TimeSpan.FromSeconds(1), n => n.ToString());
+
+        session.Keep();
+
+        Assert.Empty(session.Current!.Markers);
+        Assert.Single(session.Clips[0].Markers);
+    }
+
+    [Fact]
     public void Undoing_a_keep_also_undoes_the_carried_over_tags()
     {
         var session = Start();
