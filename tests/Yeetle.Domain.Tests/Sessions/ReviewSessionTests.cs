@@ -162,6 +162,23 @@ public class ReviewSessionTests
     }
 
     [Fact]
+    public void A_tag_deleted_mid_session_leaves_every_clip_and_the_undo_history()
+    {
+        var session = Start();
+        session.SelectTag(Zil);
+        session.SelectTag(Dota2);
+        var withoutZil = new TagVocabulary(
+            Create().InManagerOrder.Select(t => Create().BoxOf(t)).Distinct(),
+            Create().InManagerOrder.Where(t => t != Zil).Select(t => Create().Tag(t)));
+
+        session.UseVocabulary(withoutZil);
+
+        Assert.Equal([Dota2], session.Current!.Tags);
+        session.Undo();
+        Assert.Empty(session.Current!.Tags);
+    }
+
+    [Fact]
     public void Undoing_a_keep_also_undoes_the_carried_over_tags()
     {
         var session = Start();

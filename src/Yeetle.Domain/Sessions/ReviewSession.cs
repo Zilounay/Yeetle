@@ -24,7 +24,7 @@ public enum KeepOutcome
 // session is committed; undo goes back one decision or tag change at a time.
 public sealed class ReviewSession
 {
-    private readonly TagRules _rules;
+    private TagRules _rules;
     private readonly Stack<(ImmutableList<ClipReview> Clips, int Position)> _undo = new();
     private ImmutableList<ClipReview> _clips;
     private bool _requiredWarningShown;
@@ -88,6 +88,25 @@ public sealed class ReviewSession
     public void SelectTag(TagId tag) => ChangeTags(_rules.Select(CurrentOrThrow().Tags, tag));
 
     public void DeselectTag(TagId tag) => ChangeTags(_rules.Deselect(CurrentOrThrow().Tags, tag));
+
+    // The Tag Manager changed the vocabulary mid-session (spec §5): its rules apply from now on,
+    // and deleted tags leave every clip, in the undo history too.
+    public void UseVocabulary(TagVocabulary vocabulary)
+    {
+        _rules = new TagRules(vocabulary);
+        var known = vocabulary.InManagerOrder.ToHashSet();
+        _clips = WithKnownTags(_clips);
+        var history = _undo.Reverse().Select(s => (WithKnownTags(s.Clips), s.Position)).ToList();
+        _undo.Clear();
+        foreach (var state in history)
+            _undo.Push(state);
+
+        ImmutableList<ClipReview> WithKnownTags(ImmutableList<ClipReview> clips) => clips.ConvertAll(c => c with
+        {
+            Tags = c.Tags.Intersect(known),
+            CarriedOver = c.CarriedOver.Intersect(known),
+        });
+    }
 
     public bool Undo()
     {

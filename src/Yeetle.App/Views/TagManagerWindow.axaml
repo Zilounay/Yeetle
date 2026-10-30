@@ -1,0 +1,241 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Yeetle.App.ViewModels"
+        xmlns:res="using:Yeetle.App.Resources"
+        x:Class="Yeetle.App.Views.TagManagerWindow"
+        x:DataType="vm:TagManagerViewModel"
+        Title="{x:Static res:Strings.TagManagerTitle}"
+        Width="1120" Height="740" MinWidth="760" MinHeight="420"
+        WindowStartupLocation="CenterOwner"
+        RequestedThemeVariant="Dark">
+    <!-- Layout decided in #9 (spec §6): nested box cards on the left, the selection on the right. -->
+    <Window.Resources>
+        <SolidColorBrush x:Key="PageBrush" Color="#0E1013" />
+        <SolidColorBrush x:Key="PanelBrush" Color="#15181D" />
+        <SolidColorBrush x:Key="LineBrush" Color="#23272E" />
+        <SolidColorBrush x:Key="ChipBrush" Color="#1C2026" />
+        <SolidColorBrush x:Key="ChipLineBrush" Color="#3A414B" />
+        <SolidColorBrush x:Key="SelectedBrush" Color="#2F6FD6" />
+        <SolidColorBrush x:Key="KeyBrush" Color="#24FFFFFF" />
+        <SolidColorBrush x:Key="DangerBrush" Color="#C62828" />
+        <SolidColorBrush x:Key="NoticeBrush" Color="#1A2F6FD6" />
+        <SolidColorBrush x:Key="WarningTextBrush" Color="#FF9A92" />
+        <x:Double x:Key="SecondaryTextOpacity">0.7</x:Double>
+        <x:Double x:Key="DotSize">10</x:Double>
+        <x:Double x:Key="SwatchSize">22</x:Double>
+        <!-- Boxes under a tag are indented below it. -->
+        <Thickness x:Key="NestedIndent">24,0,0,0</Thickness>
+    </Window.Resources>
+
+    <Window.Styles>
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="{StaticResource PanelBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource LineBrush}" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="14,12" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+        </Style>
+        <Style Selector="Border.card.selected">
+            <Setter Property="BorderBrush" Value="{StaticResource SelectedBrush}" />
+        </Style>
+        <Style Selector="Button.chip">
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="Background" Value="{StaticResource ChipBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ChipLineBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Margin" Value="0,0,6,6" />
+        </Style>
+        <Style Selector="Button.chip.selected /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="{StaticResource SelectedBrush}" />
+            <Setter Property="BorderThickness" Value="2" />
+        </Style>
+        <Style Selector="Button.plain">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Padding" Value="4,2" />
+        </Style>
+        <Style Selector="Button.danger /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource DangerBrush}" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Border.key">
+            <Setter Property="Background" Value="{StaticResource KeyBrush}" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="5,1" />
+        </Style>
+        <Style Selector="TextBlock.caption">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Opacity" Value="{StaticResource SecondaryTextOpacity}" />
+            <Setter Property="Margin" Value="0,8,0,0" />
+        </Style>
+    </Window.Styles>
+
+    <Window.DataTemplates>
+        <!-- A box card. Its tags with boxes below them repeat this template, nested. -->
+        <DataTemplate DataType="vm:BoxCardViewModel" x:DataType="vm:BoxCardViewModel">
+            <Border Classes="card" Classes.selected="{Binding IsSelected}">
+                <StackPanel Spacing="10">
+                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="16">
+                        <Button Classes="plain" Command="{Binding Select}" HorizontalAlignment="Left"
+                                ToolTip.Tip="{x:Static res:Strings.SelectBoxTip}">
+                            <TextBlock FontSize="15" FontWeight="SemiBold" Text="{Binding Title}" TextWrapping="Wrap" />
+                        </Button>
+                        <!-- An unnamed box is always pick many and never required (spec §6). -->
+                        <ToggleSwitch Grid.Column="1" IsChecked="{Binding IsPickOne}" VerticalAlignment="Center" IsVisible="{Binding IsNamed}"
+                                      OnContent="{x:Static res:Strings.RulePickOne}"
+                                      OffContent="{x:Static res:Strings.RulePickMany}" />
+                        <CheckBox Grid.Column="2" IsChecked="{Binding IsRequired}" VerticalAlignment="Center" IsVisible="{Binding IsNamed}"
+                                  Content="{x:Static res:Strings.Required}" ToolTip.Tip="{x:Static res:Strings.RequiredTip}" />
+                    </Grid>
+                    <WrapPanel>
+                        <ItemsControl ItemsSource="{Binding Tags}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:TagNodeViewModel">
+                                    <Button Classes="chip" Classes.selected="{Binding IsSelected}" Command="{Binding Select}">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <Ellipse Width="{StaticResource DotSize}" Height="{StaticResource DotSize}"
+                                                     Fill="{Binding ColourBrush}" IsVisible="{Binding HasColour}"
+                                                     VerticalAlignment="Center" />
+                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                            <Border Classes="key" IsVisible="{Binding HasHotkey}" VerticalAlignment="Center">
+                                                <TextBlock FontSize="11" Text="{Binding Hotkey}" />
+                                            </Border>
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Button Height="32" Content="{x:Static res:Strings.AddTag}" Command="{Binding AddTag}" />
+                    </WrapPanel>
+                    <ItemsControl ItemsSource="{Binding TagsWithBoxes}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:TagNodeViewModel">
+                                <StackPanel Margin="{StaticResource NestedIndent}" Spacing="6">
+                                    <Button Classes="plain" Command="{Binding ToggleExpandedCommand}">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <TextBlock Text="{Binding ExpandGlyph}" />
+                                            <TextBlock Text="{Binding UnderTitle}" Opacity="{StaticResource SecondaryTextOpacity}" />
+                                        </StackPanel>
+                                    </Button>
+                                    <ItemsControl ItemsSource="{Binding Boxes}" IsVisible="{Binding IsExpanded}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+    </Window.DataTemplates>
+
+    <Grid ColumnDefinitions="*,360" Background="{StaticResource PageBrush}">
+        <DockPanel Margin="20,20,10,20">
+            <StackPanel DockPanel.Dock="Top" Spacing="4" Margin="0,0,0,14">
+                <TextBlock FontSize="20" FontWeight="Bold" Text="{x:Static res:Strings.TagManagerTitle}" />
+                <TextBlock Text="{x:Static res:Strings.TagManagerHint}" TextWrapping="Wrap"
+                           Opacity="{StaticResource SecondaryTextOpacity}" />
+            </StackPanel>
+            <!-- Text typed in the session's tag box that matched nothing (spec §6). -->
+            <Border DockPanel.Dock="Top" Background="{StaticResource NoticeBrush}" CornerRadius="8" Padding="12,8"
+                    Margin="0,0,0,12" IsVisible="{Binding HasPendingName}">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <TextBlock Text="{Binding PendingNameHint}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                    <Button Grid.Column="1" Content="{x:Static res:Strings.Cancel}" Command="{Binding CancelPendingNameCommand}" />
+                </Grid>
+            </Border>
+            <ScrollViewer>
+                <StackPanel>
+                    <TextBlock Text="{x:Static res:Strings.NoTagsInManager}" TextWrapping="Wrap" Margin="0,0,0,12"
+                               IsVisible="{Binding IsEmpty}" Opacity="{StaticResource SecondaryTextOpacity}" />
+                    <ItemsControl ItemsSource="{Binding Boxes}" />
+                    <Button Content="{x:Static res:Strings.AddTopLevelBox}" Command="{Binding AddTopLevelBoxCommand}" />
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+
+        <!-- The selected tag or box. -->
+        <Border Grid.Column="1" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource LineBrush}"
+                BorderThickness="1,0,0,0" Padding="18">
+            <ScrollViewer>
+                <StackPanel Spacing="6">
+                    <TextBlock Text="{x:Static res:Strings.SelectSomething}" TextWrapping="Wrap"
+                               Opacity="{StaticResource SecondaryTextOpacity}" IsVisible="{Binding !HasSelection}" />
+                    <StackPanel Spacing="6" IsVisible="{Binding HasSelection}">
+                        <TextBlock Text="{Binding SelectedPath}" TextWrapping="Wrap" Opacity="{StaticResource SecondaryTextOpacity}" />
+                        <TextBlock Classes="caption" Text="{x:Static res:Strings.NameLabel}" IsVisible="{Binding CanRename}" />
+                        <TextBox x:Name="NameBox" Text="{Binding EditName}" IsVisible="{Binding CanRename}" />
+
+                        <StackPanel Spacing="6" IsVisible="{Binding HasTagSelected}">
+                            <TextBlock Classes="caption" Text="{x:Static res:Strings.ColourLabel}" />
+                            <ItemsControl ItemsSource="{Binding Colours}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:ColourChoice">
+                                        <Button Classes="plain" Margin="0,0,4,4" ToolTip.Tip="{Binding Tip}" AutomationProperties.Name="{Binding Tip}"
+                                                Command="{Binding $parent[Window].((vm:TagManagerViewModel)DataContext).SetColourCommand}"
+                                                CommandParameter="{Binding}">
+                                            <Panel Width="{StaticResource SwatchSize}" Height="{StaticResource SwatchSize}">
+                                                <Ellipse Fill="{Binding Brush}" Stroke="{StaticResource ChipLineBrush}" StrokeThickness="1" />
+                                                <TextBlock Text="×" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                           IsVisible="{Binding Brush, Converter={x:Static ObjectConverters.IsNull}}" />
+                                            </Panel>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <TextBlock Classes="caption" Text="{x:Static res:Strings.HotkeyLabel}" />
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Border Classes="key" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding SelectedHotkey}" />
+                                </Border>
+                                <Button Content="{x:Static res:Strings.ChangeHotkey}" Command="{Binding StartHotkeyCaptureCommand}" />
+                                <Button Content="{x:Static res:Strings.RemoveHotkey}" Command="{Binding ClearHotkeyCommand}" />
+                            </StackPanel>
+                            <TextBlock Text="{x:Static res:Strings.PressAKey}" TextWrapping="Wrap" FontWeight="SemiBold"
+                                       IsVisible="{Binding IsCapturingHotkey}" />
+
+                            <TextBlock Classes="caption" Text="{x:Static res:Strings.UsageLabel}" />
+                            <TextBlock Text="{Binding ClipCountText}" />
+                            <TextBlock Classes="caption" Text="{x:Static res:Strings.FileNameFormLabel}" />
+                            <TextBlock FontFamily="Consolas,monospace" Text="{Binding FileNameForm}" TextWrapping="Wrap" />
+
+                            <TextBlock Classes="caption" Text="{x:Static res:Strings.BelowThisTag}" />
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button Content="{x:Static res:Strings.AddBoxUnder}" Command="{Binding AddBoxUnderSelectedCommand}"
+                                        ToolTip.Tip="{x:Static res:Strings.AddBoxUnderTip}" />
+                                <Button Content="{x:Static res:Strings.AddTagUnder}" Command="{Binding AddTagUnderSelectedCommand}"
+                                        ToolTip.Tip="{x:Static res:Strings.AddTagUnderTip}" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <TextBlock Classes="caption" Text="{x:Static res:Strings.OrderLabel}" />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button Content="{x:Static res:Strings.MoveUp}" Command="{Binding MoveUpCommand}" />
+                            <Button Content="{x:Static res:Strings.MoveDown}" Command="{Binding MoveDownCommand}" />
+                        </StackPanel>
+                        <TextBlock Text="{x:Static res:Strings.OrderHint}" TextWrapping="Wrap" FontSize="12"
+                                   Opacity="{StaticResource SecondaryTextOpacity}" />
+
+                        <Button Classes="danger" Margin="0,16,0,0" Content="{x:Static res:Strings.Delete}"
+                                Command="{Binding DeleteSelectedCommand}" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Margin="0,12,0,0"
+                               Foreground="{StaticResource WarningTextBrush}"
+                               IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</Window>

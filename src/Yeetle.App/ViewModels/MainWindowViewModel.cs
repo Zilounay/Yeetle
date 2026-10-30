@@ -80,6 +80,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     [RelayCommand]
     private Task OpenFoldersAsync() => _dialogs.ShowSourceFoldersAsync();
 
+    [RelayCommand]
+    private void OpenTagManager() => _dialogs.ShowTagManager();
+
     private async Task OnScannedAsync(ScanReport report)
     {
         ScanSummary = ScanNotice.Describe(report);

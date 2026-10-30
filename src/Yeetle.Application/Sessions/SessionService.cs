@@ -45,6 +45,8 @@ public sealed class SessionService(
         // A clip wiped from the library meanwhile simply leaves the session.
         var reviews = unfinished.Snapshot.Clips.Where(c => known.Contains(c.Clip)).ToList();
         var review = new ReviewSession(new TagRules(catalog.Vocabulary), reviews, unfinished.Snapshot.Position);
+        // Tags deleted since the journal was written are dropped.
+        review.UseVocabulary(catalog.Vocabulary);
         log.Info($"Session {unfinished.Id} resumed.");
         return Create(unfinished.Id, review, clips, catalog);
     }

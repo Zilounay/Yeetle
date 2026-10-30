@@ -351,13 +351,131 @@ Fermez tout programme qui pourrait l'utiliser, puis relancez Yeetle.</value>
   <data name="NoTagMatch" xml:space="preserve">
     <value>Aucun tag nommé « {0} ». Appuyez sur Entrée pour le créer dans le gestionnaire de tags.</value>
   </data>
-  <data name="TagManagerNotYet" xml:space="preserve">
-    <value>Le gestionnaire de tags n'existe pas encore (#16), « {0} » n'a donc pas été créé.</value>
-  </data>
   <data name="NoTagsYet" xml:space="preserve">
     <value>Aucun tag pour l'instant. Les tags se créent dans le gestionnaire de tags.</value>
   </data>
   <data name="TagHotkeyClash" xml:space="preserve">
     <value>Le raccourci {0} du tag {1} est déjà utilisé par une autre action et a été ignoré.</value>
+  </data>
+  <data name="TagManagerTitle" xml:space="preserve">
+    <value>Gestionnaire de tags</value>
+  </data>
+  <data name="TagManagerHint" xml:space="preserve">
+    <value>Les boîtes contiennent les tags et portent les règles. Les changements sont enregistrés tout de suite et s'appliquent aussi à une session en cours. L'ordre ici est celui des noms de fichiers renommés.</value>
+  </data>
+  <data name="NoTagsInManager" xml:space="preserve">
+    <value>Pas encore de tags. Commencez par une boîte, par exemple « Jeu » (un seul) ou « Moments » (plusieurs).</value>
+  </data>
+  <data name="AddTopLevelBox" xml:space="preserve">
+    <value>+ Nouvelle boîte principale</value>
+  </data>
+  <data name="AddTag" xml:space="preserve">
+    <value>+ Tag</value>
+  </data>
+  <data name="BoxesUnderTag" xml:space="preserve">
+    <value>Sous {0} · {1} boîte(s)</value>
+  </data>
+  <data name="DirectlyUnderTag" xml:space="preserve">
+    <value>Directement sous {0}</value>
+  </data>
+  <data name="SelectBoxTip" xml:space="preserve">
+    <value>Sélectionnez cette boîte pour la renommer, la déplacer ou la supprimer</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Obligatoire</value>
+  </data>
+  <data name="RequiredTip" xml:space="preserve">
+    <value>Quand cette boîte est visible et vide, Garder avertit une fois.</value>
+  </data>
+  <data name="PendingTagHint" xml:space="preserve">
+    <value>« {0} » n'est pas encore un tag. Appuyez sur + Tag dans la boîte qui lui correspond.</value>
+  </data>
+  <data name="SelectSomething" xml:space="preserve">
+    <value>Sélectionnez un tag ou une boîte pour le modifier.</value>
+  </data>
+  <data name="NameLabel" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="ColourLabel" xml:space="preserve">
+    <value>Couleur</value>
+  </data>
+  <data name="NoColour" xml:space="preserve">
+    <value>Sans couleur</value>
+  </data>
+  <data name="HotkeyLabel" xml:space="preserve">
+    <value>Raccourci</value>
+  </data>
+  <data name="NoHotkey" xml:space="preserve">
+    <value>Aucun</value>
+  </data>
+  <data name="ChangeHotkey" xml:space="preserve">
+    <value>Changer</value>
+  </data>
+  <data name="RemoveHotkey" xml:space="preserve">
+    <value>Retirer</value>
+  </data>
+  <data name="PressAKey" xml:space="preserve">
+    <value>Appuyez sur une touche (Échap pour annuler). La rangée des chiffres et F1–F12 sont libres pour les tags.</value>
+  </data>
+  <data name="HotkeyTakenByAction" xml:space="preserve">
+    <value>{0} est déjà la touche de « {1} ».</value>
+  </data>
+  <data name="HotkeyTakenByTag" xml:space="preserve">
+    <value>{0} est déjà la touche du tag « {1} ».</value>
+  </data>
+  <data name="HotkeyTaken" xml:space="preserve">
+    <value>{0} est déjà utilisée par un autre tag.</value>
+  </data>
+  <data name="UsageLabel" xml:space="preserve">
+    <value>Utilisé sur</value>
+  </data>
+  <data name="TagClipCount" xml:space="preserve">
+    <value>{0} clip(s)</value>
+  </data>
+  <data name="FileNameFormLabel" xml:space="preserve">
+    <value>Dans les noms de fichiers renommés</value>
+  </data>
+  <data name="BelowThisTag" xml:space="preserve">
+    <value>Sous ce tag</value>
+  </data>
+  <data name="AddBoxUnder" xml:space="preserve">
+    <value>+ Boîte dessous</value>
+  </data>
+  <data name="AddBoxUnderTip" xml:space="preserve">
+    <value>Une boîte qui n'apparaît que quand ce tag est choisi, comme Carte sous Counter-Strike 2</value>
+  </data>
+  <data name="AddTagUnder" xml:space="preserve">
+    <value>+ Tag dessous</value>
+  </data>
+  <data name="AddTagUnderTip" xml:space="preserve">
+    <value>Un tag porté directement par celui-ci, sans boîte nommée (plusieurs)</value>
+  </data>
+  <data name="OrderLabel" xml:space="preserve">
+    <value>Ordre</value>
+  </data>
+  <data name="MoveUp" xml:space="preserve">
+    <value>Monter</value>
+  </data>
+  <data name="MoveDown" xml:space="preserve">
+    <value>Descendre</value>
+  </data>
+  <data name="OrderHint" xml:space="preserve">
+    <value>Les tags sont écrits dans les noms de fichiers dans cet ordre.</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Supprimer</value>
+  </data>
+  <data name="DeleteTagTitle" xml:space="preserve">
+    <value>Supprimer du vocabulaire</value>
+  </data>
+  <data name="DeleteTagMessage" xml:space="preserve">
+    <value>Supprimer « {0} » et tout ce qu'il contient ?
+{1} clip(s) seront concernés : ces tags leur seront retirés. Une sauvegarde de la bibliothèque est faite avant.</value>
+  </data>
+  <data name="NewBoxName" xml:space="preserve">
+    <value>Nouvelle boîte</value>
+  </data>
+  <data name="NewTagName" xml:space="preserve">
+    <value>Nouveau tag</value>
   </data>
 </root>

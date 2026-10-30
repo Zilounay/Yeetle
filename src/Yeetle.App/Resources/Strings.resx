@@ -351,13 +351,131 @@ Close any program that may be using it, then start Yeetle again.</value>
   <data name="NoTagMatch" xml:space="preserve">
     <value>No tag named "{0}". Press Enter to create it in the Tag Manager.</value>
   </data>
-  <data name="TagManagerNotYet" xml:space="preserve">
-    <value>The Tag Manager is not built yet (#16), so "{0}" was not created.</value>
-  </data>
   <data name="NoTagsYet" xml:space="preserve">
     <value>No tags yet. Tags are created in the Tag Manager.</value>
   </data>
   <data name="TagHotkeyClash" xml:space="preserve">
     <value>Tag hotkey {0} for {1} is already used by another action and was ignored.</value>
+  </data>
+  <data name="TagManagerTitle" xml:space="preserve">
+    <value>Tag Manager</value>
+  </data>
+  <data name="TagManagerHint" xml:space="preserve">
+    <value>Boxes hold tags and carry the rules. Changes are saved at once and also apply to a running session. The order here is the order used in renamed filenames.</value>
+  </data>
+  <data name="NoTagsInManager" xml:space="preserve">
+    <value>No tags yet. Start with a box, for example "Game" (pick one) or "Moments" (pick many).</value>
+  </data>
+  <data name="AddTopLevelBox" xml:space="preserve">
+    <value>+ New top-level box</value>
+  </data>
+  <data name="AddTag" xml:space="preserve">
+    <value>+ Tag</value>
+  </data>
+  <data name="BoxesUnderTag" xml:space="preserve">
+    <value>Under {0} · {1} box(es)</value>
+  </data>
+  <data name="DirectlyUnderTag" xml:space="preserve">
+    <value>Directly under {0}</value>
+  </data>
+  <data name="SelectBoxTip" xml:space="preserve">
+    <value>Select this box to rename, move or delete it</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Required</value>
+  </data>
+  <data name="RequiredTip" xml:space="preserve">
+    <value>When this box is visible and empty, Keep warns once.</value>
+  </data>
+  <data name="PendingTagHint" xml:space="preserve">
+    <value>"{0}" is not a tag yet. Press + Tag in the box it belongs to.</value>
+  </data>
+  <data name="SelectSomething" xml:space="preserve">
+    <value>Select a tag or a box to edit it.</value>
+  </data>
+  <data name="NameLabel" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ColourLabel" xml:space="preserve">
+    <value>Colour</value>
+  </data>
+  <data name="NoColour" xml:space="preserve">
+    <value>No colour</value>
+  </data>
+  <data name="HotkeyLabel" xml:space="preserve">
+    <value>Hotkey</value>
+  </data>
+  <data name="NoHotkey" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="ChangeHotkey" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="RemoveHotkey" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="PressAKey" xml:space="preserve">
+    <value>Press a key (Esc cancels). The number row and F1–F12 are free for tags.</value>
+  </data>
+  <data name="HotkeyTakenByAction" xml:space="preserve">
+    <value>{0} is already the key for "{1}".</value>
+  </data>
+  <data name="HotkeyTakenByTag" xml:space="preserve">
+    <value>{0} is already the key of the tag "{1}".</value>
+  </data>
+  <data name="HotkeyTaken" xml:space="preserve">
+    <value>{0} is already used by another tag.</value>
+  </data>
+  <data name="UsageLabel" xml:space="preserve">
+    <value>Used on</value>
+  </data>
+  <data name="TagClipCount" xml:space="preserve">
+    <value>{0} clip(s)</value>
+  </data>
+  <data name="FileNameFormLabel" xml:space="preserve">
+    <value>In renamed filenames</value>
+  </data>
+  <data name="BelowThisTag" xml:space="preserve">
+    <value>Below this tag</value>
+  </data>
+  <data name="AddBoxUnder" xml:space="preserve">
+    <value>+ Box under it</value>
+  </data>
+  <data name="AddBoxUnderTip" xml:space="preserve">
+    <value>A box that only shows when this tag is picked, like Map under Counter-Strike 2</value>
+  </data>
+  <data name="AddTagUnder" xml:space="preserve">
+    <value>+ Tag under it</value>
+  </data>
+  <data name="AddTagUnderTip" xml:space="preserve">
+    <value>A tag held directly by this one, without a named box (pick many)</value>
+  </data>
+  <data name="OrderLabel" xml:space="preserve">
+    <value>Order</value>
+  </data>
+  <data name="MoveUp" xml:space="preserve">
+    <value>Move up</value>
+  </data>
+  <data name="MoveDown" xml:space="preserve">
+    <value>Move down</value>
+  </data>
+  <data name="OrderHint" xml:space="preserve">
+    <value>Tags are written in filenames in this order.</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="DeleteTagTitle" xml:space="preserve">
+    <value>Delete from the vocabulary</value>
+  </data>
+  <data name="DeleteTagMessage" xml:space="preserve">
+    <value>Delete "{0}" and everything below it?
+{1} clip(s) will be affected: these tags are removed from them. A backup of the library is taken first.</value>
+  </data>
+  <data name="NewBoxName" xml:space="preserve">
+    <value>New box</value>
+  </data>
+  <data name="NewTagName" xml:space="preserve">
+    <value>New tag</value>
   </data>
 </root>

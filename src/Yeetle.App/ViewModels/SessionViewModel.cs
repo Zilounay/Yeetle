@@ -7,6 +7,7 @@ using Yeetle.App.Services;
 using Yeetle.Application.Playback;
 using Yeetle.Application.Sessions;
 using Yeetle.Application.Settings;
+using Yeetle.Application.Tagging;
 using Yeetle.Domain.Clips;
 using Yeetle.Domain.Sessions;
 
@@ -24,6 +25,7 @@ public sealed partial class SessionViewModel : ViewModelBase
     private readonly ClipNavigator _navigator;
     private readonly PlayerViewModel _player;
     private readonly IDialogs _dialogs;
+    private readonly TagManager _tagManager;
     private ActiveSession? _session;
     private int _stripCentre;
 
@@ -56,8 +58,10 @@ public sealed partial class SessionViewModel : ViewModelBase
     private string _notice = string.Empty;
 
     public SessionViewModel(SessionService sessions, ClipNavigator navigator, PlayerViewModel player, IDialogs dialogs,
-        TagPanelViewModel tags)
+        TagPanelViewModel tags, TagManager tagManager)
     {
+        _tagManager = tagManager;
+        _tagManager.Changed += (_, _) => _ = ReloadTagsAsync();
         _sessions = sessions;
         _navigator = navigator;
         _player = player;
@@ -201,6 +205,18 @@ public sealed partial class SessionViewModel : ViewModelBase
         _navigator.Load(session.Reviews.Select(r => session.Clip(r.Clip).FullPath).ToList(), session.Position);
         IsActive = true;
         OnSessionChanged(session, EventArgs.Empty);
+    }
+
+    // Tag Manager changes apply to the running session at once (spec §5).
+    private async Task ReloadTagsAsync()
+    {
+        if (_session is null)
+            return;
+        var catalog = await _tagManager.LoadAsync();
+        if (_session is not { } session)
+            return;
+        session.UseCatalog(catalog);
+        Tags.Attach(session);
     }
 
     private async Task AfterMoveAsync()

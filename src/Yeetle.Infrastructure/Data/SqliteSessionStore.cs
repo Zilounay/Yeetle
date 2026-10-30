@@ -98,7 +98,9 @@ public sealed class SqliteSessionStore(SqliteConnectionFactory connections, Time
                 """,
                 new { id = clip.Clip.Value, decision = clip.Decision.ToString(), now = DbTime.Write(now) }, transaction);
             connection.Execute("DELETE FROM ClipTags WHERE ClipId = @id;", new { id = clip.Clip.Value }, transaction);
-            connection.Execute("INSERT INTO ClipTags (ClipId, TagId) VALUES (@clipId, @tagId);",
+            // A tag deleted in the Tag Manager after the snapshot was taken is skipped.
+            connection.Execute(
+                "INSERT INTO ClipTags (ClipId, TagId) SELECT @clipId, Id FROM Nodes WHERE Id = @tagId AND Kind = 'Tag';",
                 clip.Tags.Select(t => new { clipId = clip.Clip.Value, tagId = t.Value }), transaction);
         }
         Close(connection, sessionId, Committed, now, transaction);
