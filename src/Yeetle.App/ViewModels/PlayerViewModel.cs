@@ -107,11 +107,12 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
         SyncPosition();
     }
 
-    // Leaves the current picture on screen without sound, e.g. when a session ends.
-    public void Pause()
+    // Closes the clips the player holds open, the current and the preloaded one, so they can be
+    // deleted or renamed. The next session loads its clips again.
+    public Task ReleaseFilesAsync()
     {
-        if (IsPlaying)
-            _player.TogglePause();
+        _navigator.Load([]);
+        return Task.Run(_player.Stop);
     }
 
     public void Stop()

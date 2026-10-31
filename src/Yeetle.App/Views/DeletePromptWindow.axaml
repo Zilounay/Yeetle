@@ -1,0 +1,62 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Yeetle.App.ViewModels"
+        xmlns:res="using:Yeetle.App.Resources"
+        x:Class="Yeetle.App.Views.DeletePromptWindow"
+        x:DataType="vm:DeletePromptViewModel"
+        Title="{Binding Title}"
+        Width="680" SizeToContent="Height" MaxHeight="640" MinWidth="520"
+        ShowInTaskbar="False" WindowStartupLocation="CenterOwner"
+        RequestedThemeVariant="Dark">
+    <!-- Destructive styling with a warning icon, and keeping the files as the safe choice
+         (spec §9, layout from #9). -->
+    <Window.Resources>
+        <SolidColorBrush x:Key="DangerBrush" Color="#C62828" />
+        <SolidColorBrush x:Key="WarningBackBrush" Color="#22E5534B" />
+        <SolidColorBrush x:Key="WarningLineBrush" Color="#E5534B" />
+        <x:Double x:Key="SecondaryTextOpacity">0.7</x:Double>
+    </Window.Resources>
+
+    <Window.Styles>
+        <Style Selector="Button.danger /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource DangerBrush}" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+    </Window.Styles>
+
+    <DockPanel Margin="24">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12" Margin="0,0,0,12">
+            <TextBlock FontSize="28" Foreground="{StaticResource WarningLineBrush}" Text="⚠" VerticalAlignment="Center" />
+            <TextBlock FontSize="20" FontWeight="Bold" Text="{Binding Title}" VerticalAlignment="Center" TextWrapping="Wrap" />
+        </StackPanel>
+        <TextBlock DockPanel.Dock="Top" Text="{Binding Message}" TextWrapping="Wrap" Margin="0,0,0,12" />
+        <Border DockPanel.Dock="Top" Background="{StaticResource WarningBackBrush}" BorderBrush="{StaticResource WarningLineBrush}"
+                BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,12">
+            <TextBlock Text="{x:Static res:Strings.RecycleBinWarning}" TextWrapping="Wrap" />
+        </Border>
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button x:Name="KeepButton" Content="{x:Static res:Strings.KeepTheFiles}" IsCancel="True" IsDefault="True" />
+            <Button x:Name="DeleteButton" Classes="danger" Content="{Binding DeleteLabel}" />
+        </StackPanel>
+
+        <Expander Header="{Binding ListTitle}" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+            <ScrollViewer MaxHeight="240">
+                <ItemsControl ItemsSource="{Binding Files}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:DeleteFileViewModel">
+                            <Grid ColumnDefinitions="*,Auto" Margin="0,3">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding FileName}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock FontSize="12" Opacity="{StaticResource SecondaryTextOpacity}" Text="{Binding Folder}"
+                                               TextTrimming="PathSegmentEllipsis" />
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center" Text="{Binding Size}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Expander>
+    </DockPanel>
+</Window>

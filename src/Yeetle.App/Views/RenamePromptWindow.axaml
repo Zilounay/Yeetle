@@ -1,0 +1,64 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Yeetle.App.ViewModels"
+        xmlns:res="using:Yeetle.App.Resources"
+        x:Class="Yeetle.App.Views.RenamePromptWindow"
+        x:DataType="vm:RenamePromptViewModel"
+        Title="{Binding Title}"
+        Width="900" Height="600" MinWidth="600" MinHeight="380"
+        ShowInTaskbar="False" WindowStartupLocation="CenterOwner"
+        RequestedThemeVariant="Dark">
+    <!-- Current name → new name, with notes and the editing-projects warning (spec §9, layout from #9). -->
+    <Window.Resources>
+        <SolidColorBrush x:Key="NoticeBackBrush" Color="#1AF0B429" />
+        <SolidColorBrush x:Key="NoticeLineBrush" Color="#F0B429" />
+        <SolidColorBrush x:Key="NoteBrush" Color="#F0B429" />
+        <SolidColorBrush x:Key="RowLineBrush" Color="#23272E" />
+        <x:Double x:Key="SecondaryTextOpacity">0.7</x:Double>
+    </Window.Resources>
+
+    <DockPanel Margin="24">
+        <TextBlock DockPanel.Dock="Top" FontSize="20" FontWeight="Bold" Text="{Binding Title}" TextWrapping="Wrap"
+                   Margin="0,0,0,8" />
+        <TextBlock DockPanel.Dock="Top" Text="{x:Static res:Strings.RenamePromptMessage}" TextWrapping="Wrap"
+                   Opacity="{StaticResource SecondaryTextOpacity}" Margin="0,0,0,12" />
+        <Border DockPanel.Dock="Top" Background="{StaticResource NoticeBackBrush}" BorderBrush="{StaticResource NoticeLineBrush}"
+                BorderThickness="1" CornerRadius="8" Padding="12,10" Margin="0,0,0,12">
+            <TextBlock Text="{x:Static res:Strings.RenameEditorWarning}" TextWrapping="Wrap" />
+        </Border>
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button x:Name="KeepButton" Content="{x:Static res:Strings.KeepCurrentNames}" IsCancel="True" IsDefault="True" />
+            <Button x:Name="RenameButton" Classes="accent" Content="{Binding RenameLabel}" />
+        </StackPanel>
+
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto,*" ColumnSpacing="10" Margin="0,0,0,4">
+            <TextBlock FontWeight="SemiBold" Opacity="{StaticResource SecondaryTextOpacity}" Text="{x:Static res:Strings.CurrentNameHeader}" />
+            <!-- Same width as the rows' arrow, so the headers line up with the names. -->
+            <TextBlock Grid.Column="1" Text="→" Opacity="0" />
+            <TextBlock Grid.Column="2" FontWeight="SemiBold" Opacity="{StaticResource SecondaryTextOpacity}"
+                       Text="{x:Static res:Strings.NewNameHeader}" />
+        </Grid>
+        <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding Rows}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:RenameRowViewModel">
+                        <Border BorderBrush="{StaticResource RowLineBrush}" BorderThickness="0,0,0,1" Padding="0,6">
+                            <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="10">
+                                <TextBlock Text="{Binding OldName}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding OldName}"
+                                           VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Text="→" VerticalAlignment="Center" />
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock FontFamily="Consolas,monospace" Text="{Binding NewName}" TextTrimming="CharacterEllipsis"
+                                               ToolTip.Tip="{Binding NewName}" />
+                                    <TextBlock FontSize="12" Foreground="{StaticResource NoteBrush}" Text="{Binding Note}"
+                                               IsVisible="{Binding HasNote}" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

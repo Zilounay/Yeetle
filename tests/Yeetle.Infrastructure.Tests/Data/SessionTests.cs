@@ -148,6 +148,24 @@ public class SessionTests : IDisposable
     }
 
     [Fact]
+    public async Task The_summary_lists_kept_yeeted_and_skipped_clips()
+    {
+        await AddClips("a", "b", "c", "d");
+        var session = (await Service().StartAsync())!;
+        session.Keep();
+        session.Yeet();
+        session.Skip();
+
+        var summary = SessionSummary.From(session);
+
+        Assert.Equal(4, summary.Reviewed); // d is shown, so it counts as seen
+        Assert.Equal(["a.mp4"], summary.Kept.Select(c => c.FileName));
+        Assert.Equal(["b.mp4"], summary.Yeeted.Select(c => c.FileName));
+        Assert.Equal(["c.mp4", "d.mp4"], summary.Skipped.Select(c => c.FileName));
+        Assert.Equal(2, summary.Decisions);
+    }
+
+    [Fact]
     public async Task Discard_leaves_every_clip_new()
     {
         await AddClips("a", "b");

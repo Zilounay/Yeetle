@@ -29,12 +29,15 @@ public sealed class LibraryScanner(
         return ScanFolder(folder, choice, recorder.IsRecorderRunning());
     }, CancellationToken.None);
 
-    private async Task<ScanReport> Run(Func<ScanReport> scan, CancellationToken cancellationToken)
+    // File operations run between scans, so a scan never sees a file halfway through a rename.
+    public Task<T> WhileNotScanningAsync<T>(Func<T> work) => Run(work, CancellationToken.None);
+
+    private async Task<T> Run<T>(Func<T> work, CancellationToken cancellationToken)
     {
         await _gate.WaitAsync(cancellationToken);
         try
         {
-            return await Task.Run(scan, cancellationToken);
+            return await Task.Run(work, cancellationToken);
         }
         finally
         {

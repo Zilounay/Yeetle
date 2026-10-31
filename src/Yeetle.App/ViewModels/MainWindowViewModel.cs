@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Yeetle.App.Input;
 using Yeetle.App.Services;
+using Yeetle.Application.Files;
 using Yeetle.Application.Library;
 using Yeetle.Application.Settings;
 
@@ -14,6 +15,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
 {
     private readonly ScanScheduler _scans;
     private readonly IDialogs _dialogs;
+    private readonly FileOperations _files;
     // Folders whose first-scan question is open, so a second scan does not ask again meanwhile.
     private readonly HashSet<long> _asking = [];
 
@@ -22,8 +24,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     private string _scanSummary = string.Empty;
 
     public MainWindowViewModel(PlayerViewModel player, SessionViewModel session, ScanScheduler scans, IDialogs dialogs,
-        LoadedSettings settings)
+        LoadedSettings settings, FileOperations files)
     {
+        _files = files;
         Player = player;
         Session = session;
         _scans = scans;
@@ -58,9 +61,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     public ICommand? FindCommand(KeyModifiers modifiers, PhysicalKey key, string? symbol) =>
         Hotkeys.Find(modifiers, key, symbol) is { } action ? Actions[action] : Session.Tags.FindTagCommand(modifiers, key, symbol);
 
-    // A scan at start (spec §4), then an interrupted session is offered back (spec §5).
+    // File operations cut short by a crash are checked first (spec §9), then a scan runs (spec §4),
+    // then an interrupted session is offered back (spec §5).
     public async Task StartAsync()
     {
+        await _files.RecoverInterruptedAsync();
         await _scans.RequestAsync(ScanTrigger.Startup);
         await Session.OfferUnfinishedAsync();
         await Session.RefreshHomeAsync();

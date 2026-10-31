@@ -3,7 +3,9 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Yeetle.App.Resources;
 using Yeetle.App.ViewModels;
 using Yeetle.App.Views;
+using Yeetle.Application.Files;
 using Yeetle.Application.Library;
+using Yeetle.Application.Sessions;
 
 namespace Yeetle.App.Services;
 
@@ -54,6 +56,18 @@ public sealed class WindowDialogs(Func<SourceFoldersViewModel> createSourceFolde
     public Task<T?> ChooseAsync<T>(string title, string message, IReadOnlyList<(string Label, T Value)> choices)
         where T : struct =>
         ShowAsync<T?>(new ChoiceWindow(title, message, choices.Select(c => (c.Label, (object)c.Value))));
+
+    public Task<SummaryChoice?> ShowSessionSummaryAsync(SessionSummary summary) =>
+        ShowAsync<SummaryChoice?>(new SessionSummaryWindow { DataContext = new SessionSummaryViewModel(summary) });
+
+    public Task<bool> ConfirmDeleteAsync(DeletePlan plan) =>
+        ShowAsync<bool>(new DeletePromptWindow { DataContext = new DeletePromptViewModel(plan) });
+
+    public Task<bool> ConfirmRenameAsync(RenamePreview preview) =>
+        ShowAsync<bool>(new RenamePromptWindow { DataContext = new RenamePromptViewModel(preview) });
+
+    public Task<bool> ShowFileResultsAsync(string title, IReadOnlyList<FileOutcome> outcomes, bool canRestoreNames) =>
+        ShowAsync<bool>(new FileResultsWindow { DataContext = new FileResultsViewModel(title, outcomes, canRestoreNames) });
 
     public Task<FirstScanChoice?> AskFirstScanAsync(PendingFirstScan pending) =>
         ShowAsync<FirstScanChoice?>(new FirstScanWindow { DataContext = new FirstScanViewModel(pending) });
