@@ -6,7 +6,7 @@ namespace Yeetle.Application.Sessions;
 
 // A running review session: the domain rules, the clips to play, and a journal entry after
 // every action so a crash loses nothing (spec §5).
-public sealed class ActiveSession
+public sealed class ActiveSession : IClipEditing
 {
     private readonly ReviewSession _review;
     private readonly Action<SessionSnapshot> _journal;

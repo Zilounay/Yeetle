@@ -24,9 +24,13 @@ public interface IDialogs
     Task<SummaryChoice?> ShowSessionSummaryAsync(SessionSummary summary);
 
     // True only when the user chose to delete or rename.
-    Task<bool> ConfirmDeleteAsync(DeletePlan plan);
+    // fromSession: the yeeted files of a session just committed, rather than an Explorer selection.
+    Task<bool> ConfirmDeleteAsync(DeletePlan plan, bool fromSession);
 
-    Task<bool> ConfirmRenameAsync(RenamePreview preview);
+    Task<bool> ConfirmRenameAsync(RenamePreview preview, bool fromSession);
+
+    // The marker window (spec §7): read-only text with a Copy all button.
+    Task ShowMarkerSheetAsync(string text);
 
     // True when the user asked to restore the original names.
     Task<bool> ShowFileResultsAsync(string title, IReadOnlyList<FileOutcome> outcomes, bool canRestoreNames);

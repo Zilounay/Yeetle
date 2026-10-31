@@ -45,7 +45,7 @@ public sealed partial class TagPanelViewModel : ViewModelBase
     private readonly HashSet<string> _actionKeys;
     private readonly IDialogs _dialogs;
     private readonly List<(Hotkey Key, TagId Tag)> _tagKeys = [];
-    private ActiveSession? _session;
+    private IClipEditing? _session;
 
     [ObservableProperty]
     private bool _isTyping;
@@ -81,7 +81,7 @@ public sealed partial class TagPanelViewModel : ViewModelBase
 
     public ObservableCollection<TagSuggestion> Suggestions { get; } = [];
 
-    public void Attach(ActiveSession? session)
+    public void Attach(IClipEditing? session)
     {
         _session = session;
         _tagKeys.Clear();

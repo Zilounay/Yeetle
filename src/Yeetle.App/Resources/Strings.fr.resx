@@ -658,4 +658,199 @@ Fermez tout programme qui pourrait l'utiliser, puis relancez Yeetle.</value>
   <data name="TheatreTip" xml:space="preserve">
     <value>La vidéo remplit la fenêtre ; tags, marqueurs et bande de clips s'effacent (F)</value>
   </data>
+  <data name="ClipsSetKept" xml:space="preserve">
+    <value>{0} clip(s) passé(s) en Gardé.</value>
+  </data>
+  <data name="ClipsSetYeeted" xml:space="preserve">
+    <value>{0} clip(s) passé(s) en Yeeté.</value>
+  </data>
+  <data name="ClipsWiped" xml:space="preserve">
+    <value>{0} clip(s) effacé(s) : ils sont de nouveau Nouveaux et reviennent à la prochaine session.</value>
+  </data>
+  <data name="ColumnName" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="ColumnRecorded" xml:space="preserve">
+    <value>Enregistré</value>
+  </data>
+  <data name="ColumnDuration" xml:space="preserve">
+    <value>Durée</value>
+  </data>
+  <data name="ColumnTags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="DecisionNew" xml:space="preserve">
+    <value>Nouveau</value>
+  </data>
+  <data name="DecisionYeeted" xml:space="preserve">
+    <value>Yeeté</value>
+  </data>
+  <data name="DeleteFromDisk" xml:space="preserve">
+    <value>Supprimer du disque…</value>
+  </data>
+  <data name="DragLeftOut" xml:space="preserve">
+    <value>{0} clip(s) laissé(s) hors du glisser : leur fichier est manquant, hors ligne ou supprimé.</value>
+  </data>
+  <data name="DragHint" xml:space="preserve">
+    <value>Glissez la sélection dans votre logiciel de montage, un dossier ou une page d'envoi : les fichiers sont copiés, jamais déplacés.</value>
+  </data>
+  <data name="EditorFileNotPresent" xml:space="preserve">
+    <value>Le fichier de ce clip n'est pas sur le disque ; ses tags, marqueurs et décision restent modifiables.</value>
+  </data>
+  <data name="EditorSaveFailed" xml:space="preserve">
+    <value>La dernière modification n'a pas pu être enregistrée : {0}</value>
+  </data>
+  <data name="EditorSavedHint" xml:space="preserve">
+    <value>Les modifications sont enregistrées tout de suite. Ctrl+Z les annule.</value>
+  </data>
+  <data name="BackToLibrary" xml:space="preserve">
+    <value>Retour à la bibliothèque</value>
+  </data>
+  <data name="BackToLibraryTip" xml:space="preserve">
+    <value>Retourne à l'Explorateur (Échap)</value>
+  </data>
+  <data name="MarkerSheetTags" xml:space="preserve">
+    <value>Tags :</value>
+  </data>
+  <data name="MarkerSheetMarkers" xml:space="preserve">
+    <value>Marqueurs :</value>
+  </data>
+  <data name="MarkerSheetTitle" xml:space="preserve">
+    <value>Marqueurs</value>
+  </data>
+  <data name="CopyAll" xml:space="preserve">
+    <value>Tout copier</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>Copié.</value>
+  </data>
+  <data name="MatchCount" xml:space="preserve">
+    <value>{0} sur {1} clip(s)</value>
+  </data>
+  <data name="NoNamesToRestore" xml:space="preserve">
+    <value>Ces clips portent déjà leur nom d'origine.</value>
+  </data>
+  <data name="NothingToDelete" xml:space="preserve">
+    <value>Aucun de ces clips n'a de fichier à supprimer sur le disque.</value>
+  </data>
+  <data name="NothingToRename" xml:space="preserve">
+    <value>Ces clips portent déjà le nom que leurs tags donnent.</value>
+  </data>
+  <data name="RenameOnlyKept" xml:space="preserve">
+    <value>Seuls les clips gardés sont renommés selon leurs tags.</value>
+  </data>
+  <data name="OpenInYeetle" xml:space="preserve">
+    <value>Ouvrir</value>
+  </data>
+  <data name="OpenInYeetleTip" xml:space="preserve">
+    <value>Ouvre le clip dans le lecteur de Yeetle pour changer ses tags, marqueurs et décision (Entrée)</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>Afficher dans le dossier</value>
+  </data>
+  <data name="OpenWithDefaultApp" xml:space="preserve">
+    <value>Lecteur Windows</value>
+  </data>
+  <data name="OpenWithDefaultAppTip" xml:space="preserve">
+    <value>Ouvre le fichier dans l'application vidéo de Windows</value>
+  </data>
+  <data name="RenameByTags" xml:space="preserve">
+    <value>Renommer selon les tags…</value>
+  </data>
+  <data name="RestoreNames" xml:space="preserve">
+    <value>Restaurer les noms</value>
+  </data>
+  <data name="SelectedCount" xml:space="preserve">
+    <value>{0} sélectionné(s)</value>
+  </data>
+  <data name="SetKept" xml:space="preserve">
+    <value>Garder</value>
+  </data>
+  <data name="SetYeeted" xml:space="preserve">
+    <value>Yeeter</value>
+  </data>
+  <data name="ShowMarkers" xml:space="preserve">
+    <value>Marqueurs</value>
+  </data>
+  <data name="ShowMarkersTip" xml:space="preserve">
+    <value>Affiche les tags et marqueurs de la sélection en texte à copier (Ctrl+M)</value>
+  </data>
+  <data name="StateMissing" xml:space="preserve">
+    <value>Manquant</value>
+  </data>
+  <data name="StateOffline" xml:space="preserve">
+    <value>Hors ligne</value>
+  </data>
+  <data name="StateDeleted" xml:space="preserve">
+    <value>Supprimé</value>
+  </data>
+  <data name="StateNeedsAttention" xml:space="preserve">
+    <value>À vérifier</value>
+  </data>
+  <data name="StatePresent" xml:space="preserve">
+    <value>Sur le disque</value>
+  </data>
+  <data name="UnknownDuration" xml:space="preserve">
+    <value>—</value>
+  </data>
+  <data name="WipeData" xml:space="preserve">
+    <value>Effacer les données…</value>
+  </data>
+  <data name="WipeTitle" xml:space="preserve">
+    <value>Effacer les données des clips</value>
+  </data>
+  <data name="WipeMessage" xml:space="preserve">
+    <value>Retirer les tags, marqueurs et décision de {0} clip(s) ? Ils redeviennent Nouveaux et reviennent à la prochaine session. Les fichiers ne sont pas touchés. Une sauvegarde de la bibliothèque est faite avant.</value>
+  </data>
+  <data name="TabSession" xml:space="preserve">
+    <value>Session</value>
+  </data>
+  <data name="TabSessionNew" xml:space="preserve">
+    <value>Session ({0})</value>
+  </data>
+  <data name="TabExplorer" xml:space="preserve">
+    <value>Explorateur</value>
+  </data>
+  <data name="ExplorerDuringSession" xml:space="preserve">
+    <value>L'Explorateur s'ouvre une fois la session terminée.</value>
+  </data>
+  <data name="FiltersTitle" xml:space="preserve">
+    <value>Filtres</value>
+  </data>
+  <data name="FilterTags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="FilterDecision" xml:space="preserve">
+    <value>Décision</value>
+  </data>
+  <data name="FilterFileState" xml:space="preserve">
+    <value>Fichier</value>
+  </data>
+  <data name="FilterOther" xml:space="preserve">
+    <value>Autre</value>
+  </data>
+  <data name="FilterIncomplete" xml:space="preserve">
+    <value>Incomplets (une boîte obligatoire est vide)</value>
+  </data>
+  <data name="ClearFilters" xml:space="preserve">
+    <value>Effacer les filtres</value>
+  </data>
+  <data name="NoTagsToFilter" xml:space="preserve">
+    <value>Pas encore de tags.</value>
+  </data>
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>Rechercher dans les noms et les marqueurs</value>
+  </data>
+  <data name="NoClipsMatch" xml:space="preserve">
+    <value>Aucun clip ne correspond à ces filtres.</value>
+  </data>
+  <data name="DeleteFilesTitle" xml:space="preserve">
+    <value>Supprimer {0} fichier(s) du disque ?</value>
+  </data>
+  <data name="DeleteFilesMessage" xml:space="preserve">
+    <value>{0} fichier(s) seront supprimés ({1}). Leurs fiches restent dans Yeetle, marquées Supprimé.</value>
+  </data>
+  <data name="RenameFilesTitle" xml:space="preserve">
+    <value>Renommer {0} fichier(s) selon leurs tags ?</value>
+  </data>
 </root>

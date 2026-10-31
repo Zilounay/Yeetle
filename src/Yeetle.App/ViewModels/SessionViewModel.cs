@@ -282,7 +282,7 @@ public sealed partial class SessionViewModel : ViewModelBase
         {
             var yeeted = reviews.Where(r => r.Decision == Decision.Yeeted).Select(r => r.Clip).ToList();
             if (yeeted.Count > 0 && await _files.PlanDeleteAsync(yeeted) is { Items.Count: > 0 } plan
-                                 && await _dialogs.ConfirmDeleteAsync(plan))
+                                 && await _dialogs.ConfirmDeleteAsync(plan, fromSession: true))
             {
                 var outcomes = await _files.DeleteAsync(plan);
                 if (outcomes.Any(o => !o.Succeeded))
@@ -291,7 +291,7 @@ public sealed partial class SessionViewModel : ViewModelBase
             }
             var kept = reviews.Where(r => r.Decision == Decision.Kept).Select(r => r.Clip).ToList();
             if (kept.Count > 0 && await _files.PlanRenameAsync(kept) is { ToRename.Count: > 0 } preview
-                               && await _dialogs.ConfirmRenameAsync(preview))
+                               && await _dialogs.ConfirmRenameAsync(preview, fromSession: true))
             {
                 var outcomes = await _files.RenameAsync(preview);
                 var renamed = outcomes.Where(o => o.Succeeded).Select(o => o.Clip).ToList();

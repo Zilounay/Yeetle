@@ -17,7 +17,13 @@ public partial class MainWindow : Window
         {
             if (ViewModel is not { } viewModel)
                 return;
-            new VideoOverlayWindow { DataContext = viewModel }.Follow(this, Player.Video);
+            var overlay = new VideoOverlayWindow { DataContext = viewModel };
+            overlay.Follow(this, Player.Video);
+            viewModel.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(MainWindowViewModel.ShowPlayer))
+                    overlay.SetShown(viewModel.ShowPlayer);
+            };
             _ = viewModel.StartAsync();
         };
         Activated += (_, _) => ViewModel?.OnActivated();

@@ -39,10 +39,12 @@ public sealed record DeleteFileViewModel(string FileName, string Folder, string 
 
 // "Delete the yeeted files?" (spec §5, §9): exact count, total size, the honest Recycle Bin
 // warning and every file, with keeping the files as the safe choice.
-public sealed class DeletePromptViewModel(DeletePlan plan)
+public sealed class DeletePromptViewModel(DeletePlan plan, bool fromSession)
 {
-    public string Title { get; } = string.Format(Strings.DeletePromptTitle, plan.Items.Count);
-    public string Message { get; } = string.Format(Strings.DeletePromptMessage, plan.Items.Count, SizeFormat.Bytes(plan.TotalBytes));
+    public string Title { get; } =
+        string.Format(fromSession ? Strings.DeletePromptTitle : Strings.DeleteFilesTitle, plan.Items.Count);
+    public string Message { get; } = string.Format(fromSession ? Strings.DeletePromptMessage : Strings.DeleteFilesMessage,
+        plan.Items.Count, SizeFormat.Bytes(plan.TotalBytes));
     public string DeleteLabel { get; } = string.Format(Strings.DeleteFiles, plan.Items.Count);
     public string ListTitle { get; } = string.Format(Strings.FileListTitle, plan.Items.Count);
 
@@ -59,11 +61,12 @@ public sealed record RenameRowViewModel(string OldName, string NewName, string N
 
 // "Rename the kept files by their tags?" (spec §5, §9): current name → new name, with notes for
 // shortened and numbered names and for files that cannot be renamed.
-public sealed class RenamePromptViewModel(RenamePreview preview)
+public sealed class RenamePromptViewModel(RenamePreview preview, bool fromSession)
 {
     private const string NoteSeparator = " · ";
 
-    public string Title { get; } = string.Format(Strings.RenamePromptTitle, preview.ToRename.Count);
+    public string Title { get; } =
+        string.Format(fromSession ? Strings.RenamePromptTitle : Strings.RenameFilesTitle, preview.ToRename.Count);
     public string RenameLabel { get; } = string.Format(Strings.RenameFiles, preview.ToRename.Count);
 
     public IReadOnlyList<RenameRowViewModel> Rows { get; } = preview.Items

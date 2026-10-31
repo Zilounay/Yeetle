@@ -35,6 +35,8 @@ public static class HotkeyDefaults
         [HotkeyActions.NextFrame] = ["E"],
         // Replaces full screen, as in VLC (spec §7: theatre mode, no full screen).
         [HotkeyActions.TheatreMode] = ["F"],
+        // The Explorer's marker window (spec §14).
+        [HotkeyActions.MarkerWindow] = ["Ctrl+M"],
         [HotkeyActions.Slower] = ["NumPadSubtract"],
         [HotkeyActions.Faster] = ["NumPadAdd"],
         // No default key: the number row and F-keys belong to tags (spec §14).
@@ -74,6 +76,7 @@ public static class HotkeyActions
     public const string NormalSpeed = "NormalSpeed";
     public const string NextFrame = "NextFrame";
     public const string TheatreMode = "TheatreMode";
+    public const string MarkerWindow = "MarkerWindow";
 
     // The n-th speed of PlaybackSpeeds.All, from 1.
     public static string Speed(int number) => $"Speed{number}";
