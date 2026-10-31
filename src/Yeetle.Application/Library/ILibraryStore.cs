@@ -1,3 +1,5 @@
+using Yeetle.Domain.Clips;
+
 namespace Yeetle.Application.Library;
 
 // Source folders and their clips in the database. Blocking calls: services run them off the UI thread.
@@ -17,6 +19,11 @@ public interface ILibraryStore
     IReadOnlyList<KnownClip> ClipsIn(long folderId);
 
     void Apply(long folderId, ScanChanges changes, DateTime now);
+
+    // Present clips whose duration was never read, in folders that can be reached.
+    IReadOnlyList<ClipFile> ClipsWithoutDuration(int limit);
+
+    void SetDuration(ClipId clip, long durationMs);
 }
 
 // Reads source folders on disk; never writes to them (spec §4).

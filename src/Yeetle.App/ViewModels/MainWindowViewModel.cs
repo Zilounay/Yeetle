@@ -16,6 +16,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     private readonly ScanScheduler _scans;
     private readonly IDialogs _dialogs;
     private readonly FileOperations _files;
+    private readonly ClipDurations _durations;
     // First-scan questions, asked one at a time (spec §4). A folder is in _queued from the moment
     // a scan reports it until its question closes, so a second scan does not ask again meanwhile.
     private readonly Queue<PendingFirstScan> _questions = new();
@@ -29,9 +30,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     private string _scanSummary = string.Empty;
 
     public MainWindowViewModel(PlayerViewModel player, SessionViewModel session, ScanScheduler scans, IDialogs dialogs,
-        LoadedSettings settings, FileOperations files)
+        LoadedSettings settings, FileOperations files, ClipDurations durations)
     {
         _files = files;
+        _durations = durations;
         Player = player;
         Session = session;
         _scans = scans;
@@ -39,6 +41,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
         Actions = new Dictionary<string, ICommand>(player.Actions.Concat(session.Actions))
         {
             [HotkeyActions.Rescan] = RescanCommand,
+            [HotkeyActions.TheatreMode] = ToggleTheatreCommand,
         };
         Hotkeys = new HotkeyMap(settings.Values.Hotkeys, Actions.Keys.ToHashSet());
         var problems = Hotkeys.Problems.Prepend(settings.Problem).OfType<string>().ToList();
@@ -46,13 +49,25 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
             player.ShowSettingsProblem(settings.Location, problems);
         _scans.Scanned += (_, report) => Dispatcher.UIThread.Post(() => _ = OnScannedAsync(report));
         player.PropertyChanged += (_, _) => OnPropertyChanged(nameof(HasInfo));
-        session.PropertyChanged += (_, _) => OnPropertyChanged(nameof(HasInfo));
+        session.PropertyChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(HasInfo));
+            OnPropertyChanged(nameof(ShowSidePanels));
+        };
+        _isTheatre = settings.Values.Player.TheatreMode;
     }
 
     // Whether the info block over the video has anything to show.
     public bool HasInfo => Session.IsActive || Player.Message.Length > 0 || Session.Notice.Length > 0 || ScanSummary.Length > 0;
 
     partial void OnScanSummaryChanged(string value) => OnPropertyChanged(nameof(HasInfo));
+
+    // Theatre mode (spec §7): the video takes the window; tags, markers and the strip step aside.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowSidePanels))]
+    private bool _isTheatre;
+
+    public bool ShowSidePanels => Session.IsActive && !IsTheatre;
 
     public PlayerViewModel Player { get; }
 
@@ -85,6 +100,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     public void OnClosing() => Player.Stop();
 
     [RelayCommand]
+    private void ToggleTheatre() => IsTheatre = !IsTheatre;
+
+    [RelayCommand]
     private Task RescanAsync() => _scans.RequestAsync(ScanTrigger.Rescan);
 
     [RelayCommand]
@@ -96,6 +114,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     private async Task OnScannedAsync(ScanReport report)
     {
         ScanSummary = ScanNotice.Describe(report);
+        // Durations of new clips are read in the background (spec §4).
+        _ = _durations.FillMissingAsync();
         foreach (var pending in report.PendingFirstScans.Where(p => !_answered.Contains(p.Folder.Id) && _queued.Add(p.Folder.Id)))
             _questions.Enqueue(pending);
         await AskQueuedAsync();

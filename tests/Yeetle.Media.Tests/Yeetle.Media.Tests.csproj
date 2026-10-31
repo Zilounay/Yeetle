@@ -3,9 +3,13 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
+    <!-- The tests run LibVLC itself; only its 64-bit Windows build is needed, as in Yeetle.Desktop. -->
+    <VlcWindowsX86Enabled>false</VlcWindowsX86Enabled>
+    <VlcWindowsArm64Enabled>false</VlcWindowsArm64Enabled>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="VideoLAN.LibVLC.Windows" />
     <PackageReference Include="xunit.v3" />
   </ItemGroup>
 

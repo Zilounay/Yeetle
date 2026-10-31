@@ -36,6 +36,7 @@ internal static class Composition
             .AddSingleton<ClipNavigator>()
             .AddSingleton<LibraryScanner>()
             .AddSingleton<ScanScheduler>()
+            .AddSingleton<ClipDurations>()
             .AddSingleton<SourceFolders>()
             .AddSingleton<SessionService>()
             .AddSingleton<FileOperations>()
@@ -57,6 +58,7 @@ internal static class Composition
             .AddSingleton<IFileSystem, WindowsFileSystem>()
             // Media
             .AddSingleton<IClipPlayer, VlcClipPlayer>()
+            .AddSingleton<IDurationReader, VlcDurationReader>()
             // App
             .AddSingleton<IFolderPicker, StorageFolderPicker>()
             .AddSingleton<IDialogs>(s => new WindowDialogs(s.GetRequiredService<SourceFoldersViewModel>,

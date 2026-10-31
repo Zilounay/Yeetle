@@ -31,6 +31,9 @@ public sealed class PlayerSettings
     public double LongSeekSeconds { get; set; } = 30;
 
     public int VolumeStep { get; set; } = 5;
+
+    // Starts with the video filling the window, side panels and clip strip hidden.
+    public bool TheatreMode { get; set; }
 }
 
 public sealed class LibrarySettings

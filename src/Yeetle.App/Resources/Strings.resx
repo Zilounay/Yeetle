@@ -652,4 +652,10 @@ Close any program that may be using it, then start Yeetle again.</value>
   <data name="UnitTerabytes" xml:space="preserve">
     <value>TB</value>
   </data>
+  <data name="Theatre" xml:space="preserve">
+    <value>Theatre</value>
+  </data>
+  <data name="TheatreTip" xml:space="preserve">
+    <value>The video fills the window; tags, markers and the clip strip step aside (F)</value>
+  </data>
 </root>

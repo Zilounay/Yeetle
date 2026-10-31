@@ -154,6 +154,13 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
     [RelayCommand]
     private void NormalSpeed() => _player.SetSpeed(PlaybackSpeeds.Normal);
 
+    [RelayCommand]
+    private void NextFrame()
+    {
+        if (_navigator.Current is not null)
+            _player.NextFrame();
+    }
+
     private Dictionary<string, ICommand> CreateActions()
     {
         var actions = new Dictionary<string, ICommand>
@@ -170,6 +177,7 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
             [HotkeyActions.Slower] = SlowerCommand,
             [HotkeyActions.Faster] = FasterCommand,
             [HotkeyActions.NormalSpeed] = NormalSpeedCommand,
+            [HotkeyActions.NextFrame] = NextFrameCommand,
         };
         foreach (var (speed, number) in PlaybackSpeeds.Numbered)
             actions[HotkeyActions.Speed(number)] = new RelayCommand(() => _player.SetSpeed(speed));
