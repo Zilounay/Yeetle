@@ -39,6 +39,22 @@ public partial class VideoOverlayWindow : Window
         FitToArea();
     }
 
+    // Hidden while the video area is (the Explorer page): a window over the list would take its clicks.
+    public void SetShown(bool shown)
+    {
+        if (_owner is null || shown == IsVisible)
+            return;
+        if (shown)
+        {
+            Show(_owner);
+            FitToArea();
+        }
+        else
+        {
+            Hide();
+        }
+    }
+
     private void FitToArea()
     {
         if (_owner is null || _area is null || !_area.IsVisible || !IsLaidOut(_area))

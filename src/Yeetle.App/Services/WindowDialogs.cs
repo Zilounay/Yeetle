@@ -60,11 +60,13 @@ public sealed class WindowDialogs(Func<SourceFoldersViewModel> createSourceFolde
     public Task<SummaryChoice?> ShowSessionSummaryAsync(SessionSummary summary) =>
         ShowAsync<SummaryChoice?>(new SessionSummaryWindow { DataContext = new SessionSummaryViewModel(summary) });
 
-    public Task<bool> ConfirmDeleteAsync(DeletePlan plan) =>
-        ShowAsync<bool>(new DeletePromptWindow { DataContext = new DeletePromptViewModel(plan) });
+    public Task<bool> ConfirmDeleteAsync(DeletePlan plan, bool fromSession) =>
+        ShowAsync<bool>(new DeletePromptWindow { DataContext = new DeletePromptViewModel(plan, fromSession) });
 
-    public Task<bool> ConfirmRenameAsync(RenamePreview preview) =>
-        ShowAsync<bool>(new RenamePromptWindow { DataContext = new RenamePromptViewModel(preview) });
+    public Task<bool> ConfirmRenameAsync(RenamePreview preview, bool fromSession) =>
+        ShowAsync<bool>(new RenamePromptWindow { DataContext = new RenamePromptViewModel(preview, fromSession) });
+
+    public Task ShowMarkerSheetAsync(string text) => ShowAsync<object>(new MarkerSheetWindow(text));
 
     public Task<bool> ShowFileResultsAsync(string title, IReadOnlyList<FileOutcome> outcomes, bool canRestoreNames) =>
         ShowAsync<bool>(new FileResultsWindow { DataContext = new FileResultsViewModel(title, outcomes, canRestoreNames) });

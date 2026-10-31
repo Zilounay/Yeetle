@@ -32,6 +32,17 @@
         <Style Selector="Button">
             <Setter Property="Focusable" Value="False" />
         </Style>
+        <!-- Session / Explorer tabs: the current one is underlined in the accent blue. -->
+        <Style Selector="Button.tab">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0,0,0,2" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="CornerRadius" Value="0" />
+        </Style>
+        <Style Selector="Button.tab.current /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="{StaticResource CurrentCardBrush}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
         <Style Selector="Border.card">
             <Setter Property="Background" Value="{StaticResource CardBrush}" />
             <Setter Property="CornerRadius" Value="{StaticResource CardCornerRadius}" />
@@ -69,7 +80,16 @@
         <Border Background="{StaticResource BarBrush}" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1"
                 Padding="20,10">
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
-                <TextBlock FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Text="{x:Static res:Strings.AppTitle}" />
+                <!-- Name, then the Session and Explorer tabs; the Explorer waits while a session runs. -->
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <TextBlock FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,14,0"
+                               Text="{x:Static res:Strings.AppTitle}" />
+                    <Button Classes="tab" Classes.current="{Binding IsSessionPage}" Content="{Binding SessionTabText}"
+                            Command="{Binding ShowSessionCommand}" />
+                    <Button Classes="tab" Classes.current="{Binding !IsSessionPage}" Content="{x:Static res:Strings.TabExplorer}"
+                            Command="{Binding ShowExplorerCommand}" ToolTip.Tip="{x:Static res:Strings.ExplorerDuringSession}"
+                            ToolTip.ShowOnDisabled="True" />
+                </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right"
                             VerticalAlignment="Center" IsVisible="{Binding Session.IsActive}">
                     <TextBlock FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding Session.Counter}" />
@@ -86,19 +106,26 @@
             </Grid>
         </Border>
 
-        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="16,16,16,14">
+        <!-- The Explorer list (spec §8). The video is hidden meanwhile: it is a native window and
+             would cover the list. -->
+        <Panel Grid.Row="1" Grid.RowSpan="2" IsVisible="{Binding IsExplorerPage}">
+            <views:ExplorerView DataContext="{Binding Explorer}" />
+        </Panel>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="16,16,16,14" IsVisible="{Binding ShowPlayer}">
             <!-- The video; its controls are in VideoOverlayWindow, laid over it. -->
             <views:PlayerView x:Name="Player" DataContext="{Binding Player}" />
-            <!-- Tags, then markers, beside the video, never over it (spec §5, layout from #9). -->
+            <!-- Tags, then markers, beside the video, never over it (spec §5, layout from #9): those of
+                 the session, or of the clip opened from the Explorer. -->
             <Grid Grid.Column="1" Width="340" Margin="16,0,0,0" RowDefinitions="*,Auto" RowSpacing="12"
                   IsVisible="{Binding ShowSidePanels}">
-                <views:TagsPanel DataContext="{Binding Session.Tags}" />
-                <views:MarkersPanel Grid.Row="1" MaxHeight="260" DataContext="{Binding Session.Markers}" />
+                <views:TagsPanel DataContext="{Binding SideTags}" />
+                <views:MarkersPanel Grid.Row="1" MaxHeight="260" DataContext="{Binding SideMarkers}" />
             </Grid>
         </Grid>
 
         <!-- Clip strip: two clips before and after the current one (spec §5). -->
-        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" Margin="16,0,16,16" IsVisible="{Binding ShowSidePanels}">
+        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" Margin="16,0,16,16" IsVisible="{Binding ShowStrip}">
             <Button Content="‹" VerticalAlignment="Stretch" ToolTip.Tip="{x:Static res:Strings.StripEarlier}"
                     AutomationProperties.Name="{x:Static res:Strings.StripEarlier}"
                     Command="{Binding Session.StripEarlierCommand}" />

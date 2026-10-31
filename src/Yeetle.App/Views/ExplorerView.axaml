@@ -1,0 +1,191 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Yeetle.App.ViewModels"
+             xmlns:res="using:Yeetle.App.Resources"
+             xmlns:library="using:Yeetle.Domain.Library"
+             x:Class="Yeetle.App.Views.ExplorerView"
+             x:DataType="vm:ExplorerViewModel">
+    <!-- Layout decided in #9 (spec §8): filters on the left; selection toolbar, the clip table and
+         a footer on the right. -->
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="PanelBrush" Color="#15181D" />
+        <SolidColorBrush x:Key="LineBrush" Color="#23272E" />
+        <SolidColorBrush x:Key="BadgeBrush" Color="#37474F" />
+        <SolidColorBrush x:Key="YeetedBadgeBrush" Color="#C62828" />
+        <SolidColorBrush x:Key="NoticeBrush" Color="#F0B429" />
+        <x:Double x:Key="SecondaryTextOpacity">0.7</x:Double>
+        <x:Double x:Key="DimmedOpacity">0.5</x:Double>
+        <!-- Column widths, shared by the header and the rows. -->
+        <GridLength x:Key="DateColumn">150</GridLength>
+        <GridLength x:Key="DurationColumn">80</GridLength>
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.section">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Opacity" Value="{StaticResource SecondaryTextOpacity}" />
+            <Setter Property="Margin" Value="0,14,0,4" />
+        </Style>
+        <Style Selector="Button.header">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="8,5" />
+        </Style>
+        <Style Selector="Border.badge">
+            <Setter Property="Background" Value="{StaticResource BadgeBrush}" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="6,1" />
+            <Setter Property="Margin" Value="8,0,0,0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Border.badge.yeeted">
+            <Setter Property="Background" Value="{StaticResource YeetedBadgeBrush}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid ColumnDefinitions="260,*">
+        <!-- Filters (spec §8). -->
+        <Border Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,1,0"
+                Padding="16,12">
+            <DockPanel>
+                <Button DockPanel.Dock="Bottom" Margin="0,12,0,0" Content="{x:Static res:Strings.ClearFilters}"
+                        Command="{Binding ClearFiltersCommand}" />
+                <ScrollViewer>
+                    <StackPanel>
+                        <TextBlock FontSize="16" FontWeight="Bold" Text="{x:Static res:Strings.FiltersTitle}" />
+                        <TextBlock Classes="section" Text="{x:Static res:Strings.FilterTags}" />
+                        <TextBlock Text="{x:Static res:Strings.NoTagsToFilter}" Opacity="{StaticResource SecondaryTextOpacity}"
+                                   IsVisible="{Binding !HasTagFilters}" />
+                        <ItemsControl ItemsSource="{Binding TagFilters}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:TagFilterItem">
+                                    <Panel Margin="{Binding Indent}">
+                                        <TextBlock Text="{Binding Label}" FontSize="12" Margin="0,6,0,0"
+                                                   Opacity="{StaticResource SecondaryTextOpacity}" IsVisible="{Binding IsHeader}" />
+                                        <CheckBox Content="{Binding Label}" IsChecked="{Binding IsChecked}" IsVisible="{Binding IsTag}" />
+                                    </Panel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Classes="section" Text="{x:Static res:Strings.FilterDecision}" />
+                        <CheckBox Content="{x:Static res:Strings.KeptLabel}" IsChecked="{Binding ShowKept}" />
+                        <CheckBox Content="{x:Static res:Strings.DecisionNew}" IsChecked="{Binding ShowNew}" />
+                        <CheckBox Content="{x:Static res:Strings.DecisionYeeted}" IsChecked="{Binding ShowYeeted}" />
+                        <TextBlock Classes="section" Text="{x:Static res:Strings.FilterFileState}" />
+                        <CheckBox Content="{x:Static res:Strings.StatePresent}" IsChecked="{Binding ShowPresent}" />
+                        <CheckBox Content="{x:Static res:Strings.StateMissing}" IsChecked="{Binding ShowMissing}" />
+                        <CheckBox Content="{x:Static res:Strings.StateOffline}" IsChecked="{Binding ShowOffline}" />
+                        <CheckBox Content="{x:Static res:Strings.StateDeleted}" IsChecked="{Binding ShowDeleted}" />
+                        <CheckBox Content="{x:Static res:Strings.StateNeedsAttention}" IsChecked="{Binding ShowNeedsAttention}" />
+                        <TextBlock Classes="section" Text="{x:Static res:Strings.FilterOther}" />
+                        <CheckBox IsChecked="{Binding IncompleteOnly}">
+                            <TextBlock Text="{x:Static res:Strings.FilterIncomplete}" TextWrapping="Wrap" />
+                        </CheckBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+
+        <DockPanel Grid.Column="1" Margin="16,12,16,12">
+            <TextBox DockPanel.Dock="Top" Text="{Binding SearchText}" PlaceholderText="{x:Static res:Strings.SearchPlaceholder}"
+                     Margin="0,0,0,10" />
+
+            <!-- Selection toolbar. -->
+            <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,10" ItemSpacing="6" LineSpacing="6">
+                <TextBlock Text="{Binding SelectionText}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,6,0"
+                           IsVisible="{Binding HasSelection}" />
+                <Button Content="{x:Static res:Strings.OpenInYeetle}" Command="{Binding OpenCommand}"
+                        ToolTip.Tip="{x:Static res:Strings.OpenInYeetleTip}" />
+                <Button Content="{x:Static res:Strings.ShowInFolder}" Command="{Binding ShowInFolderCommand}" />
+                <Button Content="{x:Static res:Strings.OpenWithDefaultApp}" Command="{Binding OpenWithDefaultAppCommand}"
+                        ToolTip.Tip="{x:Static res:Strings.OpenWithDefaultAppTip}" />
+                <Button Content="{x:Static res:Strings.SetKept}" Command="{Binding SetKeptCommand}" />
+                <Button Content="{x:Static res:Strings.SetYeeted}" Command="{Binding SetYeetedCommand}" />
+                <Button Content="{x:Static res:Strings.ShowMarkers}" Command="{Binding ShowMarkersCommand}"
+                        ToolTip.Tip="{x:Static res:Strings.ShowMarkersTip}" />
+                <Button Content="{x:Static res:Strings.RenameByTags}" Command="{Binding RenameByTagsCommand}" />
+                <Button Content="{x:Static res:Strings.RestoreNames}" Command="{Binding RestoreNamesCommand}" />
+                <Button Content="{x:Static res:Strings.WipeData}" Command="{Binding WipeCommand}" />
+                <Button Content="{x:Static res:Strings.DeleteFromDisk}" Command="{Binding DeleteCommand}" />
+            </WrapPanel>
+
+            <!-- Footer: match count, drag hint, and what the last action did. -->
+            <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0" Spacing="2">
+                <TextBlock Text="{Binding Notice}" TextWrapping="Wrap" Foreground="{StaticResource NoticeBrush}"
+                           IsVisible="{Binding Notice, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
+                    <TextBlock Text="{Binding MatchText}" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="1" Text="{x:Static res:Strings.DragHint}" TextTrimming="CharacterEllipsis"
+                               Opacity="{StaticResource SecondaryTextOpacity}" />
+                </Grid>
+            </StackPanel>
+
+            <!-- Column headers: a click sorts, a second click turns the order around. -->
+            <Border DockPanel.Dock="Top" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="8,4">
+                <Grid ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="{StaticResource DateColumn}" />
+                        <ColumnDefinition Width="{StaticResource DurationColumn}" />
+                        <ColumnDefinition Width="2*" />
+                    </Grid.ColumnDefinitions>
+                    <Button Classes="header" Content="{Binding NameHeader}" Command="{Binding SortByCommand}"
+                            CommandParameter="{x:Static library:LibrarySort.Name}" />
+                    <Button Grid.Column="1" Classes="header" Content="{Binding DateHeader}" Command="{Binding SortByCommand}"
+                            CommandParameter="{x:Static library:LibrarySort.RecordedAt}" />
+                    <Button Grid.Column="2" Classes="header" Content="{Binding DurationHeader}" Command="{Binding SortByCommand}"
+                            CommandParameter="{x:Static library:LibrarySort.Duration}" />
+                    <TextBlock Grid.Column="3" FontWeight="SemiBold" VerticalAlignment="Center"
+                               Text="{x:Static res:Strings.ColumnTags}" />
+                </Grid>
+            </Border>
+
+            <Panel>
+                <TextBlock Margin="8,16" Text="{x:Static res:Strings.NoClipsMatch}" Opacity="{StaticResource SecondaryTextOpacity}"
+                           IsVisible="{Binding IsEmpty}" />
+                <!-- Multiple: click, Ctrl+click, Shift+click and Ctrl+A select as in Windows Explorer.
+                     The list is virtualized. -->
+                <ListBox x:Name="List" ItemsSource="{Binding Rows}" SelectionMode="Multiple" Background="Transparent">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ExplorerRowViewModel">
+                            <Grid ColumnSpacing="12" Classes.dimmed="{Binding IsDimmed}">
+                                <Grid.Styles>
+                                    <Style Selector="Grid.dimmed">
+                                        <Setter Property="Opacity" Value="{StaticResource DimmedOpacity}" />
+                                    </Style>
+                                </Grid.Styles>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3*" />
+                                    <ColumnDefinition Width="{StaticResource DateColumn}" />
+                                    <ColumnDefinition Width="{StaticResource DurationColumn}" />
+                                    <ColumnDefinition Width="2*" />
+                                </Grid.ColumnDefinitions>
+                                <DockPanel>
+                                    <Border DockPanel.Dock="Right" Classes="badge" IsVisible="{Binding HasStateBadge}">
+                                        <TextBlock FontSize="11" Text="{Binding StateBadge}" />
+                                    </Border>
+                                    <Border DockPanel.Dock="Right" Classes="badge" Classes.yeeted="{Binding IsYeeted}"
+                                            IsVisible="{Binding HasDecisionBadge}">
+                                        <TextBlock FontSize="11" Text="{Binding DecisionBadge}" />
+                                    </Border>
+                                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Clip.FullPath}"
+                                               VerticalAlignment="Center" />
+                                </DockPanel>
+                                <TextBlock Grid.Column="1" Text="{Binding Date}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="2" Text="{Binding Duration}" FontFamily="Consolas,monospace"
+                                           VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="3" Text="{Binding Tags}" TextTrimming="CharacterEllipsis"
+                                           ToolTip.Tip="{Binding Tags}" VerticalAlignment="Center"
+                                           Opacity="{StaticResource SecondaryTextOpacity}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Panel>
+        </DockPanel>
+    </Grid>
+</UserControl>

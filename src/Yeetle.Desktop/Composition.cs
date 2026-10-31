@@ -68,8 +68,11 @@ internal static class Composition
             .AddTransient<TagManagerViewModel>()
             .AddTransient<SourceFoldersViewModel>()
             .AddSingleton<PlayerViewModel>()
-            .AddSingleton<TagPanelViewModel>()
-            .AddSingleton<MarkersPanelViewModel>()
+            // One each for the session and the clip editor.
+            .AddTransient<TagPanelViewModel>()
+            .AddTransient<MarkersPanelViewModel>()
+            .AddSingleton<ExplorerViewModel>()
+            .AddSingleton<EditorViewModel>()
             .AddSingleton<SessionViewModel>()
             .AddSingleton<MainWindowViewModel>()
             .AddTransient<RecoveryViewModel>()

@@ -106,6 +106,11 @@
         <Style Selector="Button.skip:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{StaticResource SkipHoverBrush}" />
         </Style>
+        <!-- The current decision of an opened clip. -->
+        <Style Selector="Button.decision.current /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderThickness" Value="3" />
+        </Style>
         <Style Selector="Button.decision:disabled /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Opacity" Value="{StaticResource DisabledOpacity}" />
         </Style>
@@ -121,10 +126,16 @@
                     <TextBlock FontWeight="SemiBold" Text="{Binding Session.ClipName}" TextTrimming="CharacterEllipsis" />
                     <TextBlock Text="{Binding Session.ClipDate}" Opacity="{StaticResource SecondaryTextOpacity}" />
                 </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding IsEditorPage}">
+                    <TextBlock FontWeight="SemiBold" Text="{Binding Editor.ClipName}" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding Editor.ClipDate}" Opacity="{StaticResource SecondaryTextOpacity}" />
+                </StackPanel>
+                <TextBlock Text="{Binding Editor.Notice}" TextWrapping="Wrap" Opacity="{StaticResource SecondaryTextOpacity}"
+                           IsVisible="{Binding Editor.Notice, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                 <TextBlock Text="{Binding Player.Message}" TextWrapping="Wrap" Opacity="{StaticResource SecondaryTextOpacity}"
                            IsVisible="{Binding Player.Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                 <TextBlock Text="{Binding Session.Notice}" TextWrapping="Wrap" Opacity="{StaticResource SecondaryTextOpacity}"
-                           IsVisible="{Binding Session.Notice, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                           IsVisible="{Binding ShowSessionNotice}" />
                 <TextBlock Text="{Binding ScanSummary}" TextWrapping="Wrap" Opacity="{StaticResource SecondaryTextOpacity}"
                            IsVisible="{Binding ScanSummary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             </StackPanel>
@@ -132,7 +143,7 @@
 
         <!-- Top right: how the clip sounds; hidden on the home screen, where nothing plays. -->
         <Border Classes="block" HorizontalAlignment="Right" VerticalAlignment="Top" DataContext="{Binding Player}"
-                IsVisible="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Session.IsActive}"
+                IsVisible="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ShowControls}"
                 x:DataType="vm:PlayerViewModel">
             <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="6">
                 <TextBlock Classes="label" Text="{x:Static res:Strings.AudioTrack}" />
@@ -158,7 +169,7 @@
 
         <!-- Home: no session yet (spec §5). -->
         <Border Classes="block" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="32,24"
-                IsVisible="{Binding Session.IsHome}">
+                IsVisible="{Binding ShowHome}">
             <StackPanel Spacing="16" HorizontalAlignment="Center">
                 <TextBlock FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center" TextWrapping="Wrap"
                            Text="{Binding Session.HomeText}" />
@@ -167,9 +178,18 @@
             </StackPanel>
         </Border>
 
-        <StackPanel VerticalAlignment="Bottom" Spacing="12" IsVisible="{Binding Session.IsActive}">
-            <!-- The decision for this clip. -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12">
+        <StackPanel VerticalAlignment="Bottom" Spacing="12" IsVisible="{Binding ShowControls}">
+            <!-- The decision for this clip: in a session, then for a clip opened from the Explorer,
+                 where the current decision is outlined and there is no Skip (spec §8). -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12" IsVisible="{Binding IsEditorPage}">
+                <Button Classes="decision skip" Content="{x:Static res:Strings.BackToLibrary}" Command="{Binding Editor.CloseCommand}"
+                        ToolTip.Tip="{x:Static res:Strings.BackToLibraryTip}" />
+                <Button Classes="decision yeet" Classes.current="{Binding Editor.IsYeeted}" Content="{x:Static res:Strings.Yeet}"
+                        Command="{Binding Editor.YeetCommand}" />
+                <Button Classes="decision keep" Classes.current="{Binding Editor.IsKept}" Content="{x:Static res:Strings.Keep}"
+                        Command="{Binding Editor.KeepCommand}" ToolTip.Tip="{x:Static res:Strings.EditorSavedHint}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12" IsVisible="{Binding IsSessionPage}">
                 <Button Classes="decision yeet" Content="{x:Static res:Strings.Yeet}" Command="{Binding Session.YeetCommand}"
                         ToolTip.Tip="{x:Static res:Strings.YeetTip}" />
                 <Button Classes="decision skip" Content="{x:Static res:Strings.Skip}" Command="{Binding Session.SkipCommand}"
@@ -184,7 +204,7 @@
                     <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
                         <!-- Marker ticks just above the seek bar; hovering shows the label (spec §7).
                              Same margin as the slider, so a tick sits where the thumb would. -->
-                        <ItemsControl Grid.Column="1" Margin="10,0" ItemsSource="{Binding Session.Markers.Ticks}">
+                        <ItemsControl Grid.Column="1" Margin="10,0" ItemsSource="{Binding SideMarkers.Ticks}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <controls:MarkerTickPanel />
@@ -205,12 +225,14 @@
                     </Grid>
                     <Grid ColumnDefinitions="*,Auto,*">
                         <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
-                            <Button Content="{x:Static res:Strings.Back}" Command="{Binding Session.BackCommand}"
+                            <Button Content="{x:Static res:Strings.Back}" Command="{Binding Session.BackCommand}" IsVisible="{Binding IsSessionPage}"
                                     ToolTip.Tip="{x:Static res:Strings.BackTip}" />
                             <Button Content="{Binding Player.PlayPauseLabel}" Command="{Binding Player.TogglePauseCommand}" MinWidth="80" />
-                            <Button Content="{x:Static res:Strings.Undo}" Command="{Binding Session.UndoCommand}"
+                            <Button Content="{x:Static res:Strings.Undo}" Command="{Binding Session.UndoCommand}" IsVisible="{Binding IsSessionPage}"
                                     ToolTip.Tip="{x:Static res:Strings.UndoTip}" />
-                            <Button Content="{x:Static res:Strings.AddMarker}" Command="{Binding Session.Markers.AddCommand}"
+                            <Button Content="{x:Static res:Strings.Undo}" Command="{Binding Editor.UndoCommand}" IsVisible="{Binding IsEditorPage}"
+                                    ToolTip.Tip="{x:Static res:Strings.UndoTip}" />
+                            <Button Content="{x:Static res:Strings.AddMarker}" Command="{Binding SideMarkers.AddCommand}"
                                     ToolTip.Tip="{x:Static res:Strings.AddMarkerTip}" />
                         </StackPanel>
                         <ItemsControl Grid.Column="1" ItemsSource="{Binding Player.Speeds}" Margin="12,0">

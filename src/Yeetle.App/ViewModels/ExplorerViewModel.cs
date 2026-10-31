@@ -32,7 +32,7 @@ public sealed class ExplorerRowViewModel(LibraryClip clip, string tags)
         _ => string.Empty,
     };
     public bool HasStateBadge => StateBadge.Length > 0;
-    public bool IsDimmed => clip.State != FileState.Present;
+    public bool IsDimmed => Clip.State != FileState.Present;
     // Shown when New or Yeeted clips are listed, so they stand out from Kept ones.
     public string DecisionBadge { get; } = clip.Decision switch
     {
@@ -41,6 +41,7 @@ public sealed class ExplorerRowViewModel(LibraryClip clip, string tags)
         _ => string.Empty,
     };
     public bool HasDecisionBadge => DecisionBadge.Length > 0;
+    public bool IsYeeted => Clip.Decision == Decision.Yeeted;
 }
 
 // A line of the tag filter: a box title, or a tag to tick. Boxes under a tag are indented.
