@@ -43,4 +43,4 @@ The player's interface is `IClipPlayer` in `Yeetle.Application/Playback`; `Yeetl
 - Every change belongs to a GitHub issue. Branch name: `issue-<number>-short-description`. Reference the issue in commits; use `Fixes #<number>` in the pull request that completes it.
 - Before committing: `dotnet build` with no warnings, `dotnet test` green. New domain rules come with tests.
 - Keep pull requests to one issue. If the spec has to change, update `docs/SPEC.md` in the same pull request and say so in its description.
-- POC code (milestone "1 · POC") lives under `poc/` and is never referenced by the main solution. A tryout is deleted once its question is answered (see `poc/README.md`).
+- POC code (milestone "1 · POC") lives under `poc/` and is never referenced by the main solution. A tryout is deleted once its question is answered (see `poc/README.md`), except `poc/ClipStrip`: it is kept for postponed thumbnails (`docs/THUMBNAILS.md`) and is only removed after asking ZiL.

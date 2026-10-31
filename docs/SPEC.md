@@ -29,10 +29,10 @@ The work runs in four stages: a technical POC, an MVP for ZiL and beta testers, 
 
 | Stage | Purpose | Contents |
 | --- | --- | --- |
-| POC | Prove the risky tech before building UI | Video playback in Avalonia (clip switch under 150 ms, 4x speed, audio-track switching, overlay test), thumbnail extraction, drag-out of real files into Premiere and Explorer |
+| POC | Prove the risky tech before building UI | Video playback in Avalonia (clip switch under 150 ms, 4x speed, audio-track switching, overlay test), thumbnail extraction (tried, then postponed: see `docs/THUMBNAILS.md`), drag-out of real files into Premiere and Explorer |
 | MVP | Full core loop, tested by ZiL and beta testers | Source folders + scanning, review sessions (Keep/Yeet/Skip, tags, markers, sticky tags, undo, progress counter, carousel badges, crash recovery), boxes-and-tags model with a Tag Manager, type-to-tag, hotkeys, Explorer (filters, multi-select, edit, wipe data, drag-out, Windows context menu, marker window), session summary with delete + rename prompts, Recycle Bin delete, rename + restore, migrations + backups, settings, EN/FR, local telemetry with upload, donation prompts, in-app one-click updates |
 | v1.0 public | Ready for strangers | Code signing, polished visual design, final Tag Manager UX, privacy notice/policy, website or landing page, performance tuning from beta feedback |
-| Later | Nice to have | Move/rename detection (file fingerprint), relocate a source folder, Premiere/Resolve marker export, folder-to-tag rules, tag merge, file watcher, macOS |
+| Later | Nice to have | Clip thumbnails (needs FFmpeg shipped with the app, see `docs/THUMBNAILS.md`), move/rename detection (file fingerprint), relocate a source folder, Premiere/Resolve marker export, folder-to-tag rules, tag merge, file watcher, macOS |
 
 **Explicit non-goals.** Cloud storage, accounts, collaboration, an integrated video editor or trimmer, AI auto-tagging, re-review *sessions* over old clips (old clips are edited one by one in Explorer instead), separate libraries per game, full-screen playback (theatre mode only), and any import of markers into editing software.
 
@@ -80,7 +80,9 @@ Yeetle reads the user's folders and records what it finds; it never writes to th
 
 **Identity in the MVP.** A clip is its path inside its source folder. Moving or renaming a file outside Yeetle makes the old record Missing and the file at its new place New, even if it is the same video. Renames done by Yeetle update the path directly. If a file at a known path has a different size or date, it stays the same clip, its details are refreshed, and it is listed in the scan summary. Move/rename detection with a file fingerprint is a later feature.
 
-**Recording date.** Taken from the recording time stored inside the video (written by OBS), falling back to the file's last-modified date. Never parsed from the filename, since users rename files. This date drives session order, Explorer order and renamed filenames.
+**Recording date.** The file's last-modified date. Never parsed from the filename, since users rename files. This date drives session order, Explorer order and renamed filenames. Reading the recording time stored inside the video would need FFmpeg, which is postponed with thumbnails (#5, `docs/THUMBNAILS.md`); in the POC, the time ShadowPlay stores there was the save time anyway, which is when the file was last modified.
+
+**Duration.** Read with LibVLC, which already ships for playback, in the background after the scan so the scan itself stays fast.
 
 **Files still being written.** A file modified less than 10 seconds ago, or found while OBS is running, is not imported in that scan; Yeetle shows a notice ("1 file looks like it is still recording") and picks it up on a later scan.
 
@@ -96,7 +98,7 @@ A session runs through every New clip, oldest recording first, one clip at a tim
 
 **Starting.** The home screen shows how many New clips are waiting and a Start button. A skipped clip stays New and is the first one shown next time, until it is decided. The Explorer is unavailable while a session runs; Settings and the Tag Manager stay reachable.
 
-**The screen.** The current clip plays automatically from 0:00 and loops. Below it, a thumbnail strip shows 2 previous clips, the current one (highlighted) and 2 next ones; the user can scroll back to the first clip of the session. Each thumbnail shows a shortened filename, the recording date and a decision badge (kept, yeeted, skipped). A progress counter shows the position, e.g. 17 / 43. Tags and markers sit in a compact side area. The final layout is designed after the POC (section 17).
+**The screen.** The current clip plays automatically from 0:00 and loops. Below it, a clip strip shows 2 previous clips, the current one (highlighted) and 2 next ones; the user can scroll back to the first clip of the session. Each card shows a shortened filename, the recording date and a decision badge (kept, yeeted, skipped), with no thumbnail image (thumbnails are a later feature, section 2). A progress counter shows the position, e.g. 17 / 43. Tags and markers sit in a compact side area. The final layout is designed after the POC (section 17).
 
 **Deciding.** Enter keeps, Del yeets, Shift+Right moves on without deciding (a skip), Shift+Left goes back. Keep and Yeet move to the next clip. Any decision can be changed until the session ends. Ctrl+Z undoes the last actions (decisions, tags, markers) step by step.
 
@@ -180,7 +182,7 @@ The same player is used in sessions and when a clip is opened from the Explorer;
 - Every clip starts at 0:00 and loops at the end; there is no auto-advance.
 - Audio: the first track in the file plays by default. Switching is one key (B cycles tracks, as in VLC) or a small always-visible picker (dropdown or scroll wheel), never a right-click menu. Typical OBS setup: game mix, mic, Discord on separate tracks.
 - Frame stepping exists as a hotkey but is not a focus.
-- Performance: the current clip loads first; the next and previous clips and the visible thumbnails are prepared in the background. Thumbnails are generated lazily with FFmpeg and cached; the cache can be deleted at any time without losing data.
+- Performance: the current clip loads first; the next and previous clips are prepared in the background.
 
 **Markers.**
 
@@ -206,7 +208,7 @@ The Explorer is the second half of Yeetle: a virtual library of every clip in th
 
 **Why custom.** Windows can embed a real Explorer view, but only for real folders; showing Yeetle's filtered results inside it would need a native shell extension, which is fragile and can crash Explorer itself. So the view is built in Avalonia and reuses the real Windows pieces where possible. Estimated effort: 1–2 weeks.
 
-**View.** Thumbnail grid (list view optional), newest recording first. Each item shows thumbnail, shortened name, recording date, duration and tags. Sorting by date, duration or name. Thumbnails load lazily and the grid is virtualized.
+**View.** A list, newest recording first. Each row shows the shortened name, recording date, duration and tags. Sorting by date, duration or name. The list is virtualized. A thumbnail grid is a later feature (section 2).
 
 **Filters.** Tag filters (same box = OR, different boxes = AND, a parent tag matches clips tagged with its children). A decision filter: Kept by default, plus New, Yeeted. A file-state filter: Missing, Offline, Deleted, Needs attention. A text search over filenames and marker labels. An "incomplete" filter lists clips with an empty required box.
 
@@ -256,7 +258,6 @@ The database holds the user's work, so it is backed up automatically, upgraded c
 | Library database | SQLite (`yeetle.db`) | Clips, folders, tags and boxes, markers, session journal, file-operation log |
 | App settings | JSON file | Kept outside the database so a broken database does not also lose the source folders |
 | Telemetry | Separate SQLite file | So restoring a backup does not roll it back, and a telemetry problem never blocks the app |
-| Thumbnail cache | Image files | Disposable; deleting it loses nothing |
 | Backups | SQLite copies | See below |
 | Logs | Text files | Keep full file paths locally; paths are removed only if logs are ever sent |
 
@@ -287,8 +288,8 @@ Settings are reachable at any time, including during a session; anything configu
 | Hotkeys | Every action and tag hotkey, rejects duplicates (one key = one action), restore defaults |
 | Player | Default speed, default volume, seek steps (default 5 s, and 30 s with Ctrl), volume step (default 5), theatre mode, background preparation of neighbouring clips (on/off, for low-memory PCs) |
 | Review | Sticky tags on/off, marker offset (default 1 s before the key press) |
-| Library view | Default filters, grid or list |
-| Data | Backup counts per pool, open the data folder, restore a backup, clear the thumbnail cache |
+| Library view | Default filters |
+| Data | Backup counts per pool, open the data folder, restore a backup |
 | Privacy | Usage statistics on/off |
 | General | Language (English, French), check for updates |
 
@@ -317,7 +318,7 @@ Yeetle is free, open source under GPL-3.0, funded by PayPal donations, and updat
 | Avalonia, CommunityToolkit.Mvvm, Microsoft.Data.Sqlite, Velopack | MIT |
 | Dapper | Apache 2.0 |
 | LibVLC / LibVLCSharp | LGPL 2.1+ |
-| FFmpeg | LGPL or GPL build, both fine |
+| FFmpeg (later, for thumbnails) | LGPL or GPL build, both fine |
 | libmpv (if the POC picks it) | GPL, fine |
 
 License notices for all of them ship with the app.
@@ -332,7 +333,7 @@ C# on .NET 10 with Avalonia 12 is confirmed after review, and the POC settled th
 | UI | Avalonia 12, MVVM with CommunityToolkit.Mvvm | Free and open source, good Rider support, easy custom styling, supports dragging files out to other apps. WPF would gain nothing: same video limits, weaker Rider designer. |
 | Database | SQLite via Microsoft.Data.Sqlite + Dapper | Local file, no server. Numbered SQL migration scripts, WAL mode, foreign-key checks turned on (off by default in SQLite). |
 | Playback | LibVLCSharp drawing into native child windows (option A) | Lowest CPU use (about 0.5% against 8% for option B at 1080p60); controls sit over the video in a transparent overlay window |
-| Thumbnails and metadata | ffmpeg.exe / ffprobe.exe run as separate processes | Simple, robust, no native bindings |
+| Clip metadata | Recording date from the file's last-modified date, duration from LibVLC | Nothing extra to ship. Thumbnails with FFmpeg processes are postponed (#5, `docs/THUMBNAILS.md`) |
 | Installer and updates | Velopack + GitHub Releases | One-click updates, no admin rights |
 | Code, tickets, CI | Public GitHub repo, GitHub Issues, GitHub Actions | One place; commits close tickets |
 | Tests | xUnit | Standard for .NET |
@@ -363,11 +364,11 @@ Yeetle.Application     scanner, session service, file operations, library querie
 Yeetle.Domain          Yeetle.Infrastructure            Yeetle.Media
 clip, tag and box      SQLite via Dapper, files,        player interface,
 rules, session state,  Recycle Bin, shell menu,         VLC or mpv (from the POC)
-filters, rename        FFmpeg, Velopack, telemetry
+filters, rename        Velopack, telemetry
 builder; no deps
 ```
 
-The domain project holds every rule (tags and boxes, session state, filters, filename building) with no dependencies, so it is tested first and without a UI. The UI talks only to the application layer, which reaches SQLite, the file system, FFmpeg and the player through interfaces. Only `Yeetle.Desktop` knows the implementations: it registers them and hands the app its view models.
+The domain project holds every rule (tags and boxes, session state, filters, filename building) with no dependencies, so it is tested first and without a UI. The UI talks only to the application layer, which reaches SQLite, the file system and the player through interfaces. Only `Yeetle.Desktop` knows the implementations: it registers them and hands the app its view models.
 
 ## 14. Default hotkeys
 
@@ -414,7 +415,7 @@ The POC comes first because the player decides the screen layout; then the MVP i
 
 1. Player option A: open a clip, switch clips in under 150 ms, play at 4x, switch audio tracks.
 2. Options C, then B: put a button over playing video.
-3. FFmpeg: time to extract one thumbnail, and read OBS's recording time from the file.
+3. FFmpeg: time to extract one thumbnail, and read OBS's recording time from the file. Done (#5); thumbnails postponed because FFmpeg is too heavy to ship as is (`docs/THUMBNAILS.md`).
 4. Drag 10 files out to Windows Explorer, Premiere Pro and DaVinci Resolve.
 5. Test with ZiL's real clips: OBS mp4 and mkv, multiple audio tracks, H.264, HEVC and AV1, 1080p60 and higher.
 
@@ -429,13 +430,13 @@ Gate: choose the player, and with it whether buttons can sit over the video.
 1. Domain rules + tests: tags and boxes, session state, filters, filename builder.
 2. Database: schema, migrations, backups, settings file, single instance, logging.
 3. Source folders and scanning: first-scan choice, Missing/Offline, files still recording.
-4. Player and thumbnail cache.
-5. Session screen: navigation, decisions, thumbnail strip with badges, counter, undo, journal and crash recovery.
+4. Player.
+5. Session screen: navigation, decisions, clip strip with badges, counter, undo, journal and crash recovery.
 6. Tagging in sessions: chips, sticky tags, hotkeys, type-to-tag, required boxes.
 7. Tag Manager.
 8. Markers.
 9. Session end: summary, commit/discard, delete and rename prompts, restore names.
-10. Explorer: grid, filters, search, editing, wipe data, Windows context menu, drag out, marker window.
+10. Explorer: list, filters, search, editing, wipe data, Windows context menu, drag out, marker window.
 11. Settings and EN/FR translations.
 12. Usage statistics and donation prompts.
 13. Installer and one-click updates; first beta build to testers.
@@ -456,7 +457,7 @@ Rules are tested automatically from the first slice; file safety is tested again
 - Domain: parent tags auto-added, children removed with their parent, pick-one swaps, required warnings, filter logic (OR within a box, AND across), session decisions and undo, filename building (order, 15-character cap, 260-character path limit, collisions, forbidden characters, Cyrillic).
 - Database: every migration from every earlier version, backup pools and restore, journal replay after a simulated crash.
 - Scanning: new, missing, offline folder, changed file at the same path, files still recording, subfolders on and off, same filename in two folders.
-- FFmpeg: recording time and thumbnail from sample files, including a corrupt file.
+- Duration: read from sample files, including a corrupt file (clean error, no hang).
 
 **Manual scenarios.**
 
@@ -468,7 +469,7 @@ Rules are tested automatically from the first slice; file safety is tested again
 - Drag-out to Explorer, Premiere, Resolve and a browser upload.
 - Hotkeys while typing a marker label or in the type-to-tag box.
 
-**Performance targets.** Next clip playing in under 150 ms; thumbnails visible without a placeholder in normal use; scan of 2,000 clips under 1 second on a local SSD; app ready in under 2 seconds.
+**Performance targets.** Next clip playing in under 150 ms; scan of 2,000 clips under 1 second on a local SSD; app ready in under 2 seconds.
 
 ## 17. Still open
 
