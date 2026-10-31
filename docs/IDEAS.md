@@ -7,8 +7,12 @@ Add new entries at the end of their section, one line each, with the date and wh
 ## Player
 
 - **Auto-hide the controls over the video.** Hide the overlay blocks after a few seconds without mouse movement, and show them again on movement. Low priority. (2026-10-28, ZiL, while building the overlay)
-- **Show "System default" in the Output picker.** It is empty until the user picks a device, because VLC reports no device id while it follows the Windows default. (2026-10-28, seen while porting the POC)
 
-## Hotkeys
+## Explorer
 
-- **Number row: speeds or tag shortcuts?** 1–6 select speeds (asked by ZiL); the spec reserves 1–9 for tag shortcuts during review. Settle before tagging (#15). (2026-10-27)
+- **Drag-select (rubber band) and F2.** Windows Explorer has both; F2 clashes with the F1–F12 tag keys, so it would need its own idea of what F2 does here. (2026-10-31, left out of #19)
+- **Open the next clip of the list from the editor.** Shift+Right / Shift+Left could move through the filtered list without going back to it. (2026-10-31, while building #19)
+
+## Review
+
+- **Show some tags of a fresh vocabulary.** With no hotkeys and no usage yet, the Tags panel shows no chips at all; the first session needs T or hotkeys. Relates to #25. (2026-10-31, first full test pass)
