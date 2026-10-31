@@ -227,11 +227,12 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8"
-                                    DataContext="{Binding Player}" x:DataType="vm:PlayerViewModel">
-                            <Button Content="{Binding MuteLabel}" Command="{Binding ToggleMuteCommand}" MinWidth="80" />
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                            <Button Content="{Binding Player.MuteLabel}" Command="{Binding Player.ToggleMuteCommand}" MinWidth="80" />
                             <Slider Width="120" Minimum="0" Maximum="100" VerticalAlignment="Center"
-                                    Value="{Binding Volume}" ToolTip.Tip="{x:Static res:Strings.Volume}" />
+                                    Value="{Binding Player.Volume}" ToolTip.Tip="{x:Static res:Strings.Volume}" />
+                            <Button Content="{x:Static res:Strings.Theatre}" Command="{Binding ToggleTheatreCommand}"
+                                    Classes.current="{Binding IsTheatre}" ToolTip.Tip="{x:Static res:Strings.TheatreTip}" />
                         </StackPanel>
                     </Grid>
                 </StackPanel>

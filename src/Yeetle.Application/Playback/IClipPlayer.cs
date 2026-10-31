@@ -1,7 +1,7 @@
 namespace Yeetle.Application.Playback;
 
-// Plays one clip at a time and keeps another one loaded in the background, so switching to
-// it is instant (spec §7). Commands are queued and return at once; their effect shows in the
+// Plays one clip at a time and keeps its neighbours loaded in the background, so switching to
+// them is instant (spec §7). Commands are queued and return at once; their effect shows in the
 // properties and events. Clips start at 0:00 and loop.
 public interface IClipPlayer
 {
@@ -27,11 +27,15 @@ public interface IClipPlayer
     // Raised on a background thread when the tracks, devices, volume or mute changed.
     event EventHandler? AudioChanged;
 
-    // Plays the clip from 0:00; instant when it is the preloaded one.
+    // Plays the clip from 0:00; instant when it is a prepared one.
     void Open(string path);
 
-    // Loads the clip in a hidden screen, paused on its first frame, ready for Open.
-    void Preload(string path);
+    // Loads these clips (the next and the previous one) in hidden screens, paused on their first
+    // frame, ready for Open (spec §7). Clips prepared before and not listed may be dropped.
+    void Prepare(IReadOnlyList<string> paths);
+
+    // Pauses and shows the next frame.
+    void NextFrame();
 
     void TogglePause();
     void Seek(TimeSpan position);

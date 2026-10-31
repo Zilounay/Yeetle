@@ -84,17 +84,41 @@ public sealed class SqliteLibraryStore(SqliteConnectionFactory connections) : IL
             }),
             transaction);
         connection.Execute(
-            "UPDATE Clips SET SizeBytes = @SizeBytes, ModifiedAt = @ModifiedAt WHERE Id = @Id;",
+            // A changed file may play for another length: it is read again.
+            "UPDATE Clips SET SizeBytes = @SizeBytes, ModifiedAt = @ModifiedAt, DurationMs = NULL WHERE Id = @Id;",
             changes.Refreshed.Select(r => new { Id = r.Id.Value, r.File.SizeBytes, ModifiedAt = DbTime.Write(r.File.ModifiedAt) }),
             transaction);
         SetFileState(changes.Missing, FileState.Missing);
         SetFileState(changes.Found, FileState.Present);
+        // A file that could not be read while it was missing gets another try.
+        connection.Execute("UPDATE Clips SET DurationMs = NULL WHERE Id = @Id AND DurationMs = @unreadable;",
+            changes.Found.Select(c => new { Id = c.Value, unreadable = ClipDurations.Unreadable }), transaction);
         transaction.Commit();
 
         void SetFileState(IEnumerable<ClipId> clips, FileState state) => connection.Execute(
             "UPDATE Clips SET FileState = @state WHERE Id = @Id;",
             clips.Select(c => new { Id = c.Value, state = state.ToString() }),
             transaction);
+    }
+
+    public IReadOnlyList<ClipFile> ClipsWithoutDuration(int limit)
+    {
+        using var connection = connections.Open();
+        return connection.Query<(long Id, string FolderPath, string RelativePath)>(
+                """
+                SELECT c.Id, f.Path, c.RelativePath
+                FROM Clips c JOIN SourceFolders f ON f.Id = c.FolderId
+                WHERE c.DurationMs IS NULL AND c.FileState = 'Present' AND f.IsOffline = 0 AND f.Status <> 'Hidden'
+                ORDER BY c.Id LIMIT @limit;
+                """, new { limit })
+            .Select(r => new ClipFile(new ClipId(r.Id), Path.Combine(r.FolderPath, r.RelativePath)))
+            .ToList();
+    }
+
+    public void SetDuration(ClipId clip, long durationMs)
+    {
+        using var connection = connections.Open();
+        connection.Execute("UPDATE Clips SET DurationMs = @durationMs WHERE Id = @id;", new { id = clip.Value, durationMs });
     }
 
     private sealed class FolderRow

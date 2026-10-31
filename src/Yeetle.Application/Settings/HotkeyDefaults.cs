@@ -32,6 +32,9 @@ public static class HotkeyDefaults
         [HotkeyActions.VolumeDown] = ["ArrowDown"],
         [HotkeyActions.Mute] = ["M"],
         [HotkeyActions.NextAudioTrack] = ["B"],
+        [HotkeyActions.NextFrame] = ["E"],
+        // Replaces full screen, as in VLC (spec §7: theatre mode, no full screen).
+        [HotkeyActions.TheatreMode] = ["F"],
         [HotkeyActions.Slower] = ["NumPadSubtract"],
         [HotkeyActions.Faster] = ["NumPadAdd"],
         // No default key: the number row and F-keys belong to tags (spec §14).
@@ -69,6 +72,8 @@ public static class HotkeyActions
     public const string Slower = "Slower";
     public const string Faster = "Faster";
     public const string NormalSpeed = "NormalSpeed";
+    public const string NextFrame = "NextFrame";
+    public const string TheatreMode = "TheatreMode";
 
     // The n-th speed of PlaybackSpeeds.All, from 1.
     public static string Speed(int number) => $"Speed{number}";

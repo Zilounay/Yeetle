@@ -7,8 +7,8 @@ using VlcMedia = LibVLCSharp.Shared.Media;
 namespace Yeetle.Media.Vlc;
 
 // IClipPlayer on LibVLC, drawing into native child windows (player option A, POC #3).
-// Two screens stacked in the same place: the active one plays in front, the standby one holds the
-// next clip paused on its first frame. Every Open swaps them (see Open).
+// Three screens stacked in the same place: the active one plays in front, the standby ones hold
+// the next and previous clips paused on their first frame. Open brings the matching one forward.
 public sealed class VlcClipPlayer : IClipPlayer, IDisposable
 {
     // How often the position is read from VLC, for a smooth seek bar.
@@ -30,6 +30,9 @@ public sealed class VlcClipPlayer : IClipPlayer, IDisposable
     private const int NoTrack = -1;
     private const long StartOfClip = 0;
 
+    // Screens behind the current one: one for the next clip, one for the previous (spec §7).
+    private const int StandbyScreens = 2;
+
     // Values of the int flags below, set and read with Interlocked.
     private const int Clear = 0;
     private const int Set = 1;
@@ -40,8 +43,9 @@ public sealed class VlcClipPlayer : IClipPlayer, IDisposable
     private readonly Timer _positionTimer;
     private readonly Lock _gate = new();
 
+    // Changed under _gate only.
+    private readonly List<VlcScreen> _standbys;
     private volatile VlcScreen _active;
-    private volatile VlcScreen _standby;
     private volatile string? _currentClip;
     private volatile PlaybackState _state;
     private long _positionMs;
@@ -64,8 +68,8 @@ public sealed class VlcClipPlayer : IClipPlayer, IDisposable
         Core.Initialize();
         _vlc = new LibVLC();
         _active = CreateScreen();
-        _standby = CreateScreen();
-        _screens = [_active, _standby];
+        _standbys = [.. Enumerable.Range(0, StandbyScreens).Select(_ => CreateScreen())];
+        _screens = [_active, .. _standbys];
         _active.IsActive = true;
         _positionTimer = new Timer(_ => ReadPosition(), null, PositionInterval, PositionInterval);
     }
@@ -96,9 +100,15 @@ public sealed class VlcClipPlayer : IClipPlayer, IDisposable
         bool preloaded;
         lock (_gate)
         {
-            (shown, previous) = (_standby, _active);
+            // The screen that prepared this clip, else one holding nothing, else any.
+            shown = _standbys.FirstOrDefault(s => s.Clip == path)
+                    ?? _standbys.FirstOrDefault(s => s.Clip is null)
+                    ?? _standbys[^1];
+            previous = _active;
             preloaded = shown.Clip == path && shown.IsReady;
-            (_active, _standby) = (shown, previous);
+            _standbys.Remove(shown);
+            _standbys.Add(previous);
+            _active = shown;
             shown.IsActive = true;
             previous.IsActive = false;
             shown.Clip = path;
@@ -140,24 +150,39 @@ public sealed class VlcClipPlayer : IClipPlayer, IDisposable
         });
     }
 
-    public void Preload(string path)
+    // Clips already held by a standby screen stay there; the others go to screens holding nothing
+    // wanted, in the order given.
+    public void Prepare(IReadOnlyList<string> paths)
     {
-        VlcScreen screen;
+        var loads = new List<(VlcScreen Screen, string Path)>();
         lock (_gate)
         {
-            screen = _standby;
-            if (screen.Clip == path)
-                return;
-            screen.Clip = path;
-            screen.IsReady = false;
+            var free = new Queue<VlcScreen>(_standbys.Where(s => s.Clip is null || !paths.Contains(s.Clip)));
+            foreach (var path in paths.Where(p => p != _active.Clip && _standbys.All(s => s.Clip != p)))
+            {
+                if (!free.TryDequeue(out var screen))
+                    break;
+                screen.Clip = path;
+                screen.IsReady = false;
+                loads.Add((screen, path));
+            }
         }
         // No mute here: a paused player makes no sound, and on Windows VLC's mute applies to the
         // whole app's audio session, which Windows remembers between runs.
-        _queue.Run(() =>
+        foreach (var (screen, path) in loads)
         {
-            using var media = CreateMedia(path, startPaused: true);
-            screen.Player.Play(media);
-        });
+            _queue.Run(() =>
+            {
+                using var media = CreateMedia(path, startPaused: true);
+                screen.Player.Play(media);
+            });
+        }
+    }
+
+    public void NextFrame()
+    {
+        var screen = _active;
+        _queue.Run(() => screen.Player.NextFrame());
     }
 
     public void TogglePause()

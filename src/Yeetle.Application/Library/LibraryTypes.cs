@@ -19,6 +19,8 @@ public sealed record DiskFile(string RelativePath, long SizeBytes, DateTime Modi
 // A clip as the database knows it.
 public sealed record KnownClip(ClipId Id, string RelativePath, long SizeBytes, DateTime ModifiedAt, FileState FileState);
 
+public sealed record ClipFile(ClipId Id, string FullPath);
+
 public sealed record NewClip(DiskFile File, DateTime RecordedAt, Decision Decision);
 
 // What one folder scan changes, written in one transaction.

@@ -10,16 +10,16 @@ public class ClipNavigatorTests
     public ClipNavigatorTests() => _navigator = new ClipNavigator(_player);
 
     [Fact]
-    public void Load_opens_the_first_clip_and_preloads_the_second()
+    public void Load_opens_the_first_clip_and_prepares_the_second()
     {
         _navigator.Load(["a", "b", "c"]);
 
         Assert.Equal("a", _navigator.Current);
-        Assert.Equal(["open a", "preload b"], _player.Calls);
+        Assert.Equal(["open a", "prepare b"], _player.Calls);
     }
 
     [Fact]
-    public void Next_opens_the_preloaded_clip_and_preloads_the_one_after()
+    public void Next_opens_the_prepared_clip_and_prepares_both_neighbours()
     {
         _navigator.Load(["a", "b", "c"]);
         _player.Calls.Clear();
@@ -27,11 +27,11 @@ public class ClipNavigatorTests
         _navigator.Next();
 
         Assert.Equal(1, _navigator.Index);
-        Assert.Equal(["open b", "preload c"], _player.Calls);
+        Assert.Equal(["open b", "prepare c,a"], _player.Calls);
     }
 
     [Fact]
-    public void The_last_clip_preloads_nothing_and_next_stays_on_it()
+    public void Next_stays_on_the_last_clip()
     {
         _navigator.Load(["a", "b"]);
         _navigator.Next();
@@ -54,7 +54,7 @@ public class ClipNavigatorTests
         Assert.Empty(_player.Calls);
 
         _navigator.Show(0);
-        Assert.Equal(["open a", "preload b"], _player.Calls);
+        Assert.Equal(["open a", "prepare b"], _player.Calls);
     }
 
     [Fact]
@@ -105,7 +105,8 @@ public class ClipNavigatorTests
         public event EventHandler? AudioChanged { add { } remove { } }
 
         public void Open(string path) => Calls.Add($"open {path}");
-        public void Preload(string path) => Calls.Add($"preload {path}");
+        public void Prepare(IReadOnlyList<string> paths) => Calls.Add($"prepare {string.Join(",", paths)}");
+        public void NextFrame() { }
         public void TogglePause() { }
         public void Seek(TimeSpan position) { }
         public void SetSpeed(double speed) { }
