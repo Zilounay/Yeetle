@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using Yeetle.App.Input;
 using Yeetle.App.ViewModels;
 
 namespace Yeetle.App.Views;
@@ -40,7 +41,7 @@ public partial class TagManagerWindow : Window
         if (_viewModel is not { IsCapturingHotkey: true } viewModel)
             return;
         e.Handled = true;
-        _ = viewModel.CaptureHotkeyAsync(e.KeyModifiers, e.PhysicalKey, e.KeySymbol);
+        _ = viewModel.CaptureHotkeyAsync(KeyPress.From(e));
     }
 
     private void OnNameKeyDown(object? sender, KeyEventArgs e)

@@ -62,15 +62,34 @@ public sealed class Hotkey
         return new Hotkey(modifiers, position, null);
     }
 
-    public bool Matches(KeyModifiers modifiers, PhysicalKey position, string? symbol)
+    public bool Matches(KeyPress press)
     {
         if (Character is null)
-            return position == Position && modifiers == Modifiers;
+            return press.Position == Position && PositionModifiers(press.Modifiers) == Modifiers;
+        // A letter or digit pressed with Ctrl types no character, so it is matched by the key that
+        // carries it on the current layout: Ctrl+Z is the Z key on AZERTY too, not the QWERTY Z position.
+        var sameKey = KeyFor(Character) is { } key && press.Key == key;
         // Typing a character may take Shift or AltGr (Ctrl+Alt), as for [ on AZERTY, so those
         // are part of the character rather than modifiers of their own.
-        return string.Equals(symbol, Character, StringComparison.OrdinalIgnoreCase)
-               && WithoutTypingModifiers(modifiers) == WithoutTypingModifiers(Modifiers);
+        return (sameKey || string.Equals(press.Symbol, Character, StringComparison.OrdinalIgnoreCase))
+               && WithoutTypingModifiers(press.Modifiers) == WithoutTypingModifiers(Modifiers);
     }
+
+    public static bool IsNumberRow(PhysicalKey position) => position is >= PhysicalKey.Digit0 and <= PhysicalKey.Digit9;
+
+    // The number row types its digits with Shift on AZERTY, so its keys match with or without
+    // Shift unless the hotkey asks for Shift itself (spec §14: matched by key position).
+    private KeyModifiers PositionModifiers(KeyModifiers pressed) =>
+        IsNumberRow(Position) && !Modifiers.HasFlag(KeyModifiers.Shift) ? pressed & ~KeyModifiers.Shift : pressed;
+
+    // The virtual key of a letter or digit, which follows the keyboard layout.
+    private static Key? KeyFor(string character) => character[0] switch
+    {
+        var c and >= 'a' and <= 'z' => Key.A + (c - 'a'),
+        var c and >= 'A' and <= 'Z' => Key.A + (c - 'A'),
+        var c and >= '0' and <= '9' => Key.D0 + (c - '0'),
+        _ => null,
+    };
 
     // "Ctrl+Shift+M" gives (["Ctrl", "Shift"], "M"). The key itself may be the separator:
     // "Ctrl++" is Ctrl with the + key.

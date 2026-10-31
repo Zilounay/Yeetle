@@ -9,7 +9,7 @@ namespace Yeetle.App.Input;
 public interface IHotkeyTarget
 {
     // The command for a key press, or null when the key does nothing here.
-    ICommand? FindCommand(KeyModifiers modifiers, PhysicalKey key, string? symbol);
+    ICommand? FindCommand(KeyPress press);
 }
 
 // Runs the hotkeys for a window. Every window the user can click in gets this, so the keys work
@@ -42,6 +42,6 @@ public static class HotkeyRouting
         // Hotkeys pause while a text field has focus (spec §14).
         if (target is null || window.FocusManager?.GetFocusedElement() is TextBox)
             return null;
-        return target.FindCommand(e.KeyModifiers, e.PhysicalKey, e.KeySymbol);
+        return target.FindCommand(KeyPress.From(e));
     }
 }
