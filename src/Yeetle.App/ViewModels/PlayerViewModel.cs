@@ -15,6 +15,10 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
     // How often the seek bar and time follow playback: often enough to look smooth.
     private static readonly TimeSpan PositionRefresh = TimeSpan.FromMilliseconds(100);
     private const int MinTracksToCycle = 2;
+    // Seeking forward stops this far before the end: at the very end the clip loops back to 0:00.
+    private static readonly TimeSpan EndMargin = TimeSpan.FromMilliseconds(500);
+    // The seek bar's range while nothing is loaded, so its thumb rests at the start.
+    private const double EmptySeekRange = 1;
     private const string ProblemSeparator = " · ";
 
     private readonly IClipPlayer _player;
@@ -36,6 +40,7 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
     private double _positionSeconds;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SeekMaximum))]
     private double _durationSeconds;
 
     [ObservableProperty]
@@ -98,12 +103,14 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
 
     public TimeSpan Position => _player.Position;
 
+    public double SeekMaximum => DurationSeconds > 0 ? DurationSeconds : EmptySeekRange;
+
     // Used by markers: their "move here" and clicking a marker's time.
     public void SeekTo(TimeSpan position)
     {
         if (_navigator.Current is null)
             return;
-        _player.Seek(position > _player.Duration ? _player.Duration : position);
+        _player.Seek(WithinClip(position));
         SyncPosition();
     }
 
@@ -173,9 +180,14 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
     {
         if (_navigator.Current is null)
             return;
-        var target = _player.Position + TimeSpan.FromSeconds(seconds);
-        _player.Seek(target < TimeSpan.Zero ? TimeSpan.Zero : target > _player.Duration ? _player.Duration : target);
+        _player.Seek(WithinClip(_player.Position + TimeSpan.FromSeconds(seconds)));
         SyncPosition();
+    }
+
+    private TimeSpan WithinClip(TimeSpan target)
+    {
+        var last = _player.Duration - EndMargin;
+        return target < TimeSpan.Zero || last <= TimeSpan.Zero ? TimeSpan.Zero : target > last ? last : target;
     }
 
     // The settings file could not be fully read; shown until it is fixed.
@@ -246,7 +258,9 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
         SelectedAudioTrack = AudioTracks.FirstOrDefault(t => t.Id == _player.AudioTrackId);
         if (!AudioDevices.SequenceEqual(_player.AudioDevices))
             AudioDevices = _player.AudioDevices;
-        SelectedAudioDevice = AudioDevices.FirstOrDefault(d => d.Id == _player.AudioDeviceId);
+        // VLC reports the system default as no device, and lists it as "Default" with an empty id.
+        SelectedAudioDevice = AudioDevices.FirstOrDefault(d => d.Id == (_player.AudioDeviceId ?? string.Empty))
+                              ?? AudioDevices.FirstOrDefault(d => d.Id.Length == 0);
     });
 
     private void SyncPosition()
