@@ -1,0 +1,24 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Yeetle.App.ViewModels"
+        xmlns:res="using:Yeetle.App.Resources"
+        x:Class="Yeetle.App.Views.FirstScanWindow"
+        x:DataType="vm:FirstScanViewModel"
+        Title="{x:Static res:Strings.FirstScanTitle}"
+        Width="560" SizeToContent="Height"
+        CanResize="False" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+    <StackPanel Margin="24" Spacing="12">
+        <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+        <RadioButton GroupName="FirstScan" IsChecked="{Binding ReviewAll}" Content="{x:Static res:Strings.FirstScanReviewAll}" />
+        <RadioButton GroupName="FirstScan" IsChecked="{Binding KeepAll}" Content="{x:Static res:Strings.FirstScanKeepAll}" />
+        <RadioButton GroupName="FirstScan" IsChecked="{Binding ReviewFrom}">
+            <TextBlock Text="{x:Static res:Strings.FirstScanReviewFrom}" TextWrapping="Wrap" />
+        </RadioButton>
+        <CalendarDatePicker Margin="28,0,0,0" SelectedDate="{Binding FromDate}" IsEnabled="{Binding ReviewFrom}" />
+        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+            <Button x:Name="CancelButton" Content="{x:Static res:Strings.Cancel}" IsCancel="True" />
+            <Button x:Name="ContinueButton" Content="{x:Static res:Strings.Continue}" IsDefault="True" Classes="accent" />
+        </StackPanel>
+    </StackPanel>
+</Window>

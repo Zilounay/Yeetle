@@ -96,4 +96,148 @@
   <data name="SkipTip" xml:space="preserve">
     <value>Clip suivant sans décider (Maj+→)</value>
   </data>
+  <data name="RecoveryTitle" xml:space="preserve">
+    <value>Yeetle n'a pas pu ouvrir votre bibliothèque</value>
+  </data>
+  <data name="DatabaseDamaged" xml:space="preserve">
+    <value>La base de la bibliothèque a échoué à son contrôle de sécurité, Yeetle ne l'a donc pas ouverte. Rien n'a été supprimé ni réinitialisé.
+Restaurez une sauvegarde ci-dessous. Le fichier endommagé est conservé à côté, renommé.
+Pour aider à trouver la cause, vous pouvez envoyer le fichier endommagé (yeetle.db dans le dossier de données) au développeur. Il contient les chemins de vos clips et vos tags.</value>
+  </data>
+  <data name="DatabaseNewer" xml:space="preserve">
+    <value>Cette bibliothèque a été enregistrée par une version plus récente de Yeetle (schéma {0} ; cette version lit jusqu'au {1}). Yeetle ne l'a pas ouverte, elle reste donc intacte. Mettez Yeetle à jour pour l'ouvrir.</value>
+  </data>
+  <data name="DatabaseUnavailable" xml:space="preserve">
+    <value>Yeetle n'a pas pu ouvrir sa base de bibliothèque : {0}
+Fermez tout programme qui pourrait l'utiliser, puis relancez Yeetle.</value>
+  </data>
+  <data name="Backups" xml:space="preserve">
+    <value>Sauvegardes</value>
+  </data>
+  <data name="NoBackups" xml:space="preserve">
+    <value>Aucune sauvegarde trouvée.</value>
+  </data>
+  <data name="RestoreBackup" xml:space="preserve">
+    <value>Restaurer cette sauvegarde</value>
+  </data>
+  <data name="RestoreFailed" xml:space="preserve">
+    <value>La sauvegarde n'a pas pu être restaurée : {0}</value>
+  </data>
+  <data name="RestoredButNotReady" xml:space="preserve">
+    <value>La sauvegarde a été restaurée, mais la bibliothèque ne peut toujours pas être ouverte : {0}</value>
+  </data>
+  <data name="OpenDataFolder" xml:space="preserve">
+    <value>Ouvrir le dossier de données</value>
+  </data>
+  <data name="Quit" xml:space="preserve">
+    <value>Quitter</value>
+  </data>
+  <data name="BackupPoolSession" xml:space="preserve">
+    <value>Après une session</value>
+  </data>
+  <data name="BackupPoolDaily" xml:space="preserve">
+    <value>Quotidienne</value>
+  </data>
+  <data name="BackupPoolSafety" xml:space="preserve">
+    <value>Avant une opération risquée</value>
+  </data>
+  <data name="BackupItemFormat" xml:space="preserve">
+    <value>{0:g} · {1}</value>
+  </data>
+  <data name="Folders" xml:space="preserve">
+    <value>Dossiers…</value>
+  </data>
+  <data name="SourceFoldersTitle" xml:space="preserve">
+    <value>Dossiers sources</value>
+  </data>
+  <data name="AddFolder" xml:space="preserve">
+    <value>Ajouter un dossier…</value>
+  </data>
+  <data name="PickSourceFolderTitle" xml:space="preserve">
+    <value>Choisir un dossier de clips</value>
+  </data>
+  <data name="RemoveFolder" xml:space="preserve">
+    <value>Retirer…</value>
+  </data>
+  <data name="IncludeSubfolders" xml:space="preserve">
+    <value>Inclure les sous-dossiers</value>
+  </data>
+  <data name="Rescan" xml:space="preserve">
+    <value>Réanalyser</value>
+  </data>
+  <data name="RescanTip" xml:space="preserve">
+    <value>Chercher les clips nouveaux, modifiés et manquants (Ctrl+R)</value>
+  </data>
+  <data name="FolderOffline" xml:space="preserve">
+    <value>Hors ligne</value>
+  </data>
+  <data name="FolderScanStopped" xml:space="preserve">
+    <value>Non analysé</value>
+  </data>
+  <data name="FolderHidden" xml:space="preserve">
+    <value>Masqué</value>
+  </data>
+  <data name="ResumeScanning" xml:space="preserve">
+    <value>Analyser à nouveau</value>
+  </data>
+  <data name="FolderAlreadyAdded" xml:space="preserve">
+    <value>{0} est déjà un dossier source.</value>
+  </data>
+  <data name="NoSourceFolders" xml:space="preserve">
+    <value>Aucun dossier source pour l'instant. Ajoutez le dossier où OBS enregistre vos clips.</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Fermer</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="Continue" xml:space="preserve">
+    <value>Continuer</value>
+  </data>
+  <data name="RemoveFolderTitle" xml:space="preserve">
+    <value>Retirer un dossier source</value>
+  </data>
+  <data name="RemoveFolderMessage" xml:space="preserve">
+    <value>{0} contient {1} clips dans Yeetle. Que faut-il en faire ? Les fichiers sur le disque ne sont jamais modifiés.</value>
+  </data>
+  <data name="HideClips" xml:space="preserve">
+    <value>Masquer ses clips</value>
+  </data>
+  <data name="StopScanningKeepClips" xml:space="preserve">
+    <value>Les garder visibles, arrêter l'analyse</value>
+  </data>
+  <data name="FirstScanTitle" xml:space="preserve">
+    <value>Nouveau dossier de clips</value>
+  </data>
+  <data name="FirstScanMessage" xml:space="preserve">
+    <value>Yeetle a trouvé {0} clips dans {1}, enregistrés du {2:d} au {3:d}. Que faut-il en faire ?</value>
+  </data>
+  <data name="FirstScanReviewAll" xml:space="preserve">
+    <value>Tous les passer en revue</value>
+  </data>
+  <data name="FirstScanKeepAll" xml:space="preserve">
+    <value>Tous les marquer Gardés, directement dans la bibliothèque</value>
+  </data>
+  <data name="FirstScanReviewFrom" xml:space="preserve">
+    <value>Passer en revue seulement les clips enregistrés à partir de cette date ; garder les plus anciens</value>
+  </data>
+  <data name="ScanAdded" xml:space="preserve">
+    <value>{0} nouveaux clips</value>
+  </data>
+  <data name="ScanChanged" xml:space="preserve">
+    <value>{0} modifiés : {1}</value>
+  </data>
+  <data name="ScanMissing" xml:space="preserve">
+    <value>{0} manquants</value>
+  </data>
+  <data name="StillRecordingOne" xml:space="preserve">
+    <value>1 fichier semble encore en cours d'enregistrement.</value>
+  </data>
+  <data name="StillRecordingMany" xml:space="preserve">
+    <value>{0} fichiers semblent encore en cours d'enregistrement.</value>
+  </data>
+  <data name="ScanOffline" xml:space="preserve">
+    <value>Hors ligne : {0}</value>
+  </data>
 </root>

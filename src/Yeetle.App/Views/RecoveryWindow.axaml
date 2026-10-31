@@ -1,0 +1,36 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Yeetle.App.ViewModels"
+        xmlns:res="using:Yeetle.App.Resources"
+        x:Class="Yeetle.App.Views.RecoveryWindow"
+        x:DataType="vm:RecoveryViewModel"
+        Width="640" Height="520"
+        WindowStartupLocation="CenterScreen"
+        Title="{x:Static res:Strings.AppTitle}">
+    <Window.Resources>
+        <SolidColorBrush x:Key="ProblemBrush" Color="#E5534B" />
+    </Window.Resources>
+    <DockPanel Margin="24">
+        <TextBlock DockPanel.Dock="Top" FontSize="20" FontWeight="SemiBold"
+                   Text="{x:Static res:Strings.RecoveryTitle}" Margin="0,0,0,12" />
+        <TextBlock DockPanel.Dock="Top" Text="{Binding Message}" TextWrapping="Wrap" Margin="0,0,0,16" />
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Content="{x:Static res:Strings.OpenDataFolder}" Command="{Binding OpenDataFolderCommand}" />
+            <Button Content="{x:Static res:Strings.RestoreBackup}" Command="{Binding RestoreCommand}"
+                    IsVisible="{Binding CanRestoreBackups}" Classes="accent" />
+            <Button x:Name="QuitButton" Content="{x:Static res:Strings.Quit}" />
+        </StackPanel>
+        <TextBlock DockPanel.Dock="Bottom" Text="{Binding Problem}" Foreground="{StaticResource ProblemBrush}" TextWrapping="Wrap" />
+        <DockPanel IsVisible="{Binding CanRestoreBackups}">
+            <TextBlock DockPanel.Dock="Top" Text="{x:Static res:Strings.Backups}" FontWeight="SemiBold" Margin="0,0,0,6" />
+            <TextBlock DockPanel.Dock="Top" Text="{x:Static res:Strings.NoBackups}" IsVisible="{Binding HasNoBackups}" />
+            <ListBox ItemsSource="{Binding Backups}" SelectedItem="{Binding SelectedBackup}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:BackupItemViewModel">
+                        <TextBlock Text="{Binding Label}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+    </DockPanel>
+</Window>

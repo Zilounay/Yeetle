@@ -53,6 +53,7 @@ public sealed class JsonSettingsStore(string path) : ISettingsStore
         var defaults = new AppSettings();
         settings.Player ??= defaults.Player;
         settings.Library ??= defaults.Library;
+        settings.Backups ??= defaults.Backups;
         settings.Library.VideoExtensions ??= defaults.Library.VideoExtensions;
         settings.Hotkeys ??= [];
         foreach (var (action, keys) in defaults.Hotkeys)

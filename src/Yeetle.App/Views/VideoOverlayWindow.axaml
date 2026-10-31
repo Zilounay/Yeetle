@@ -7,7 +7,7 @@
         xmlns:res="using:Yeetle.App.Resources"
         mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
         x:Class="Yeetle.App.Views.VideoOverlayWindow"
-        x:DataType="vm:PlayerViewModel"
+        x:DataType="vm:MainWindowViewModel"
         Title="{x:Static res:Strings.AppTitle}"
         WindowDecorations="None"
         Background="Transparent"
@@ -91,7 +91,7 @@
         </Style>
     </Window.Styles>
 
-    <Panel Margin="12">
+    <Panel Margin="12" DataContext="{Binding Player}" x:DataType="vm:PlayerViewModel">
         <!-- Top left: what is playing, and any message. -->
         <Border Classes="block" HorizontalAlignment="Left" VerticalAlignment="Top" MaxWidth="640">
             <StackPanel Spacing="2">
@@ -102,14 +102,21 @@
                 </StackPanel>
                 <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Opacity="{StaticResource SecondaryTextOpacity}"
                            IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                <TextBlock Text="{Binding Notice}" TextWrapping="Wrap" Opacity="{StaticResource SecondaryTextOpacity}"
+                           IsVisible="{Binding Notice, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             </StackPanel>
         </Border>
 
         <!-- Top right: where clips come from, and how they sound. -->
         <Border Classes="block" HorizontalAlignment="Right" VerticalAlignment="Top">
             <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="6">
-                <Button Grid.ColumnSpan="2" HorizontalAlignment="Right" Content="{x:Static res:Strings.OpenFolder}"
-                        Command="{Binding PickFolderCommand}" />
+                <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4">
+                    <Button Content="{x:Static res:Strings.Rescan}" ToolTip.Tip="{x:Static res:Strings.RescanTip}"
+                            Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RescanCommand}" />
+                    <Button Content="{x:Static res:Strings.Folders}"
+                            Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).OpenFoldersCommand}" />
+                    <Button Content="{x:Static res:Strings.OpenFolder}" Command="{Binding PickFolderCommand}" />
+                </StackPanel>
                 <TextBlock Grid.Row="1" Classes="label" Text="{x:Static res:Strings.AudioTrack}" />
                 <ComboBox Grid.Row="1" Grid.Column="1" Width="240" ItemsSource="{Binding AudioTracks}"
                           SelectedItem="{Binding SelectedAudioTrack}">

@@ -1,0 +1,44 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Yeetle.App.ViewModels"
+        xmlns:res="using:Yeetle.App.Resources"
+        x:Class="Yeetle.App.Views.SourceFoldersWindow"
+        x:DataType="vm:SourceFoldersViewModel"
+        Title="{x:Static res:Strings.SourceFoldersTitle}"
+        Width="760" Height="480" MinWidth="520" MinHeight="320"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+    <DockPanel Margin="20">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="8" Margin="0,0,0,12">
+            <Button Content="{x:Static res:Strings.AddFolder}" Command="{Binding AddCommand}" Classes="accent" />
+            <Button Content="{x:Static res:Strings.Rescan}" Command="{Binding RescanCommand}"
+                    ToolTip.Tip="{x:Static res:Strings.RescanTip}" />
+        </StackPanel>
+        <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,Auto" Margin="0,12,0,0">
+            <TextBlock Text="{Binding Problem}" TextWrapping="Wrap" VerticalAlignment="Center" />
+            <Button Grid.Column="1" x:Name="CloseButton" Content="{x:Static res:Strings.Close}" IsCancel="True" />
+        </Grid>
+        <Panel>
+            <TextBlock Text="{x:Static res:Strings.NoSourceFolders}" IsVisible="{Binding IsEmpty}" TextWrapping="Wrap" />
+            <ScrollViewer>
+                <ItemsControl ItemsSource="{Binding Folders}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:SourceFolderItemViewModel">
+                            <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="12" Margin="0,4">
+                                <TextBlock Text="{Binding Path}" VerticalAlignment="Center" TextTrimming="PathSegmentEllipsis"
+                                           ToolTip.Tip="{Binding Path}" />
+                                <TextBlock Grid.Column="1" Text="{Binding Status}" VerticalAlignment="Center" Opacity="0.75" />
+                                <CheckBox Grid.Column="2" IsChecked="{Binding IncludeSubfolders}"
+                                          Content="{x:Static res:Strings.IncludeSubfolders}" />
+                                <Button Grid.Column="3" Content="{x:Static res:Strings.ResumeScanning}"
+                                        Command="{Binding ResumeCommand}" IsVisible="{Binding IsStopped}" />
+                                <Button Grid.Column="4" Content="{x:Static res:Strings.RemoveFolder}"
+                                        Command="{Binding RemoveCommand}" IsVisible="{Binding !IsStopped}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Panel>
+    </DockPanel>
+</Window>

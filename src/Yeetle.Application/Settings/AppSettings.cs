@@ -11,6 +11,8 @@ public sealed class AppSettings
 
     public LibrarySettings Library { get; set; } = new();
 
+    public BackupSettings Backups { get; set; } = new();
+
     // Action name to the keys that trigger it; see HotkeyDefaults for how keys are written.
     public Dictionary<string, List<string>> Hotkeys { get; set; } = HotkeyDefaults.Create();
 }
@@ -32,4 +34,14 @@ public sealed class PlayerSettings
 public sealed class LibrarySettings
 {
     public List<string> VideoExtensions { get; set; } = [.. VideoFileTypes.DefaultExtensions];
+}
+
+// How many backups each pool keeps (spec §10).
+public sealed class BackupSettings
+{
+    public int SessionCount { get; set; } = 5;
+
+    public int DailyCount { get; set; } = 7;
+
+    public int SafetyCount { get; set; } = 5;
 }

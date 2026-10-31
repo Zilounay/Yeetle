@@ -7,6 +7,7 @@ namespace Yeetle.App.Input;
 public sealed class Hotkey
 {
     private const char Separator = '+';
+    private const string LetterKeyPrefix = "Key";
     private const KeyModifiers AltGr = KeyModifiers.Control | KeyModifiers.Alt;
 
     private static readonly Dictionary<string, KeyModifiers> ModifierNames = new(StringComparer.OrdinalIgnoreCase)
@@ -50,6 +51,10 @@ public sealed class Hotkey
 
         if (IsCharacter(key))
             return new Hotkey(modifiers, PhysicalKey.None, key);
+        // Letter positions are named as on the web ("KeyR"); Avalonia names them by the letter.
+        if (key.Length == LetterKeyPrefix.Length + 1 && key.StartsWith(LetterKeyPrefix, StringComparison.OrdinalIgnoreCase)
+                                                    && char.IsAsciiLetter(key[^1]))
+            key = key[^1].ToString();
         // Enum.TryParse also accepts numbers ("12"), which are not key names.
         if (key.All(char.IsDigit) || !Enum.TryParse<PhysicalKey>(key, ignoreCase: true, out var position)
                                   || position == PhysicalKey.None)
