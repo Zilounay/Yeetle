@@ -28,9 +28,6 @@ public enum KeepOutcome
 // session is committed; undo goes back one decision, tag or marker change at a time.
 public sealed class ReviewSession
 {
-    private static readonly Comparison<Marker> ByPosition = (a, b) =>
-        a.Position != b.Position ? a.Position.CompareTo(b.Position) : a.Number.CompareTo(b.Number);
-
     private TagRules _rules;
     private readonly Stack<(ImmutableList<ClipReview> Clips, int Position)> _undo = new();
     private ImmutableList<ClipReview> _clips;
@@ -99,20 +96,18 @@ public sealed class ReviewSession
     // Adds a marker to the current clip, numbered after its highest one; label gets that number.
     public Marker AddMarker(TimeSpan position, Func<int, string> label)
     {
-        var current = CurrentOrThrow();
-        var number = current.Markers.Count == 0 ? 1 : current.Markers.Max(m => m.Number) + 1;
-        var marker = new Marker(number, position < TimeSpan.Zero ? TimeSpan.Zero : position, label(number));
-        ChangeMarkers(current.Markers.Add(marker));
-        return marker;
+        var (markers, added) = ClipMarkers.Add(CurrentOrThrow().Markers, position, label);
+        ChangeMarkers(markers);
+        return added;
     }
 
-    public void RenameMarker(int number, string label) => ChangeMarker(number, m => m with { Label = label });
+    public void RenameMarker(int number, string label) =>
+        ChangeMarkers(ClipMarkers.Rename(CurrentOrThrow().Markers, number, label));
 
     public void MoveMarker(int number, TimeSpan position) =>
-        ChangeMarker(number, m => m with { Position = position < TimeSpan.Zero ? TimeSpan.Zero : position });
+        ChangeMarkers(ClipMarkers.Move(CurrentOrThrow().Markers, number, position));
 
-    public void DeleteMarker(int number) =>
-        ChangeMarkers(CurrentOrThrow().Markers.RemoveAll(m => m.Number == number));
+    public void DeleteMarker(int number) => ChangeMarkers(ClipMarkers.Delete(CurrentOrThrow().Markers, number));
 
     // The Tag Manager changed the vocabulary mid-session (spec §5): its rules apply from now on,
     // and deleted tags leave every clip, in the undo history too.
@@ -174,16 +169,13 @@ public sealed class ReviewSession
             : next with { Visited = true });
     }
 
-    private void ChangeMarker(int number, Func<Marker, Marker> change) =>
-        ChangeMarkers(CurrentOrThrow().Markers.ConvertAll(m => m.Number == number ? change(m) : m));
-
     private void ChangeMarkers(ImmutableList<Marker> markers)
     {
         var current = CurrentOrThrow();
         if (markers.SequenceEqual(current.Markers))
             return;
         SaveUndo();
-        _clips = _clips.SetItem(Position, current with { Markers = markers.Sort(ByPosition) });
+        _clips = _clips.SetItem(Position, current with { Markers = markers });
     }
 
     private void SaveUndo() => _undo.Push((_clips, Position));

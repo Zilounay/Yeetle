@@ -36,7 +36,7 @@ public sealed partial class MarkersPanelViewModel : ViewModelBase
 
     private readonly PlayerViewModel _player;
     private readonly ReviewSettings _settings;
-    private ActiveSession? _session;
+    private IClipEditing? _session;
     private IReadOnlyList<Marker> _shown = [];
 
     [ObservableProperty]
@@ -56,7 +56,7 @@ public sealed partial class MarkersPanelViewModel : ViewModelBase
     // Asks the view to put the cursor in a marker's label, right after K.
     public event EventHandler<int>? EditRequested;
 
-    public void Attach(ActiveSession? session)
+    public void Attach(IClipEditing? session)
     {
         _session = session;
         Refresh();
