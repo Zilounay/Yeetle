@@ -7,9 +7,13 @@ using Yeetle.Application.Library;
 
 namespace Yeetle.App.Services;
 
-// Each dialog is modal over the active window.
-public sealed class WindowDialogs(Func<SourceFoldersViewModel> createSourceFolders) : IDialogs
+// Each dialog is modal over the active window, except the Tag Manager.
+public sealed class WindowDialogs(Func<SourceFoldersViewModel> createSourceFolders, Func<TagManagerViewModel> createTagManager)
+    : IDialogs
 {
+    // Not modal: the Tag Manager stays open beside a running session (spec §5).
+    private TagManagerWindow? _tagManager;
+
     public static Window? ActiveWindow() =>
         Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
             ? desktop.Windows.FirstOrDefault(w => w.IsActive && w is not VideoOverlayWindow) ?? desktop.MainWindow
@@ -20,6 +24,27 @@ public sealed class WindowDialogs(Func<SourceFoldersViewModel> createSourceFolde
         var viewModel = createSourceFolders();
         await viewModel.LoadAsync();
         await ShowAsync<object>(new SourceFoldersWindow { DataContext = viewModel });
+    }
+
+    public void ShowTagManager(string? newTagName = null)
+    {
+        if (_tagManager is { } open)
+        {
+            if (newTagName is not null && open.DataContext is TagManagerViewModel viewModel)
+                viewModel.PendingName = newTagName;
+            open.Activate();
+            return;
+        }
+        var created = createTagManager();
+        created.PendingName = newTagName ?? string.Empty;
+        var window = new TagManagerWindow { DataContext = created };
+        window.Closed += (_, _) => _tagManager = null;
+        _tagManager = window;
+        _ = created.LoadAsync();
+        if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } main })
+            window.Show(main);
+        else
+            window.Show();
     }
 
     public Task<FolderRemoval?> AskFolderRemovalAsync(string folder, int clipCount) =>

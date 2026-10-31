@@ -111,6 +111,8 @@
                                                         Classes.carried="{Binding IsCarriedOver}" Command="{Binding Toggle}">
                                                     <StackPanel Orientation="Horizontal" Spacing="6">
                                                         <TextBlock Text="↻" IsVisible="{Binding IsCarriedOver}" />
+                                                        <Ellipse Width="10" Height="10" VerticalAlignment="Center"
+                                                                 Fill="{Binding ColourBrush}" IsVisible="{Binding HasColour}" />
                                                         <TextBlock Text="{Binding Name}" />
                                                         <Border Classes="key" IsVisible="{Binding HasHotkey}">
                                                             <TextBlock FontSize="11" Text="{Binding Hotkey}" />

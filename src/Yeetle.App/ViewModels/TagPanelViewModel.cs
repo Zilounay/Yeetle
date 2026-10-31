@@ -1,18 +1,22 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Avalonia.Input;
+using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Yeetle.App.Input;
 using Yeetle.App.Resources;
+using Yeetle.App.Services;
 using Yeetle.Application.Sessions;
 using Yeetle.Application.Settings;
 using Yeetle.Domain.Tagging;
 
 namespace Yeetle.App.ViewModels;
 
-public sealed class ChipViewModel(Chip chip, ICommand toggle)
+public sealed class ChipViewModel(Chip chip, string? colour, ICommand toggle)
 {
+    public IBrush? ColourBrush { get; } = TagColours.Brush(colour);
+    public bool HasColour => ColourBrush is not null;
     public TagId Tag { get; } = chip.Tag;
     public string Name { get; } = chip.Name;
     public string? Hotkey { get; } = chip.Hotkey is { } key ? HotkeyLabels.Short(key) : null;
@@ -39,6 +43,7 @@ public sealed partial class TagPanelViewModel : ViewModelBase
     private const string RuleSeparator = " · ";
 
     private readonly HashSet<string> _actionKeys;
+    private readonly IDialogs _dialogs;
     private readonly List<(Hotkey Key, TagId Tag)> _tagKeys = [];
     private ActiveSession? _session;
 
@@ -63,8 +68,11 @@ public sealed partial class TagPanelViewModel : ViewModelBase
     // Set when Keep was refused because a visible required box is empty; cleared by any change.
     private bool _showRequiredWarning;
 
-    public TagPanelViewModel(LoadedSettings settings) =>
+    public TagPanelViewModel(LoadedSettings settings, IDialogs dialogs)
+    {
+        _dialogs = dialogs;
         _actionKeys = settings.Values.Hotkeys.Values.SelectMany(k => k).Select(Normalize).ToHashSet(StringComparer.OrdinalIgnoreCase);
+    }
 
     public ObservableCollection<ChipGroupViewModel> Groups { get; } = [];
 
@@ -106,7 +114,8 @@ public sealed partial class TagPanelViewModel : ViewModelBase
         var catalog = _session.Catalog;
         foreach (var group in TagChips.For(catalog, review.Tags, review.CarriedOver))
         {
-            var chips = group.Chips.Select(c => new ChipViewModel(c, new RelayCommand(() => Toggle(c.Tag)))).ToList();
+            var chips = group.Chips.Select(c =>
+                new ChipViewModel(c, catalog.Colours.GetValueOrDefault(c.Tag), new RelayCommand(() => Toggle(c.Tag)))).ToList();
             Groups.Add(new ChipGroupViewModel(Title(group), _showRequiredWarning && group.IsMissingRequired, chips));
         }
         HasCarriedOver = !review.CarriedOver.IsEmpty;
@@ -137,8 +146,8 @@ public sealed partial class TagPanelViewModel : ViewModelBase
         IsTyping = true;
     }
 
-    // Enter: applies the highlighted suggestion. Without a match the Tag Manager should open with
-    // the text ready (spec §6); it does not exist yet (#16).
+    // Enter: applies the highlighted suggestion. Without a match the Tag Manager opens with the text
+    // ready as a new tag (spec §6).
     [RelayCommand]
     private void ApplyTyped()
     {
@@ -150,7 +159,8 @@ public sealed partial class TagPanelViewModel : ViewModelBase
         }
         else if (TypedText.Trim().Length > 0)
         {
-            Message = string.Format(Strings.TagManagerNotYet, TypedText.Trim());
+            Message = string.Empty;
+            _dialogs.ShowTagManager(TypedText.Trim());
         }
         IsTyping = false;
     }

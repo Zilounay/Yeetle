@@ -5,9 +5,12 @@ using Yeetle.Domain.Tagging;
 
 namespace Yeetle.Application.Sessions;
 
-// A clip as a session needs it: what to play and what to show on its card.
+// A clip as a session needs it: what to play and what to show on its card, and the tags and
+// markers it already has.
 public sealed record SessionClip(ClipId Id, string FullPath, DateTime RecordedAt, ImmutableHashSet<TagId> Tags)
 {
+    public ImmutableList<Marker> Markers { get; init; } = [];
+
     public string FileName => Path.GetFileName(FullPath);
 }
 

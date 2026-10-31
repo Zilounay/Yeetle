@@ -127,6 +127,27 @@ public class SessionTests : IDisposable
     }
 
     [Fact]
+    public async Task Markers_survive_a_crash_and_are_saved_with_the_clip()
+    {
+        await AddClips("a", "b");
+        var service = Service();
+        var session = (await service.StartAsync())!;
+        session.AddMarker(TimeSpan.FromSeconds(87), n => $"Marker {n}");
+        session.RenameMarker(1, "Smoke kill");
+        session.Skip();
+        await service.FlushJournalAsync();
+
+        var resumed = await Service().ResumeAsync(_store.FindUnfinished()!);
+        Assert.Equal([new Domain.Clips.Marker(1, TimeSpan.FromSeconds(87), "Smoke kill")], resumed.Reviews[0].Markers);
+        await Service().CommitAsync(resumed.Id, resumed.Reviews);
+
+        // The skipped clip comes back next time with its marker.
+        var next = _store.NewClips().First();
+        Assert.Equal("a.mp4", next.FileName);
+        Assert.Equal("Smoke kill", Assert.Single(next.Markers).Label);
+    }
+
+    [Fact]
     public async Task Discard_leaves_every_clip_new()
     {
         await AddClips("a", "b");

@@ -66,7 +66,24 @@ public class HotkeyTests
     [InlineData("Digit0", "0")]
     [InlineData("F3", "F3")]
     [InlineData("KeyQ", "Q")]
+    [InlineData("Shift+Digit1", "Shift+1")]
+    [InlineData("Ctrl++", "Ctrl++")]
     public void Chips_show_short_key_names(string key, string label) => Assert.Equal(label, HotkeyLabels.Short(key));
+
+    [Theory]
+    [InlineData(KeyModifiers.None, PhysicalKey.Digit1, "Digit1")]
+    [InlineData(KeyModifiers.None, PhysicalKey.Q, "KeyQ")]
+    [InlineData(KeyModifiers.None, PhysicalKey.Z, "KeyZ")]
+    [InlineData(KeyModifiers.None, PhysicalKey.Minus, "Minus")]
+    [InlineData(KeyModifiers.Control | KeyModifiers.Shift, PhysicalKey.F3, "Ctrl+Shift+F3")]
+    public void A_pressed_key_is_written_by_position(KeyModifiers modifiers, PhysicalKey key, string text)
+    {
+        Assert.Equal(text, HotkeyNames.FromKey(modifiers, key));
+        Assert.True(Hotkey.Parse(text)!.Matches(modifiers, key, null));
+    }
+
+    [Fact]
+    public void A_modifier_alone_is_not_a_key() => Assert.Null(HotkeyNames.FromKey(KeyModifiers.Control, PhysicalKey.ControlLeft));
 
     [Theory]
     [InlineData("Hyper+A")]

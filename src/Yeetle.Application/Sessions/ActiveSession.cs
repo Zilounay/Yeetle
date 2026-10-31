@@ -24,8 +24,8 @@ public sealed class ActiveSession
 
     public long Id { get; }
 
-    // The tags as they were when the session started.
-    public TagCatalog Catalog { get; }
+    // The tags as the Tag Manager last left them.
+    public TagCatalog Catalog { get; private set; }
 
     public IReadOnlyList<ClipReview> Reviews => _review.Clips;
 
@@ -61,6 +61,27 @@ public sealed class ActiveSession
     public void SelectTag(TagId tag) => Do(() => _review.SelectTag(tag));
 
     public void DeselectTag(TagId tag) => Do(() => _review.DeselectTag(tag));
+
+    public Marker AddMarker(TimeSpan position, Func<int, string> label)
+    {
+        var marker = _review.AddMarker(position, label);
+        Record();
+        return marker;
+    }
+
+    public void RenameMarker(int number, string label) => Do(() => _review.RenameMarker(number, label));
+
+    public void MoveMarker(int number, TimeSpan position) => Do(() => _review.MoveMarker(number, position));
+
+    public void DeleteMarker(int number) => Do(() => _review.DeleteMarker(number));
+
+    // The Tag Manager changed the tags (spec §5): new names and rules show at once, and deleted
+    // tags leave the session's clips.
+    public void UseCatalog(TagCatalog catalog)
+    {
+        Catalog = catalog;
+        Do(() => _review.UseVocabulary(catalog.Vocabulary));
+    }
 
     public bool Undo()
     {

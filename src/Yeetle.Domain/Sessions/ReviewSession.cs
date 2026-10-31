@@ -11,7 +11,11 @@ public sealed record ClipReview(
     Decision Decision,
     ImmutableHashSet<TagId> Tags,
     ImmutableHashSet<TagId> CarriedOver,
-    bool Visited);
+    bool Visited)
+{
+    // In position order. Markers are never carried over to the next clip.
+    public ImmutableList<Marker> Markers { get; init; } = [];
+}
 
 public enum KeepOutcome
 {
@@ -21,10 +25,13 @@ public enum KeepOutcome
 }
 
 // A review run over New clips, oldest first (spec §5). Everything stays in memory until the
-// session is committed; undo goes back one decision or tag change at a time.
+// session is committed; undo goes back one decision, tag or marker change at a time.
 public sealed class ReviewSession
 {
-    private readonly TagRules _rules;
+    private static readonly Comparison<Marker> ByPosition = (a, b) =>
+        a.Position != b.Position ? a.Position.CompareTo(b.Position) : a.Number.CompareTo(b.Number);
+
+    private TagRules _rules;
     private readonly Stack<(ImmutableList<ClipReview> Clips, int Position)> _undo = new();
     private ImmutableList<ClipReview> _clips;
     private bool _requiredWarningShown;
@@ -89,6 +96,43 @@ public sealed class ReviewSession
 
     public void DeselectTag(TagId tag) => ChangeTags(_rules.Deselect(CurrentOrThrow().Tags, tag));
 
+    // Adds a marker to the current clip, numbered after its highest one; label gets that number.
+    public Marker AddMarker(TimeSpan position, Func<int, string> label)
+    {
+        var current = CurrentOrThrow();
+        var number = current.Markers.Count == 0 ? 1 : current.Markers.Max(m => m.Number) + 1;
+        var marker = new Marker(number, position < TimeSpan.Zero ? TimeSpan.Zero : position, label(number));
+        ChangeMarkers(current.Markers.Add(marker));
+        return marker;
+    }
+
+    public void RenameMarker(int number, string label) => ChangeMarker(number, m => m with { Label = label });
+
+    public void MoveMarker(int number, TimeSpan position) =>
+        ChangeMarker(number, m => m with { Position = position < TimeSpan.Zero ? TimeSpan.Zero : position });
+
+    public void DeleteMarker(int number) =>
+        ChangeMarkers(CurrentOrThrow().Markers.RemoveAll(m => m.Number == number));
+
+    // The Tag Manager changed the vocabulary mid-session (spec §5): its rules apply from now on,
+    // and deleted tags leave every clip, in the undo history too.
+    public void UseVocabulary(TagVocabulary vocabulary)
+    {
+        _rules = new TagRules(vocabulary);
+        var known = vocabulary.InManagerOrder.ToHashSet();
+        _clips = WithKnownTags(_clips);
+        var history = _undo.Reverse().Select(s => (WithKnownTags(s.Clips), s.Position)).ToList();
+        _undo.Clear();
+        foreach (var state in history)
+            _undo.Push(state);
+
+        ImmutableList<ClipReview> WithKnownTags(ImmutableList<ClipReview> clips) => clips.ConvertAll(c => c with
+        {
+            Tags = c.Tags.Intersect(known),
+            CarriedOver = c.CarriedOver.Intersect(known),
+        });
+    }
+
     public bool Undo()
     {
         if (!_undo.TryPop(out var previous))
@@ -128,6 +172,18 @@ public sealed class ReviewSession
         _clips = _clips.SetItem(Position, next.Tags.IsEmpty
             ? next with { Tags = left.Tags, CarriedOver = left.Tags, Visited = true }
             : next with { Visited = true });
+    }
+
+    private void ChangeMarker(int number, Func<Marker, Marker> change) =>
+        ChangeMarkers(CurrentOrThrow().Markers.ConvertAll(m => m.Number == number ? change(m) : m));
+
+    private void ChangeMarkers(ImmutableList<Marker> markers)
+    {
+        var current = CurrentOrThrow();
+        if (markers.SequenceEqual(current.Markers))
+            return;
+        SaveUndo();
+        _clips = _clips.SetItem(Position, current with { Markers = markers.Sort(ByPosition) });
     }
 
     private void SaveUndo() => _undo.Push((_clips, Position));

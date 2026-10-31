@@ -8,6 +8,7 @@ using Yeetle.Application.Playback;
 using Yeetle.Application.Sessions;
 using Yeetle.Application.Settings;
 using Yeetle.Application.Shell;
+using Yeetle.Application.Tagging;
 using Yeetle.Infrastructure;
 using Yeetle.Infrastructure.Clips;
 using Yeetle.Infrastructure.Data;
@@ -35,6 +36,7 @@ internal static class Composition
             .AddSingleton<ScanScheduler>()
             .AddSingleton<SourceFolders>()
             .AddSingleton<SessionService>()
+            .AddSingleton<TagManager>()
             // Infrastructure
             .AddSingleton<ILog, FileLog>()
             .AddSingleton<SqliteConnectionFactory>()
@@ -45,15 +47,20 @@ internal static class Composition
             .AddSingleton<IClipFiles, FileSystemClipFiles>()
             .AddSingleton<IRecorderCheck, ObsRecorderCheck>()
             .AddSingleton<ISessionStore, SqliteSessionStore>()
-            .AddSingleton<ITagStore, SqliteTagStore>()
+            .AddSingleton<SqliteTagStore>()
+            .AddSingleton<ITagStore>(s => s.GetRequiredService<SqliteTagStore>())
+            .AddSingleton<ITagEditor>(s => s.GetRequiredService<SqliteTagStore>())
             // Media
             .AddSingleton<IClipPlayer, VlcClipPlayer>()
             // App
             .AddSingleton<IFolderPicker, StorageFolderPicker>()
-            .AddSingleton<IDialogs>(s => new WindowDialogs(s.GetRequiredService<SourceFoldersViewModel>))
+            .AddSingleton<IDialogs>(s => new WindowDialogs(s.GetRequiredService<SourceFoldersViewModel>,
+                s.GetRequiredService<TagManagerViewModel>))
+            .AddTransient<TagManagerViewModel>()
             .AddTransient<SourceFoldersViewModel>()
             .AddSingleton<PlayerViewModel>()
             .AddSingleton<TagPanelViewModel>()
+            .AddSingleton<MarkersPanelViewModel>()
             .AddSingleton<SessionViewModel>()
             .AddSingleton<MainWindowViewModel>()
             .AddTransient<RecoveryViewModel>()

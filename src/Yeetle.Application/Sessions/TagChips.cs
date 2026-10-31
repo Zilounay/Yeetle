@@ -2,12 +2,15 @@ using Yeetle.Domain.Tagging;
 
 namespace Yeetle.Application.Sessions;
 
-// The vocabulary with what the session screen needs on top: each tag's hotkey and how often it
-// is used.
+// The vocabulary with what the screens need on top: each tag's hotkey and colour, and how many
+// clips carry it.
 public sealed record TagCatalog(
     TagVocabulary Vocabulary, IReadOnlyDictionary<TagId, string> Hotkeys, IReadOnlyDictionary<TagId, int> Usage)
 {
     public static TagCatalog Empty { get; } = new(TagVocabulary.Empty, new Dictionary<TagId, string>(), new Dictionary<TagId, int>());
+
+    // Colours such as "#E5534B"; tags without one are left out.
+    public IReadOnlyDictionary<TagId, string> Colours { get; init; } = new Dictionary<TagId, string>();
 }
 
 public sealed record Chip(TagId Tag, string Name, string? Hotkey, bool IsSelected, bool IsCarriedOver);
