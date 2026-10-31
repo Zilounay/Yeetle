@@ -1,4 +1,5 @@
 using System.Windows.Input;
+using Avalonia.Input;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -52,6 +53,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     public HotkeyMap Hotkeys { get; }
 
     public IReadOnlyDictionary<string, ICommand> Actions { get; }
+
+    // Actions from the settings file first, then the tag hotkeys of a running session.
+    public ICommand? FindCommand(KeyModifiers modifiers, PhysicalKey key, string? symbol) =>
+        Hotkeys.Find(modifiers, key, symbol) is { } action ? Actions[action] : Session.Tags.FindTagCommand(modifiers, key, symbol);
 
     // A scan at start (spec §4), then an interrupted session is offered back (spec §5).
     public async Task StartAsync()

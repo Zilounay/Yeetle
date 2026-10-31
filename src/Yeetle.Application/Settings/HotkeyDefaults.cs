@@ -17,6 +17,7 @@ public static class HotkeyDefaults
         [HotkeyActions.Rescan] = ["Ctrl+KeyR"],
         [HotkeyActions.Undo] = ["Ctrl+KeyZ"],
         [HotkeyActions.StopSession] = ["Escape"],
+        [HotkeyActions.TypeTag] = ["T"],
         [HotkeyActions.TogglePause] = ["Space"],
         [HotkeyActions.NextClip] = ["Shift+ArrowRight"],
         [HotkeyActions.PreviousClip] = ["Shift+ArrowLeft"],
@@ -48,6 +49,7 @@ public static class HotkeyActions
     public const string Rescan = "Rescan";
     public const string Undo = "Undo";
     public const string StopSession = "StopSession";
+    public const string TypeTag = "TypeTag";
     public const string TogglePause = "TogglePause";
     public const string NextClip = "NextClip";
     public const string PreviousClip = "PreviousClip";

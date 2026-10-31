@@ -318,4 +318,46 @@ Fermez tout programme qui pourrait l'utiliser, puis relancez Yeetle.</value>
   <data name="ClipDateFormat" xml:space="preserve">
     <value>{0:g}</value>
   </data>
+  <data name="Tags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="TypeTag" xml:space="preserve">
+    <value>Taper un tag</value>
+  </data>
+  <data name="TypeTagTip" xml:space="preserve">
+    <value>Trouver un tag par son nom (T)</value>
+  </data>
+  <data name="TypeTagWatermark" xml:space="preserve">
+    <value>Nom du tag…</value>
+  </data>
+  <data name="RulePickOne" xml:space="preserve">
+    <value>un seul</value>
+  </data>
+  <data name="RulePickMany" xml:space="preserve">
+    <value>plusieurs</value>
+  </data>
+  <data name="RuleRequired" xml:space="preserve">
+    <value>obligatoire</value>
+  </data>
+  <data name="RequiredBoxEmpty" xml:space="preserve">
+    <value>Rien de choisi ici. Appuyez à nouveau sur Garder pour garder quand même.</value>
+  </data>
+  <data name="CarriedOverHint" xml:space="preserve">
+    <value>Pointillés = repris du clip précédent</value>
+  </data>
+  <data name="RemoveTagTip" xml:space="preserve">
+    <value>Retirer ce tag</value>
+  </data>
+  <data name="NoTagMatch" xml:space="preserve">
+    <value>Aucun tag nommé « {0} ». Appuyez sur Entrée pour le créer dans le gestionnaire de tags.</value>
+  </data>
+  <data name="TagManagerNotYet" xml:space="preserve">
+    <value>Le gestionnaire de tags n'existe pas encore (#16), « {0} » n'a donc pas été créé.</value>
+  </data>
+  <data name="NoTagsYet" xml:space="preserve">
+    <value>Aucun tag pour l'instant. Les tags se créent dans le gestionnaire de tags.</value>
+  </data>
+  <data name="TagHotkeyClash" xml:space="preserve">
+    <value>Le raccourci {0} du tag {1} est déjà utilisé par une autre action et a été ignoré.</value>
+  </data>
 </root>

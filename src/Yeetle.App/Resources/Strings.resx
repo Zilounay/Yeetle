@@ -318,4 +318,46 @@ Close any program that may be using it, then start Yeetle again.</value>
   <data name="ClipDateFormat" xml:space="preserve">
     <value>{0:g}</value>
   </data>
+  <data name="Tags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="TypeTag" xml:space="preserve">
+    <value>Type a tag</value>
+  </data>
+  <data name="TypeTagTip" xml:space="preserve">
+    <value>Find a tag by name (T)</value>
+  </data>
+  <data name="TypeTagWatermark" xml:space="preserve">
+    <value>Tag name…</value>
+  </data>
+  <data name="RulePickOne" xml:space="preserve">
+    <value>pick one</value>
+  </data>
+  <data name="RulePickMany" xml:space="preserve">
+    <value>pick many</value>
+  </data>
+  <data name="RuleRequired" xml:space="preserve">
+    <value>required</value>
+  </data>
+  <data name="RequiredBoxEmpty" xml:space="preserve">
+    <value>Nothing chosen here yet. Press Keep again to keep anyway.</value>
+  </data>
+  <data name="CarriedOverHint" xml:space="preserve">
+    <value>Dashed = carried over from the previous clip</value>
+  </data>
+  <data name="RemoveTagTip" xml:space="preserve">
+    <value>Remove this tag</value>
+  </data>
+  <data name="NoTagMatch" xml:space="preserve">
+    <value>No tag named "{0}". Press Enter to create it in the Tag Manager.</value>
+  </data>
+  <data name="TagManagerNotYet" xml:space="preserve">
+    <value>The Tag Manager is not built yet (#16), so "{0}" was not created.</value>
+  </data>
+  <data name="NoTagsYet" xml:space="preserve">
+    <value>No tags yet. Tags are created in the Tag Manager.</value>
+  </data>
+  <data name="TagHotkeyClash" xml:space="preserve">
+    <value>Tag hotkey {0} for {1} is already used by another action and was ignored.</value>
+  </data>
 </root>

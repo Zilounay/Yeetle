@@ -22,16 +22,16 @@ public sealed class SessionService(
     public async Task<ActiveSession?> StartAsync()
     {
         await scans.RequestAsync(ScanTrigger.SessionStart);
-        var (clips, vocabulary, id) = await Task.Run(() =>
+        var (clips, catalog, id) = await Task.Run(() =>
         {
             var newClips = store.NewClips();
-            return (newClips, tags.LoadVocabulary(), newClips.Count > 0 ? store.Start(Now) : 0);
+            return (newClips, tags.LoadCatalog(), newClips.Count > 0 ? store.Start(Now) : 0);
         });
         if (clips.Count == 0)
             return null;
-        var review = new ReviewSession(new TagRules(vocabulary),
+        var review = new ReviewSession(new TagRules(catalog.Vocabulary),
             clips.Select(c => new ClipReview(c.Id, Domain.Clips.Decision.New, c.Tags, [], Visited: false)), position: 0);
-        var session = Create(id, review, clips);
+        var session = Create(id, review, clips, catalog);
         Journal(id, session.Snapshot());
         log.Info($"Session {id} started with {clips.Count} clips.");
         return session;
@@ -39,14 +39,14 @@ public sealed class SessionService(
 
     public async Task<ActiveSession> ResumeAsync(UnfinishedSession unfinished)
     {
-        var (clips, vocabulary) = await Task.Run(() =>
-            (store.Clips(unfinished.Snapshot.Clips.Select(c => c.Clip).ToList()), tags.LoadVocabulary()));
+        var (clips, catalog) = await Task.Run(() =>
+            (store.Clips(unfinished.Snapshot.Clips.Select(c => c.Clip).ToList()), tags.LoadCatalog()));
         var known = clips.Select(c => c.Id).ToHashSet();
         // A clip wiped from the library meanwhile simply leaves the session.
         var reviews = unfinished.Snapshot.Clips.Where(c => known.Contains(c.Clip)).ToList();
-        var review = new ReviewSession(new TagRules(vocabulary), reviews, unfinished.Snapshot.Position);
+        var review = new ReviewSession(new TagRules(catalog.Vocabulary), reviews, unfinished.Snapshot.Position);
         log.Info($"Session {unfinished.Id} resumed.");
-        return Create(unfinished.Id, review, clips);
+        return Create(unfinished.Id, review, clips, catalog);
     }
 
     // Completes once every journal entry written so far is in the database.
@@ -73,8 +73,8 @@ public sealed class SessionService(
 
     private DateTime Now => clock.GetLocalNow().DateTime;
 
-    private ActiveSession Create(long id, ReviewSession review, IEnumerable<SessionClip> clips) =>
-        new(id, review, clips, snapshot => Journal(id, snapshot));
+    private ActiveSession Create(long id, ReviewSession review, IEnumerable<SessionClip> clips, TagCatalog catalog) =>
+        new(id, review, clips, catalog, snapshot => Journal(id, snapshot));
 
     private void Journal(long sessionId, SessionSnapshot snapshot)
     {

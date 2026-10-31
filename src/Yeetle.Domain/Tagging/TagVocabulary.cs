@@ -54,6 +54,21 @@ public sealed class TagVocabulary
 
     public IEnumerable<TagId> DescendantsOf(TagId tag) => Below(tag);
 
+    // How a tag is shown in suggestions: its parent tags and the named boxes between them, without
+    // the top-level box, e.g. ["Dota 2", "Hero", "Crystal Maiden"] (spec §6).
+    public IReadOnlyList<string> PathOf(TagId tag)
+    {
+        var path = new List<string> { Tag(tag).Name };
+        for (var box = BoxOf(tag); box.ParentTag is { } parent; box = BoxOf(parent))
+        {
+            if (box.IsNamed)
+                path.Add(box.Name);
+            path.Add(Tag(parent).Name);
+        }
+        path.Reverse();
+        return path;
+    }
+
     // Depth first, in Tag Manager order.
     private IEnumerable<TagId> Below(TagId? parent) =>
         BoxesUnder(parent).SelectMany(b => TagsIn(b.Id)).SelectMany(t => Below(t.Id).Prepend(t.Id));
