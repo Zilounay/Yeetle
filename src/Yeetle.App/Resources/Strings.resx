@@ -478,4 +478,28 @@ Close any program that may be using it, then start Yeetle again.</value>
   <data name="NewTagName" xml:space="preserve">
     <value>New tag</value>
   </data>
+  <data name="Markers" xml:space="preserve">
+    <value>Markers</value>
+  </data>
+  <data name="AddMarker" xml:space="preserve">
+    <value>Add marker</value>
+  </data>
+  <data name="AddMarkerTip" xml:space="preserve">
+    <value>Adds a marker a moment before now; playback goes on and you can type its label right away (K)</value>
+  </data>
+  <data name="NoMarkersYet" xml:space="preserve">
+    <value>No markers on this clip. Press K while watching to mark a moment.</value>
+  </data>
+  <data name="MarkerDefaultLabel" xml:space="preserve">
+    <value>Marker {0}</value>
+  </data>
+  <data name="SeekToMarkerTip" xml:space="preserve">
+    <value>Go to this moment</value>
+  </data>
+  <data name="MoveMarkerHereTip" xml:space="preserve">
+    <value>Move this marker to the current moment</value>
+  </data>
+  <data name="DeleteMarkerTip" xml:space="preserve">
+    <value>Delete this marker</value>
+  </data>
 </root>

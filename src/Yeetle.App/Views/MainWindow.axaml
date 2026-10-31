@@ -89,10 +89,12 @@
         <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="16,16,16,0">
             <!-- The video; its controls are in VideoOverlayWindow, laid over it. -->
             <views:PlayerView x:Name="Player" DataContext="{Binding Player}" />
-            <!-- Tags beside the video, never over it (spec §5, layout from #9). -->
-            <Panel Grid.Column="1" Width="340" Margin="16,0,0,0" IsVisible="{Binding Session.IsActive}">
+            <!-- Tags, then markers, beside the video, never over it (spec §5, layout from #9). -->
+            <Grid Grid.Column="1" Width="340" Margin="16,0,0,0" RowDefinitions="*,Auto" RowSpacing="12"
+                  IsVisible="{Binding Session.IsActive}">
                 <views:TagsPanel DataContext="{Binding Session.Tags}" />
-            </Panel>
+                <views:MarkersPanel Grid.Row="1" MaxHeight="260" DataContext="{Binding Session.Markers}" />
+            </Grid>
         </Grid>
 
         <!-- Clip strip: two clips before and after the current one (spec §5). -->

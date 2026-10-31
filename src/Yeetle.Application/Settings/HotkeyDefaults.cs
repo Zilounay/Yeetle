@@ -18,6 +18,8 @@ public static class HotkeyDefaults
         [HotkeyActions.Undo] = ["Ctrl+KeyZ"],
         [HotkeyActions.StopSession] = ["Escape"],
         [HotkeyActions.TypeTag] = ["T"],
+        // M is Mute, as in VLC (spec §14).
+        [HotkeyActions.AddMarker] = ["K"],
         [HotkeyActions.TogglePause] = ["Space"],
         [HotkeyActions.NextClip] = ["Shift+ArrowRight"],
         [HotkeyActions.PreviousClip] = ["Shift+ArrowLeft"],
@@ -51,6 +53,7 @@ public static class HotkeyActions
     public const string Undo = "Undo";
     public const string StopSession = "StopSession";
     public const string TypeTag = "TypeTag";
+    public const string AddMarker = "AddMarker";
     public const string TogglePause = "TogglePause";
     public const string NextClip = "NextClip";
     public const string PreviousClip = "PreviousClip";

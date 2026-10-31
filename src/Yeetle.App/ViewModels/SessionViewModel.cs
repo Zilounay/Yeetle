@@ -58,8 +58,9 @@ public sealed partial class SessionViewModel : ViewModelBase
     private string _notice = string.Empty;
 
     public SessionViewModel(SessionService sessions, ClipNavigator navigator, PlayerViewModel player, IDialogs dialogs,
-        TagPanelViewModel tags, TagManager tagManager)
+        TagPanelViewModel tags, MarkersPanelViewModel markers, TagManager tagManager)
     {
+        Markers = markers;
         _tagManager = tagManager;
         _tagManager.Changed += (_, _) => _ = ReloadTagsAsync();
         _sessions = sessions;
@@ -76,10 +77,13 @@ public sealed partial class SessionViewModel : ViewModelBase
             [HotkeyActions.Undo] = UndoCommand,
             [HotkeyActions.StopSession] = StopCommand,
             [HotkeyActions.TypeTag] = tags.OpenTypeTagCommand,
+            [HotkeyActions.AddMarker] = markers.AddCommand,
         };
     }
 
     public TagPanelViewModel Tags { get; }
+
+    public MarkersPanelViewModel Markers { get; }
 
     public bool IsHome => !IsActive;
 
@@ -202,6 +206,7 @@ public sealed partial class SessionViewModel : ViewModelBase
         _session = session;
         session.Changed += OnSessionChanged;
         Tags.Attach(session);
+        Markers.Attach(session);
         _navigator.Load(session.Reviews.Select(r => session.Clip(r.Clip).FullPath).ToList(), session.Position);
         IsActive = true;
         OnSessionChanged(session, EventArgs.Empty);
@@ -248,6 +253,7 @@ public sealed partial class SessionViewModel : ViewModelBase
         session.Changed -= OnSessionChanged;
         _session = null;
         Tags.Attach(null);
+        Markers.Attach(null);
         IsActive = false;
         Strip.Clear();
         Counter = ClipName = ClipDate = string.Empty;
@@ -297,6 +303,7 @@ public sealed partial class SessionViewModel : ViewModelBase
         FillStrip();
         Tags.ClearRequiredWarning();
         Tags.Refresh();
+        Markers.Refresh();
         UndoCommand.NotifyCanExecuteChanged();
         Changed?.Invoke(this, EventArgs.Empty);
     }

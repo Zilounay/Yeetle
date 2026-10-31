@@ -102,6 +102,12 @@ public sealed class SqliteSessionStore(SqliteConnectionFactory connections, Time
             connection.Execute(
                 "INSERT INTO ClipTags (ClipId, TagId) SELECT @clipId, Id FROM Nodes WHERE Id = @tagId AND Kind = 'Tag';",
                 clip.Tags.Select(t => new { clipId = clip.Clip.Value, tagId = t.Value }), transaction);
+            connection.Execute("DELETE FROM Markers WHERE ClipId = @id;", new { id = clip.Clip.Value }, transaction);
+            connection.Execute("INSERT INTO Markers (ClipId, PositionMs, Label) VALUES (@clipId, @positionMs, @label);",
+                clip.Markers.Select(m => new
+                {
+                    clipId = clip.Clip.Value, positionMs = (long)m.Position.TotalMilliseconds, label = m.Label,
+                }), transaction);
         }
         Close(connection, sessionId, Committed, now, transaction);
         transaction.Commit();
@@ -126,8 +132,17 @@ public sealed class SqliteSessionStore(SqliteConnectionFactory connections, Time
         var tags = connection.Query<(long ClipId, long TagId)>(
                 "SELECT ClipId, TagId FROM ClipTags WHERE ClipId IN @ids;", new { ids = rows.Select(r => r.Id).ToList() })
             .ToLookup(t => t.ClipId, t => new TagId(t.TagId));
+        // Markers get numbers 1, 2, 3... in position order, as stored rows have none.
+        var markers = connection.Query<(long ClipId, long PositionMs, string Label)>(
+                "SELECT ClipId, PositionMs, Label FROM Markers WHERE ClipId IN @ids ORDER BY PositionMs, Id;",
+                new { ids = rows.Select(r => r.Id).ToList() })
+            .ToLookup(m => m.ClipId);
         return rows.Select(r => new SessionClip(new ClipId(r.Id), Path.Combine(r.FolderPath, r.RelativePath),
-            DbTime.Read(r.RecordedAt), tags[r.Id].ToImmutableHashSet())).ToList();
+            DbTime.Read(r.RecordedAt), tags[r.Id].ToImmutableHashSet())
+        {
+            Markers = markers[r.Id].Select((m, i) => new Marker(i + 1, TimeSpan.FromMilliseconds(m.PositionMs), m.Label))
+                .ToImmutableList(),
+        }).ToList();
     }
 
     private sealed class ClipRow
@@ -144,7 +159,8 @@ public sealed class SqliteSessionStore(SqliteConnectionFactory connections, Time
         public static string Write(SessionSnapshot snapshot) => JsonSerializer.Serialize(new SnapshotDto(
             snapshot.Position,
             snapshot.Clips.Select(c => new ClipDto(c.Clip.Value, c.Decision.ToString(),
-                c.Tags.Select(t => t.Value).ToList(), c.CarriedOver.Select(t => t.Value).ToList(), c.Visited)).ToList()));
+                c.Tags.Select(t => t.Value).ToList(), c.CarriedOver.Select(t => t.Value).ToList(), c.Visited,
+                c.Markers.Select(m => new MarkerDto(m.Number, (long)m.Position.TotalMilliseconds, m.Label)).ToList())).ToList()));
 
         public static SessionSnapshot Read(string json)
         {
@@ -153,11 +169,19 @@ public sealed class SqliteSessionStore(SqliteConnectionFactory connections, Time
                 new ClipId(c.Id), Enum.Parse<Decision>(c.Decision),
                 c.Tags.Select(t => new TagId(t)).ToImmutableHashSet(),
                 c.CarriedOver.Select(t => new TagId(t)).ToImmutableHashSet(),
-                c.Visited)).ToList());
+                c.Visited)
+            {
+                // Journals written before markers existed have none.
+                Markers = (c.Markers ?? []).Select(m => new Marker(m.Number, TimeSpan.FromMilliseconds(m.PositionMs), m.Label))
+                    .ToImmutableList(),
+            }).ToList());
         }
 
         private sealed record SnapshotDto(int Position, List<ClipDto> Clips);
 
-        private sealed record ClipDto(long Id, string Decision, List<long> Tags, List<long> CarriedOver, bool Visited);
+        private sealed record ClipDto(
+            long Id, string Decision, List<long> Tags, List<long> CarriedOver, bool Visited, List<MarkerDto>? Markers);
+
+        private sealed record MarkerDto(int Number, long PositionMs, string Label);
     }
 }

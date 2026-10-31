@@ -62,6 +62,19 @@ public sealed class ActiveSession
 
     public void DeselectTag(TagId tag) => Do(() => _review.DeselectTag(tag));
 
+    public Marker AddMarker(TimeSpan position, Func<int, string> label)
+    {
+        var marker = _review.AddMarker(position, label);
+        Record();
+        return marker;
+    }
+
+    public void RenameMarker(int number, string label) => Do(() => _review.RenameMarker(number, label));
+
+    public void MoveMarker(int number, TimeSpan position) => Do(() => _review.MoveMarker(number, position));
+
+    public void DeleteMarker(int number) => Do(() => _review.DeleteMarker(number));
+
     // The Tag Manager changed the tags (spec §5): new names and rules show at once, and deleted
     // tags leave the session's clips.
     public void UseCatalog(TagCatalog catalog)
