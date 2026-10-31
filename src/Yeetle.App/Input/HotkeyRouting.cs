@@ -8,9 +8,8 @@ namespace Yeetle.App.Input;
 // Whatever owns the hotkeys of a window: the keys from the settings file and what they do.
 public interface IHotkeyTarget
 {
-    HotkeyMap Hotkeys { get; }
-
-    IReadOnlyDictionary<string, ICommand> Actions { get; }
+    // The command for a key press, or null when the key does nothing here.
+    ICommand? FindCommand(KeyModifiers modifiers, PhysicalKey key, string? symbol);
 }
 
 // Runs the hotkeys for a window. Every window the user can click in gets this, so the keys work
@@ -43,8 +42,6 @@ public static class HotkeyRouting
         // Hotkeys pause while a text field has focus (spec §14).
         if (target is null || window.FocusManager?.GetFocusedElement() is TextBox)
             return null;
-        return target.Hotkeys.Find(e.KeyModifiers, e.PhysicalKey, e.KeySymbol) is { } action
-            ? target.Actions[action]
-            : null;
+        return target.FindCommand(e.KeyModifiers, e.PhysicalKey, e.KeySymbol);
     }
 }

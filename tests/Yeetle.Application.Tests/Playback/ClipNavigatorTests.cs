@@ -45,6 +45,19 @@ public class ClipNavigatorTests
     }
 
     [Fact]
+    public void Show_opens_a_clip_only_when_it_changes()
+    {
+        _navigator.Load(["a", "b", "c"], start: 1);
+        _player.Calls.Clear();
+
+        _navigator.Show(1);
+        Assert.Empty(_player.Calls);
+
+        _navigator.Show(0);
+        Assert.Equal(["open a", "preload b"], _player.Calls);
+    }
+
+    [Fact]
     public void Previous_goes_back_and_stops_at_the_first_clip()
     {
         _navigator.Load(["a", "b", "c"]);

@@ -62,6 +62,13 @@ public class HotkeyTests
     }
 
     [Theory]
+    [InlineData("Digit1", "1")]
+    [InlineData("Digit0", "0")]
+    [InlineData("F3", "F3")]
+    [InlineData("KeyQ", "Q")]
+    public void Chips_show_short_key_names(string key, string label) => Assert.Equal(label, HotkeyLabels.Short(key));
+
+    [Theory]
     [InlineData("Hyper+A")]
     [InlineData("NotAKey")]
     [InlineData("12")]

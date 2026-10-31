@@ -91,34 +91,31 @@
         </Style>
     </Window.Styles>
 
-    <Panel Margin="12" DataContext="{Binding Player}" x:DataType="vm:PlayerViewModel">
+    <Panel Margin="12">
         <!-- Top left: what is playing, and any message. -->
-        <Border Classes="block" HorizontalAlignment="Left" VerticalAlignment="Top" MaxWidth="640">
+        <Border Classes="block" HorizontalAlignment="Left" VerticalAlignment="Top" MaxWidth="640"
+                IsVisible="{Binding HasInfo}">
             <StackPanel Spacing="2">
-                <StackPanel Orientation="Horizontal" Spacing="10">
-                    <TextBlock FontWeight="Bold" Text="{Binding ClipCounter}"
-                               IsVisible="{Binding ClipCounter, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                    <TextBlock FontWeight="SemiBold" Text="{Binding ClipName}" TextTrimming="CharacterEllipsis" />
+                <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding Session.IsActive}">
+                    <TextBlock FontWeight="Bold" Text="{Binding Session.Counter}" />
+                    <TextBlock FontWeight="SemiBold" Text="{Binding Session.ClipName}" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding Session.ClipDate}" Opacity="{StaticResource SecondaryTextOpacity}" />
                 </StackPanel>
-                <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Opacity="{StaticResource SecondaryTextOpacity}"
-                           IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                <TextBlock Text="{Binding Notice}" TextWrapping="Wrap" Opacity="{StaticResource SecondaryTextOpacity}"
-                           IsVisible="{Binding Notice, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                <TextBlock Text="{Binding Player.Message}" TextWrapping="Wrap" Opacity="{StaticResource SecondaryTextOpacity}"
+                           IsVisible="{Binding Player.Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                <TextBlock Text="{Binding Session.Notice}" TextWrapping="Wrap" Opacity="{StaticResource SecondaryTextOpacity}"
+                           IsVisible="{Binding Session.Notice, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                <TextBlock Text="{Binding ScanSummary}" TextWrapping="Wrap" Opacity="{StaticResource SecondaryTextOpacity}"
+                           IsVisible="{Binding ScanSummary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             </StackPanel>
         </Border>
 
-        <!-- Top right: where clips come from, and how they sound. -->
-        <Border Classes="block" HorizontalAlignment="Right" VerticalAlignment="Top">
-            <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="6">
-                <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4">
-                    <Button Content="{x:Static res:Strings.Rescan}" ToolTip.Tip="{x:Static res:Strings.RescanTip}"
-                            Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RescanCommand}" />
-                    <Button Content="{x:Static res:Strings.Folders}"
-                            Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).OpenFoldersCommand}" />
-                    <Button Content="{x:Static res:Strings.OpenFolder}" Command="{Binding PickFolderCommand}" />
-                </StackPanel>
-                <TextBlock Grid.Row="1" Classes="label" Text="{x:Static res:Strings.AudioTrack}" />
-                <ComboBox Grid.Row="1" Grid.Column="1" Width="240" ItemsSource="{Binding AudioTracks}"
+        <!-- Top right: how the clip sounds. -->
+        <Border Classes="block" HorizontalAlignment="Right" VerticalAlignment="Top" DataContext="{Binding Player}"
+                x:DataType="vm:PlayerViewModel">
+            <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="6">
+                <TextBlock Classes="label" Text="{x:Static res:Strings.AudioTrack}" />
+                <ComboBox Grid.Column="1" Width="240" ItemsSource="{Binding AudioTracks}"
                           SelectedItem="{Binding SelectedAudioTrack}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate x:DataType="playback:AudioTrack">
@@ -126,8 +123,8 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                <TextBlock Grid.Row="2" Classes="label" Text="{x:Static res:Strings.AudioOutput}" />
-                <ComboBox Grid.Row="2" Grid.Column="1" Width="240" ItemsSource="{Binding AudioDevices}"
+                <TextBlock Grid.Row="1" Classes="label" Text="{x:Static res:Strings.AudioOutput}" />
+                <ComboBox Grid.Row="1" Grid.Column="1" Width="240" ItemsSource="{Binding AudioDevices}"
                           SelectedItem="{Binding SelectedAudioDevice}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate x:DataType="playback:AudioDevice">
@@ -138,21 +135,32 @@
             </Grid>
         </Border>
 
-        <StackPanel VerticalAlignment="Bottom" Spacing="12">
+        <!-- Home: no session yet (spec §5). -->
+        <Border Classes="block" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="32,24"
+                IsVisible="{Binding Session.IsHome}">
+            <StackPanel Spacing="16" HorizontalAlignment="Center">
+                <TextBlock FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center" TextWrapping="Wrap"
+                           Text="{Binding Session.HomeText}" />
+                <Button Classes="decision keep" HorizontalAlignment="Center" Content="{x:Static res:Strings.StartSession}"
+                        Command="{Binding Session.StartCommand}" />
+            </StackPanel>
+        </Border>
+
+        <StackPanel VerticalAlignment="Bottom" Spacing="12" IsVisible="{Binding Session.IsActive}">
             <!-- The decision for this clip. -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12">
-                <Button Classes="decision yeet" Content="{x:Static res:Strings.Yeet}" Command="{Binding YeetCommand}"
+                <Button Classes="decision yeet" Content="{x:Static res:Strings.Yeet}" Command="{Binding Session.YeetCommand}"
                         ToolTip.Tip="{x:Static res:Strings.YeetTip}" />
-                <Button Classes="decision skip" Content="{x:Static res:Strings.Skip}" Command="{Binding NextCommand}"
+                <Button Classes="decision skip" Content="{x:Static res:Strings.Skip}" Command="{Binding Session.SkipCommand}"
                         ToolTip.Tip="{x:Static res:Strings.SkipTip}" />
-                <Button Classes="decision keep" Content="{x:Static res:Strings.Keep}" Command="{Binding KeepCommand}"
+                <Button Classes="decision keep" Content="{x:Static res:Strings.Keep}" Command="{Binding Session.KeepCommand}"
                         ToolTip.Tip="{x:Static res:Strings.KeepTip}" />
             </StackPanel>
 
             <!-- Playback: position, then navigation, speed and volume. -->
             <Border Classes="block">
                 <StackPanel Spacing="4">
-                    <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Grid ColumnDefinitions="Auto,*,Auto" DataContext="{Binding Player}" x:DataType="vm:PlayerViewModel">
                         <TextBlock Grid.Column="0" Classes="time" Text="{Binding PositionText}" />
                         <Slider x:Name="SeekBar" Grid.Column="1" Margin="10,0" Minimum="0"
                                 Maximum="{Binding DurationSeconds}" Value="{Binding PositionSeconds}" />
@@ -160,11 +168,13 @@
                     </Grid>
                     <Grid ColumnDefinitions="*,Auto,*">
                         <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
-                            <Button Content="{x:Static res:Strings.Previous}" Command="{Binding PreviousCommand}" />
-                            <Button Content="{Binding PlayPauseLabel}" Command="{Binding TogglePauseCommand}" MinWidth="80" />
-                            <Button Content="{x:Static res:Strings.Next}" Command="{Binding NextCommand}" />
+                            <Button Content="{x:Static res:Strings.Back}" Command="{Binding Session.BackCommand}"
+                                    ToolTip.Tip="{x:Static res:Strings.BackTip}" />
+                            <Button Content="{Binding Player.PlayPauseLabel}" Command="{Binding Player.TogglePauseCommand}" MinWidth="80" />
+                            <Button Content="{x:Static res:Strings.Undo}" Command="{Binding Session.UndoCommand}"
+                                    ToolTip.Tip="{x:Static res:Strings.UndoTip}" />
                         </StackPanel>
-                        <ItemsControl Grid.Column="1" ItemsSource="{Binding Speeds}" Margin="12,0">
+                        <ItemsControl Grid.Column="1" ItemsSource="{Binding Player.Speeds}" Margin="12,0">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel Orientation="Horizontal" Spacing="2" />
@@ -173,12 +183,13 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="vm:SpeedOptionViewModel">
                                     <Button Content="{Binding Label}" Classes.current="{Binding IsCurrent}"
-                                            Command="{Binding $parent[ItemsControl].((vm:PlayerViewModel)DataContext).SetSpeedCommand}"
+                                            Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Player.SetSpeedCommand}"
                                             CommandParameter="{Binding Speed}" />
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8"
+                                    DataContext="{Binding Player}" x:DataType="vm:PlayerViewModel">
                             <Button Content="{Binding MuteLabel}" Command="{Binding ToggleMuteCommand}" MinWidth="80" />
                             <Slider Width="120" Minimum="0" Maximum="100" VerticalAlignment="Center"
                                     Value="{Binding Volume}" ToolTip.Tip="{x:Static res:Strings.Volume}" />

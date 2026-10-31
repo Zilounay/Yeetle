@@ -15,18 +15,6 @@
   <data name="AppTitle" xml:space="preserve">
     <value>Yeetle</value>
   </data>
-  <data name="OpenFolder" xml:space="preserve">
-    <value>Open folder…</value>
-  </data>
-  <data name="PickFolderTitle" xml:space="preserve">
-    <value>Folder with clips</value>
-  </data>
-  <data name="Previous" xml:space="preserve">
-    <value>◀ Previous</value>
-  </data>
-  <data name="Next" xml:space="preserve">
-    <value>Next ▶</value>
-  </data>
   <data name="Play" xml:space="preserve">
     <value>Play</value>
   </data>
@@ -53,15 +41,6 @@
   </data>
   <data name="ClipCounterFormat" xml:space="preserve">
     <value>{0} / {1}</value>
-  </data>
-  <data name="NoFolderOpen" xml:space="preserve">
-    <value>Open a folder to play its clips.</value>
-  </data>
-  <data name="NoClipsInFolder" xml:space="preserve">
-    <value>No video files in {0}.</value>
-  </data>
-  <data name="FolderUnreadable" xml:space="preserve">
-    <value>Could not read {0}: {1}</value>
   </data>
   <data name="PlaybackError" xml:space="preserve">
     <value>This clip could not be played.</value>
@@ -239,5 +218,146 @@ Close any program that may be using it, then start Yeetle again.</value>
   </data>
   <data name="ScanOffline" xml:space="preserve">
     <value>Offline: {0}</value>
+  </data>
+  <data name="HomeNewClips" xml:space="preserve">
+    <value>{0} new clips waiting</value>
+  </data>
+  <data name="HomeNoNewClips" xml:space="preserve">
+    <value>No new clips to review. Add a source folder, or record some!</value>
+  </data>
+  <data name="StartSession" xml:space="preserve">
+    <value>Start session</value>
+  </data>
+  <data name="StopSession" xml:space="preserve">
+    <value>Stop session</value>
+  </data>
+  <data name="StopSessionTip" xml:space="preserve">
+    <value>End the session (Esc)</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="BackTip" xml:space="preserve">
+    <value>Previous clip (Shift+←)</value>
+  </data>
+  <data name="Undo" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="UndoTip" xml:space="preserve">
+    <value>Undo the last change (Ctrl+Z)</value>
+  </data>
+  <data name="BadgeKept" xml:space="preserve">
+    <value>Kept</value>
+  </data>
+  <data name="BadgeYeeted" xml:space="preserve">
+    <value>Yeeted</value>
+  </data>
+  <data name="BadgeSkipped" xml:space="preserve">
+    <value>Skipped</value>
+  </data>
+  <data name="BadgeNew" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="BadgePlaying" xml:space="preserve">
+    <value>Playing</value>
+  </data>
+  <data name="StripEarlier" xml:space="preserve">
+    <value>Earlier clips</value>
+  </data>
+  <data name="StripLater" xml:space="preserve">
+    <value>Later clips</value>
+  </data>
+  <data name="EndSessionTitle" xml:space="preserve">
+    <value>End the session</value>
+  </data>
+  <data name="EndSessionMessage" xml:space="preserve">
+    <value>{0} kept, {1} yeeted, {2} skipped. Save these decisions? Skipped clips stay New and come first next time.</value>
+  </data>
+  <data name="SaveSession" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="DiscardSession" xml:space="preserve">
+    <value>Discard</value>
+  </data>
+  <data name="CloseDuringSessionTitle" xml:space="preserve">
+    <value>A session is running</value>
+  </data>
+  <data name="CloseDuringSessionMessage" xml:space="preserve">
+    <value>{0} kept, {1} yeeted, {2} skipped so far. Save these decisions before leaving?</value>
+  </data>
+  <data name="SaveAndLeave" xml:space="preserve">
+    <value>Save and leave</value>
+  </data>
+  <data name="DiscardAndLeave" xml:space="preserve">
+    <value>Discard and leave</value>
+  </data>
+  <data name="InterruptedTitle" xml:space="preserve">
+    <value>Unfinished session</value>
+  </data>
+  <data name="InterruptedMessage" xml:space="preserve">
+    <value>A session started on {0:g} was not finished ({1} clips decided). What should happen to it?</value>
+  </data>
+  <data name="Resume" xml:space="preserve">
+    <value>Resume</value>
+  </data>
+  <data name="Commit" xml:space="preserve">
+    <value>Commit</value>
+  </data>
+  <data name="Discard" xml:space="preserve">
+    <value>Discard</value>
+  </data>
+  <data name="SessionSaved" xml:space="preserve">
+    <value>Session saved: {0} kept, {1} yeeted.</value>
+  </data>
+  <data name="SessionDiscarded" xml:space="preserve">
+    <value>Session discarded; its clips stay New.</value>
+  </data>
+  <data name="SessionSaveFailed" xml:space="preserve">
+    <value>The session could not be saved: {0}. It is still in the journal and will be offered again at the next start.</value>
+  </data>
+  <data name="ClipDateFormat" xml:space="preserve">
+    <value>{0:g}</value>
+  </data>
+  <data name="Tags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="TypeTag" xml:space="preserve">
+    <value>Type a tag</value>
+  </data>
+  <data name="TypeTagTip" xml:space="preserve">
+    <value>Find a tag by name (T)</value>
+  </data>
+  <data name="TypeTagWatermark" xml:space="preserve">
+    <value>Tag name…</value>
+  </data>
+  <data name="RulePickOne" xml:space="preserve">
+    <value>pick one</value>
+  </data>
+  <data name="RulePickMany" xml:space="preserve">
+    <value>pick many</value>
+  </data>
+  <data name="RuleRequired" xml:space="preserve">
+    <value>required</value>
+  </data>
+  <data name="RequiredBoxEmpty" xml:space="preserve">
+    <value>Nothing chosen here yet. Press Keep again to keep anyway.</value>
+  </data>
+  <data name="CarriedOverHint" xml:space="preserve">
+    <value>Dashed = carried over from the previous clip</value>
+  </data>
+  <data name="RemoveTagTip" xml:space="preserve">
+    <value>Remove this tag</value>
+  </data>
+  <data name="NoTagMatch" xml:space="preserve">
+    <value>No tag named "{0}". Press Enter to create it in the Tag Manager.</value>
+  </data>
+  <data name="TagManagerNotYet" xml:space="preserve">
+    <value>The Tag Manager is not built yet (#16), so "{0}" was not created.</value>
+  </data>
+  <data name="NoTagsYet" xml:space="preserve">
+    <value>No tags yet. Tags are created in the Tag Manager.</value>
+  </data>
+  <data name="TagHotkeyClash" xml:space="preserve">
+    <value>Tag hotkey {0} for {1} is already used by another action and was ignored.</value>
   </data>
 </root>
