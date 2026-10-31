@@ -150,12 +150,12 @@ public sealed partial class TagPanelViewModel : ViewModelBase
         IsTyping = true;
     }
 
-    // Enter: applies the highlighted suggestion. Without a match the Tag Manager opens with the text
-    // ready as a new tag (spec §6).
+    // Enter: applies the highlighted suggestion, the first one when none is. Without a match the Tag
+    // Manager opens with the text ready as a new tag (spec §6).
     [RelayCommand]
     private void ApplyTyped()
     {
-        if (SelectedSuggestion is { } suggestion)
+        if ((SelectedSuggestion ?? Suggestions.FirstOrDefault()) is { } suggestion)
         {
             if (_session?.CurrentReview is { } review && !review.Tags.Contains(suggestion.Tag))
                 _session.SelectTag(suggestion.Tag);

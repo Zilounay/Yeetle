@@ -47,8 +47,21 @@ public sealed partial class SessionViewModel : ViewModelBase
     [ObservableProperty]
     private string _counter = string.Empty;
 
+    // The counter's bar: one segment per decision, each as long as its share of the session (#62).
     [ObservableProperty]
-    private double _progress;
+    private int _keptCount;
+
+    [ObservableProperty]
+    private int _yeetedCount;
+
+    [ObservableProperty]
+    private int _skippedCount;
+
+    [ObservableProperty]
+    private int _clipCount;
+
+    [ObservableProperty]
+    private string _progressTip = string.Empty;
 
     [ObservableProperty]
     private string _clipName = string.Empty;
@@ -297,7 +310,8 @@ public sealed partial class SessionViewModel : ViewModelBase
                 var renamed = outcomes.Where(o => o.Succeeded).Select(o => o.Clip).ToList();
                 Notice = string.Format(Strings.FilesRenamed, renamed.Count);
                 // The original names are stored, so the rename can be undone right here (spec §9).
-                if (await _dialogs.ShowFileResultsAsync(Strings.RenameResultsTitle, outcomes, canRestoreNames: renamed.Count > 0))
+                if (await _dialogs.ShowFileResultsAsync(Strings.RenameResultsTitle, outcomes, canRestoreNames: renamed.Count > 0,
+                        preview.FirstRenamedPath(outcomes)))
                 {
                     var restored = await _files.RestoreNamesAsync(renamed);
                     await _dialogs.ShowFileResultsAsync(Strings.RestoreResultsTitle, restored, canRestoreNames: false);
@@ -344,7 +358,12 @@ public sealed partial class SessionViewModel : ViewModelBase
         var shown = Math.Min(session.Position, total - 1);
         _navigator.Show(shown);
         Counter = string.Format(Strings.ClipCounterFormat, shown + 1, total);
-        Progress = total == 0 ? 0 : (double)session.Reviews.Count(r => r.Visited) / total;
+        ClipCount = total;
+        KeptCount = session.Reviews.Count(r => r.Decision == Decision.Kept);
+        YeetedCount = session.Reviews.Count(r => r.Decision == Decision.Yeeted);
+        // Seen and left undecided; the clip on screen is not skipped yet.
+        SkippedCount = session.Reviews.Where((r, i) => i != shown && r.Visited && r.Decision == Decision.New).Count();
+        ProgressTip = string.Format(Strings.ProgressTip, KeptCount, YeetedCount, SkippedCount);
         var clip = session.Clip(session.Reviews[shown].Clip);
         ClipName = clip.FileName;
         ClipDate = string.Format(Strings.ClipDateFormat, clip.RecordedAt);

@@ -39,7 +39,8 @@ public interface ITagEditor
 
     int CountClipsInBox(BoxId box);
 
-    // Deletes it with everything below it, and removes those tags from every clip.
+    // Deletes it with everything below it from the vocabulary. They are retired, not removed:
+    // clips that carry them keep them under their old names (spec §6).
     void DeleteTag(TagId tag);
 
     void DeleteBox(BoxId box);

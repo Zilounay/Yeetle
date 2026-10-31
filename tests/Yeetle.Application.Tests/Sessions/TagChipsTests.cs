@@ -29,17 +29,39 @@ public class TagChipsTests
 
     private static IReadOnlyList<ChipGroup> Chips(
         IReadOnlySet<TagId> tags, IReadOnlySet<TagId>? carried = null, Dictionary<TagId, string>? hotkeys = null,
-        Dictionary<TagId, int>? usage = null) =>
-        TagChips.For(new TagCatalog(Vocabulary, hotkeys ?? [], usage ?? []), tags, carried ?? new HashSet<TagId>());
+        Dictionary<TagId, int>? usage = null, Dictionary<TagId, DateTime>? lastUsed = null,
+        TagVocabulary? vocabulary = null) =>
+        TagChips.For(new TagCatalog(vocabulary ?? Vocabulary, hotkeys ?? [], usage ?? []) { LastUsed = lastUsed ?? [] },
+            tags, carried ?? new HashSet<TagId>());
 
     [Fact]
-    public void Top_level_boxes_show_hotkeyed_and_most_used_tags_only()
+    public void Every_tag_of_a_top_level_box_shows_even_unused_ones()
     {
-        var groups = Chips(new HashSet<TagId>(), hotkeys: new() { [Cs2] = "Digit1" }, usage: new() { [Funny] = 3 });
+        var groups = Chips(new HashSet<TagId>(), hotkeys: new() { [Cs2] = "Digit1" });
 
-        Assert.Equal([Cs2], groups.Single(g => g.Box.Id == Game).Chips.Select(c => c.Tag));
-        Assert.Equal("Digit1", groups.Single(g => g.Box.Id == Game).Chips.Single().Hotkey);
-        Assert.Equal([Funny], groups.Single(g => g.Box.Id == Moments).Chips.Select(c => c.Tag));
+        Assert.Equal(2, groups.Single(g => g.Box.Id == Game).Chips.Count);
+        Assert.Equal("Digit1", groups.Single(g => g.Box.Id == Game).Chips.Single(c => c.Tag == Cs2).Hotkey);
+        Assert.Equal(2, groups.Single(g => g.Box.Id == Moments).Chips.Count);
+    }
+
+    [Fact]
+    public void Chips_come_last_used_first_then_most_used_then_newest()
+    {
+        var clutch = new TagId(32);
+        var ace = new TagId(33);
+        var vocabulary = new TagVocabulary(
+            [new Box(Moments, "Moments", BoxRule.PickMany, Required: false, ParentTag: null)],
+            [new Tag(Funny, "Funny", Moments), new Tag(Fail, "Fail", Moments), new Tag(clutch, "Clutch", Moments),
+                new Tag(ace, "Ace", Moments)]);
+        var october = new DateTime(2026, 10, 20);
+
+        var chips = Chips(new HashSet<TagId>(), vocabulary: vocabulary,
+            usage: new() { [Funny] = 9, [Fail] = 2, [clutch] = 4 },
+            lastUsed: new() { [Funny] = october, [Fail] = october.AddDays(5), [clutch] = october })
+            .Single().Chips.Select(c => c.Tag);
+
+        // Fail is the latest; Funny and Clutch tie on date, Funny is used more; Ace was never used.
+        Assert.Equal([Fail, Funny, clutch, ace], chips);
     }
 
     [Fact]
@@ -47,7 +69,7 @@ public class TagChipsTests
     {
         var map = Chips(new HashSet<TagId> { Cs2 }).Single(g => g.Box.Id == Map);
 
-        Assert.Equal([Dust2, Mirage], map.Chips.Select(c => c.Tag));
+        Assert.Equal([Mirage, Dust2], map.Chips.Select(c => c.Tag)); // never used: newest first
         Assert.Equal(["Counter-Strike 2", "Map"], map.Path);
         Assert.True(map.IsMissingRequired);
     }
@@ -57,16 +79,24 @@ public class TagChipsTests
     {
         var groups = Chips(new HashSet<TagId> { Fail }, carried: new HashSet<TagId> { Fail });
 
-        var fail = groups.Single(g => g.Box.Id == Moments).Chips.Single();
+        var fail = groups.Single(g => g.Box.Id == Moments).Chips.Single(c => c.Tag == Fail);
         Assert.True(fail.IsSelected);
         Assert.True(fail.IsCarriedOver);
     }
 
     [Fact]
-    public void An_empty_required_box_shows_even_without_chips() =>
+    public void An_empty_required_box_is_flagged() =>
         Assert.True(Chips(new HashSet<TagId>()).Single(g => g.Box.Id == Game).IsMissingRequired);
 
     [Fact]
-    public void An_optional_box_without_chips_is_left_out() =>
-        Assert.DoesNotContain(Chips(new HashSet<TagId>()), g => g.Box.Id == Moments);
+    public void An_optional_box_without_tags_is_left_out()
+    {
+        var empty = new BoxId(9);
+        var vocabulary = new TagVocabulary(
+            [new Box(Moments, "Moments", BoxRule.PickMany, Required: false, ParentTag: null),
+                new Box(empty, "People", BoxRule.PickMany, Required: false, ParentTag: null)],
+            [new Tag(Funny, "Funny", Moments)]);
+
+        Assert.DoesNotContain(Chips(new HashSet<TagId>(), vocabulary: vocabulary), g => g.Box.Id == empty);
+    }
 }

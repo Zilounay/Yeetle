@@ -313,7 +313,7 @@ Close any program that may be using it, then start Yeetle again.</value>
     <value>Tags</value>
   </data>
   <data name="TypeTag" xml:space="preserve">
-    <value>Type a tag</value>
+    <value>Search</value>
   </data>
   <data name="TypeTagTip" xml:space="preserve">
     <value>Find a tag by name (T)</value>
@@ -461,7 +461,7 @@ Close any program that may be using it, then start Yeetle again.</value>
   </data>
   <data name="DeleteTagMessage" xml:space="preserve">
     <value>Delete "{0}" and everything below it?
-{1} clip(s) will be affected: these tags are removed from them. A backup of the library is taken first.</value>
+It can no longer be picked. The {1} clip(s) that already carry it keep it under this name. A backup of the library is taken first.</value>
   </data>
   <data name="NewBoxName" xml:space="preserve">
     <value>New box</value>
@@ -852,5 +852,8 @@ Close any program that may be using it, then start Yeetle again.</value>
   </data>
   <data name="RenameFilesTitle" xml:space="preserve">
     <value>Rename {0} file(s) by their tags?</value>
+  </data>
+  <data name="ProgressTip" xml:space="preserve">
+    <value>{0} kept · {1} yeeted · {2} skipped</value>
   </data>
 </root>

@@ -32,8 +32,10 @@ public interface IDialogs
     // The marker window (spec §7): read-only text with a Copy all button.
     Task ShowMarkerSheetAsync(string text);
 
-    // True when the user asked to restore the original names.
-    Task<bool> ShowFileResultsAsync(string title, IReadOnlyList<FileOutcome> outcomes, bool canRestoreNames);
+    // True when the user asked to restore the original names. With a path, Show in folder opens
+    // Windows Explorer on that file.
+    Task<bool> ShowFileResultsAsync(string title, IReadOnlyList<FileOutcome> outcomes, bool canRestoreNames,
+        string? showInFolder = null);
 
     // A question with a few answers and Cancel; null on Cancel.
     Task<T?> ChooseAsync<T>(string title, string message, IReadOnlyList<(string Label, T Value)> choices) where T : struct;

@@ -64,7 +64,7 @@ internal static class Composition
             // App
             .AddSingleton<IFolderPicker, StorageFolderPicker>()
             .AddSingleton<IDialogs>(s => new WindowDialogs(s.GetRequiredService<SourceFoldersViewModel>,
-                s.GetRequiredService<TagManagerViewModel>))
+                s.GetRequiredService<TagManagerViewModel>, s.GetRequiredService<IShell>()))
             .AddTransient<TagManagerViewModel>()
             .AddTransient<SourceFoldersViewModel>()
             .AddSingleton<PlayerViewModel>()

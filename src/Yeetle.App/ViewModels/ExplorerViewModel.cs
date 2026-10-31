@@ -270,7 +270,8 @@ public sealed partial class ExplorerViewModel : ViewModelBase
             var outcomes = await _files.RenameAsync(preview);
             var renamed = outcomes.Where(o => o.Succeeded).Select(o => o.Clip).ToList();
             Notice = string.Format(Strings.FilesRenamed, renamed.Count);
-            if (await _dialogs.ShowFileResultsAsync(Strings.RenameResultsTitle, outcomes, canRestoreNames: renamed.Count > 0))
+            if (await _dialogs.ShowFileResultsAsync(Strings.RenameResultsTitle, outcomes, canRestoreNames: renamed.Count > 0,
+                    preview.FirstRenamedPath(outcomes)))
                 await RestoreAsync(renamed);
         });
     }
@@ -434,8 +435,7 @@ public sealed partial class ExplorerViewModel : ViewModelBase
         var shown = LibraryQuery.Apply(_all, filter, vocabulary, Sort, Descending);
         Rows.Clear();
         foreach (var clip in shown)
-            Rows.Add(new ExplorerRowViewModel(clip, string.Join(TagSeparator,
-                vocabulary.InManagerOrder.Where(clip.Tags.Contains).Select(t => vocabulary.Tag(t).Name))));
+            Rows.Add(new ExplorerRowViewModel(clip, string.Join(TagSeparator, vocabulary.NamesOf(clip.Tags))));
         MatchText = string.Format(Strings.MatchCount, shown.Count, _all.Count);
         IsEmpty = shown.Count == 0;
         SetSelection([]);

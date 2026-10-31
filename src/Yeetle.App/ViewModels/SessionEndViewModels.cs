@@ -1,3 +1,5 @@
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using Yeetle.App.Resources;
 using Yeetle.Application.Files;
 using Yeetle.Application.Sessions;
@@ -17,6 +19,9 @@ public sealed class SummaryClipViewModel(SummaryClip clip)
     public string FileName { get; } = clip.FileName;
     public string Tags { get; } = clip.Tags.Count > 0 ? string.Join(TagSeparator, clip.Tags) : Strings.NoTagsOnClip;
     public string Markers { get; } = clip.MarkerCount > 0 ? string.Format(Strings.MarkerCount, clip.MarkerCount) : string.Empty;
+
+    // Shown on hover: the list itself is one file name per line.
+    public string Details => Markers.Length > 0 ? Tags + Environment.NewLine + Markers : Tags;
 }
 
 // The read-only summary before Commit or Discard (spec §5, layout from #9).
@@ -29,6 +34,9 @@ public sealed class SessionSummaryViewModel(SessionSummary summary)
     public IReadOnlyList<SummaryClipViewModel> Kept { get; } = summary.Kept.Select(c => new SummaryClipViewModel(c)).ToList();
     public IReadOnlyList<SummaryClipViewModel> Yeeted { get; } = summary.Yeeted.Select(c => new SummaryClipViewModel(c)).ToList();
     public IReadOnlyList<SummaryClipViewModel> Skipped { get; } = summary.Skipped.Select(c => new SummaryClipViewModel(c)).ToList();
+    public bool HasKept => KeptCount > 0;
+    public bool HasYeeted => YeetedCount > 0;
+    public bool HasSkipped => SkippedCount > 0;
     public string KeptTitle => string.Format(Strings.KeptListTitle, KeptCount);
     public string YeetedTitle => string.Format(Strings.YeetedListTitle, YeetedCount);
     public string SkippedTitle => string.Format(Strings.SkippedListTitle, SkippedCount);
@@ -89,10 +97,14 @@ public sealed class RenamePromptViewModel(RenamePreview preview, bool fromSessio
 
 public sealed record FailedFileViewModel(string FileName, string Reason);
 
-// What happened to each file (spec §9): a partial failure is never shown as a success.
-public sealed class FileResultsViewModel(string title, IReadOnlyList<FileOutcome> outcomes, bool canRestoreNames)
+// What happened to each file (spec §9): a partial failure is never shown as a success. After a
+// rename, Show in folder opens Windows Explorer on a renamed file (#62).
+public sealed class FileResultsViewModel(
+    string title, IReadOnlyList<FileOutcome> outcomes, bool canRestoreNames, Action? showInFolder = null)
 {
     public string Title { get; } = title;
+    public bool CanShowInFolder { get; } = showInFolder is not null;
+    public ICommand ShowInFolderCommand { get; } = new RelayCommand(() => showInFolder?.Invoke());
     public string Summary { get; } = outcomes.All(o => o.Succeeded)
         ? string.Format(Strings.AllFilesDone, outcomes.Count)
         : string.Format(Strings.SomeFilesFailed, outcomes.Count(o => !o.Succeeded), outcomes.Count);

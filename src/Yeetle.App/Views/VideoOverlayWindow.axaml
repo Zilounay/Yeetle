@@ -56,6 +56,36 @@
             <Setter Property="FontFamily" Value="Consolas,monospace" />
             <Setter Property="MinWidth" Value="48" />
         </Style>
+        <!-- Icon buttons of the control blocks; the play button is the largest, in the middle. -->
+        <Style Selector="Button.icon">
+            <Setter Property="Width" Value="36" />
+            <Setter Property="Height" Value="34" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button.icon.main">
+            <Setter Property="Width" Value="46" />
+            <Setter Property="Height" Value="42" />
+        </Style>
+        <Style Selector="Button.icon.main TextBlock.icon">
+            <Setter Property="FontSize" Value="22" />
+        </Style>
+        <Style Selector="Button.speed">
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="Padding" Value="7,5" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <!-- Narrow enough that the sound block stays clear of the middle one at the default window size. -->
+        <Style Selector="ComboBox.audio">
+            <Setter Property="Width" Value="128" />
+            <Setter Property="MinHeight" Value="28" />
+            <Setter Property="Padding" Value="8,2" />
+        </Style>
+        <Style Selector="TextBlock.icon.label">
+            <Setter Property="Opacity" Value="{StaticResource SecondaryTextOpacity}" />
+        </Style>
         <!-- A marker tick: a short bright bar, wider when hovered. -->
         <Style Selector="Button.tick">
             <Setter Property="Width" Value="4" />
@@ -141,42 +171,9 @@
             </StackPanel>
         </Border>
 
-        <!-- Top right: how the clip sounds; hidden on the home screen, where nothing plays. -->
-        <Border Classes="block" HorizontalAlignment="Right" VerticalAlignment="Top" IsVisible="{Binding ShowControls}">
-            <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="6">
-                <TextBlock Classes="label" Text="{x:Static res:Strings.AudioTrack}" />
-                <ComboBox Grid.Column="1" Width="240" ItemsSource="{Binding Player.AudioTracks}"
-                          SelectedItem="{Binding Player.SelectedAudioTrack}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate x:DataType="playback:AudioTrack">
-                            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-                <TextBlock Grid.Row="1" Classes="label" Text="{x:Static res:Strings.AudioOutput}" />
-                <ComboBox Grid.Row="1" Grid.Column="1" Width="240" ItemsSource="{Binding Player.AudioDevices}"
-                          SelectedItem="{Binding Player.SelectedAudioDevice}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate x:DataType="playback:AudioDevice">
-                            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-            </Grid>
-        </Border>
-
-        <!-- Home: no session yet (spec §5). -->
-        <Border Classes="block" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="32,24"
-                IsVisible="{Binding ShowHome}">
-            <StackPanel Spacing="16" HorizontalAlignment="Center">
-                <TextBlock FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center" TextWrapping="Wrap"
-                           Text="{Binding Session.HomeText}" />
-                <Button Classes="decision keep" HorizontalAlignment="Center" Content="{x:Static res:Strings.StartSession}"
-                        Command="{Binding Session.StartCommand}" />
-            </StackPanel>
-        </Border>
-
-        <StackPanel VerticalAlignment="Bottom" Spacing="12" IsVisible="{Binding ShowControls}">
+        <!-- Bottom: the decision, then three small control blocks (sound, playback, speed), then the
+             seek bar. Each block is its own tinted card, so most of the picture stays clear (#62). -->
+        <StackPanel VerticalAlignment="Bottom" Spacing="10" IsVisible="{Binding ShowControls}">
             <!-- The decision for this clip: in a session, then for a clip opened from the Explorer,
                  where the current decision is outlined and there is no Skip (spec §8). -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12" IsVisible="{Binding IsEditorPage}">
@@ -196,44 +193,86 @@
                         ToolTip.Tip="{x:Static res:Strings.KeepTip}" />
             </StackPanel>
 
-            <!-- Playback: position, then navigation, speed and volume. -->
-            <Border Classes="block">
-                <StackPanel Spacing="4">
-                    <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
-                        <!-- Marker ticks just above the seek bar; hovering shows the label (spec §7).
-                             Same margin as the slider, so a tick sits where the thumb would. -->
-                        <ItemsControl Grid.Column="1" Margin="10,0" ItemsSource="{Binding SideMarkers.Ticks}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <controls:MarkerTickPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="vm:MarkerTick">
-                                    <Button Classes="tick" controls:MarkerTickPanel.Fraction="{Binding Fraction}"
-                                            ToolTip.Tip="{Binding Tip}" Command="{Binding Seek}" />
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                        <TextBlock Grid.Row="1" Grid.Column="0" Classes="time" Text="{Binding Player.PositionText}" />
-                        <Slider x:Name="SeekBar" Grid.Row="1" Grid.Column="1" Margin="10,0" Minimum="0"
-                                Maximum="{Binding Player.SeekMaximum}" Value="{Binding Player.PositionSeconds}" />
-                        <TextBlock Grid.Row="1" Grid.Column="2" Classes="time" TextAlignment="Right"
-                                   Text="{Binding Player.DurationText}" />
-                    </Grid>
-                    <Grid ColumnDefinitions="*,Auto,*">
-                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
-                            <Button Content="{x:Static res:Strings.Back}" Command="{Binding Session.BackCommand}" IsVisible="{Binding IsSessionPage}"
-                                    ToolTip.Tip="{x:Static res:Strings.BackTip}" />
-                            <Button Content="{Binding Player.PlayPauseLabel}" Command="{Binding Player.TogglePauseCommand}" MinWidth="80" />
-                            <Button Content="{x:Static res:Strings.Undo}" Command="{Binding Session.UndoCommand}" IsVisible="{Binding IsSessionPage}"
-                                    ToolTip.Tip="{x:Static res:Strings.UndoTip}" />
-                            <Button Content="{x:Static res:Strings.Undo}" Command="{Binding Editor.UndoCommand}" IsVisible="{Binding IsEditorPage}"
-                                    ToolTip.Tip="{x:Static res:Strings.UndoTip}" />
-                            <Button Content="{x:Static res:Strings.AddMarker}" Command="{Binding SideMarkers.AddCommand}"
-                                    ToolTip.Tip="{x:Static res:Strings.AddMarkerTip}" />
-                        </StackPanel>
-                        <ItemsControl Grid.Column="1" ItemsSource="{Binding Player.Speeds}" Margin="12,0">
+            <!-- Equal side columns keep the playback block in the exact middle, under Skip. -->
+            <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="10">
+                <!-- Left: how the clip sounds. -->
+                <Border Grid.Column="0" Classes="block" HorizontalAlignment="Left" VerticalAlignment="Bottom" Padding="8,6">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Classes="icon" Command="{Binding Player.ToggleMuteCommand}" ToolTip.Tip="{Binding Player.MuteLabel}"
+                                AutomationProperties.Name="{Binding Player.MuteLabel}" VerticalAlignment="Center">
+                            <Panel>
+                                <TextBlock Classes="icon" Text="{StaticResource IconVolume}" IsVisible="{Binding !Player.IsMuted}" />
+                                <TextBlock Classes="icon" Text="{StaticResource IconMute}" IsVisible="{Binding Player.IsMuted}" />
+                            </Panel>
+                        </Button>
+                        <Slider Width="72" Minimum="0" Maximum="100" VerticalAlignment="Center"
+                                Value="{Binding Player.Volume}" ToolTip.Tip="{x:Static res:Strings.Volume}"
+                                AutomationProperties.Name="{x:Static res:Strings.Volume}" />
+                        <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="6" RowSpacing="4"
+                              VerticalAlignment="Center">
+                            <TextBlock Classes="icon label" FontSize="14" Text="{StaticResource IconAudioTrack}"
+                                       ToolTip.Tip="{x:Static res:Strings.AudioTrack}" />
+                            <ComboBox Grid.Column="1" Classes="audio" ItemsSource="{Binding Player.AudioTracks}"
+                                      SelectedItem="{Binding Player.SelectedAudioTrack}" ToolTip.Tip="{x:Static res:Strings.AudioTrack}"
+                                      AutomationProperties.Name="{x:Static res:Strings.AudioTrack}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="playback:AudioTrack">
+                                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <TextBlock Grid.Row="1" Classes="icon label" FontSize="14" Text="{StaticResource IconAudioOutput}"
+                                       ToolTip.Tip="{x:Static res:Strings.AudioOutput}" />
+                            <ComboBox Grid.Row="1" Grid.Column="1" Classes="audio" ItemsSource="{Binding Player.AudioDevices}"
+                                      SelectedItem="{Binding Player.SelectedAudioDevice}" ToolTip.Tip="{x:Static res:Strings.AudioOutput}"
+                                      AutomationProperties.Name="{x:Static res:Strings.AudioOutput}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="playback:AudioDevice">
+                                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Middle: undo, previous, play / pause, next, marker. -->
+                <Border Grid.Column="1" Classes="block" VerticalAlignment="Bottom" Padding="8,4">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <Button Classes="icon" Command="{Binding Session.UndoCommand}" IsVisible="{Binding IsSessionPage}"
+                                ToolTip.Tip="{x:Static res:Strings.UndoTip}" AutomationProperties.Name="{x:Static res:Strings.Undo}">
+                            <TextBlock Classes="icon" Text="{StaticResource IconUndo}" />
+                        </Button>
+                        <Button Classes="icon" Command="{Binding Editor.UndoCommand}" IsVisible="{Binding IsEditorPage}"
+                                ToolTip.Tip="{x:Static res:Strings.UndoTip}" AutomationProperties.Name="{x:Static res:Strings.Undo}">
+                            <TextBlock Classes="icon" Text="{StaticResource IconUndo}" />
+                        </Button>
+                        <Button Classes="icon" Command="{Binding Session.BackCommand}" IsVisible="{Binding IsSessionPage}"
+                                ToolTip.Tip="{x:Static res:Strings.BackTip}" AutomationProperties.Name="{x:Static res:Strings.Back}">
+                            <TextBlock Classes="icon" Text="{StaticResource IconPrevious}" />
+                        </Button>
+                        <Button Classes="icon main" Command="{Binding Player.TogglePauseCommand}"
+                                ToolTip.Tip="{Binding Player.PlayPauseLabel}" AutomationProperties.Name="{Binding Player.PlayPauseLabel}">
+                            <Panel>
+                                <TextBlock Classes="icon" Text="{StaticResource IconPause}" IsVisible="{Binding Player.IsPlaying}" />
+                                <TextBlock Classes="icon" Text="{StaticResource IconPlay}" IsVisible="{Binding !Player.IsPlaying}" />
+                            </Panel>
+                        </Button>
+                        <Button Classes="icon" Command="{Binding Session.SkipCommand}" IsVisible="{Binding IsSessionPage}"
+                                ToolTip.Tip="{x:Static res:Strings.SkipTip}" AutomationProperties.Name="{x:Static res:Strings.Skip}">
+                            <TextBlock Classes="icon" Text="{StaticResource IconNext}" />
+                        </Button>
+                        <Button Classes="icon" Command="{Binding SideMarkers.AddCommand}"
+                                ToolTip.Tip="{x:Static res:Strings.AddMarkerTip}" AutomationProperties.Name="{x:Static res:Strings.AddMarker}">
+                            <TextBlock Classes="icon" Text="{StaticResource IconMarker}" />
+                        </Button>
+                    </StackPanel>
+                </Border>
+
+                <!-- Right: speed and theatre mode. -->
+                <Border Grid.Column="2" Classes="block" HorizontalAlignment="Right" VerticalAlignment="Bottom" Padding="8,4">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <ItemsControl ItemsSource="{Binding Player.Speeds}" VerticalAlignment="Center">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel Orientation="Horizontal" Spacing="2" />
@@ -241,21 +280,43 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="vm:SpeedOptionViewModel">
-                                    <Button Content="{Binding Label}" Classes.current="{Binding IsCurrent}"
+                                    <Button Classes="speed" Content="{Binding Label}" Classes.current="{Binding IsCurrent}"
                                             Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Player.SetSpeedCommand}"
                                             CommandParameter="{Binding Speed}" />
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
-                            <Button Content="{Binding Player.MuteLabel}" Command="{Binding Player.ToggleMuteCommand}" MinWidth="80" />
-                            <Slider Width="120" Minimum="0" Maximum="100" VerticalAlignment="Center"
-                                    Value="{Binding Player.Volume}" ToolTip.Tip="{x:Static res:Strings.Volume}" />
-                            <Button Content="{x:Static res:Strings.Theatre}" Command="{Binding ToggleTheatreCommand}"
-                                    Classes.current="{Binding IsTheatre}" ToolTip.Tip="{x:Static res:Strings.TheatreTip}" />
-                        </StackPanel>
-                    </Grid>
-                </StackPanel>
+                        <Button Classes="icon" Command="{Binding ToggleTheatreCommand}" Classes.current="{Binding IsTheatre}"
+                                ToolTip.Tip="{x:Static res:Strings.TheatreTip}" AutomationProperties.Name="{x:Static res:Strings.Theatre}">
+                            <TextBlock Classes="icon" Text="{StaticResource IconTheatre}" />
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Position, with the marker ticks just above the seek bar; hovering a tick shows its
+                 label (spec §7). Same margin as the slider, so a tick sits where the thumb would. -->
+            <Border Classes="block" Padding="12,4,12,6">
+                <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
+                    <ItemsControl Grid.Column="1" Margin="10,0" ItemsSource="{Binding SideMarkers.Ticks}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <controls:MarkerTickPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:MarkerTick">
+                                <Button Classes="tick" controls:MarkerTickPanel.Fraction="{Binding Fraction}"
+                                        ToolTip.Tip="{Binding Tip}" Command="{Binding Seek}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Classes="time" Text="{Binding Player.PositionText}" />
+                    <Slider x:Name="SeekBar" Grid.Row="1" Grid.Column="1" Margin="10,0" Minimum="0"
+                            Maximum="{Binding Player.SeekMaximum}" Value="{Binding Player.PositionSeconds}" />
+                    <TextBlock Grid.Row="1" Grid.Column="2" Classes="time" TextAlignment="Right"
+                               Text="{Binding Player.DurationText}" />
+                </Grid>
             </Border>
         </StackPanel>
     </Panel>

@@ -1,3 +1,4 @@
+using System.Globalization;
 using Dapper;
 using Microsoft.Data.Sqlite;
 using Yeetle.Application.Sessions;
@@ -27,17 +28,32 @@ public sealed class SqliteTagStore(SqliteConnectionFactory connections) : ITagSt
     {
         using var connection = connections.Open();
         var nodes = connection.Query<NodeRow>(
-            "SELECT Id, Kind, ParentId, Name, Colour, Hotkey, Rule, Required FROM Nodes ORDER BY SortOrder, Id;").ToList();
-        var boxes = nodes.Where(n => n.Kind == BoxKind).Select(n => new Box(new BoxId(n.Id), n.Name,
+            "SELECT Id, Kind, ParentId, Name, Colour, Hotkey, Rule, Required, Retired FROM Nodes ORDER BY SortOrder, Id;").ToList();
+        var active = nodes.Where(n => !n.Retired).ToList();
+        var boxes = active.Where(n => n.Kind == BoxKind).Select(n => new Box(new BoxId(n.Id), n.Name,
             Enum.TryParse<BoxRule>(n.Rule, out var rule) ? rule : BoxRule.PickMany, n.Required,
             n.ParentId is { } parent ? new TagId(parent) : null));
-        var tags = nodes.Where(n => n.Kind != BoxKind).ToList();
-        var vocabulary = new TagVocabulary(boxes, tags.Select(n => new Tag(new TagId(n.Id), n.Name, new BoxId(n.ParentId ?? 0))));
+        var tags = active.Where(n => n.Kind != BoxKind).ToList();
+        var retired = nodes.Where(n => n.Retired && n.Kind != BoxKind).Select(n => new RetiredTag(new TagId(n.Id), n.Name));
+        var vocabulary = new TagVocabulary(boxes,
+            tags.Select(n => new Tag(new TagId(n.Id), n.Name, new BoxId(n.ParentId ?? 0))), retired);
         var hotkeys = tags.Where(n => !string.IsNullOrWhiteSpace(n.Hotkey)).ToDictionary(n => new TagId(n.Id), n => n.Hotkey!);
         var colours = tags.Where(n => !string.IsNullOrWhiteSpace(n.Colour)).ToDictionary(n => new TagId(n.Id), n => n.Colour!);
-        var usage = connection.Query<(long TagId, int Count)>("SELECT TagId, COUNT(*) FROM ClipTags GROUP BY TagId;")
-            .ToDictionary(u => new TagId(u.TagId), u => u.Count);
-        return new TagCatalog(vocabulary, hotkeys, usage) { Colours = colours };
+        var usage = connection.Query<(long TagId, int Count, string LastUsed)>(
+                "SELECT ct.TagId, COUNT(*), MAX(c.RecordedAt) FROM ClipTags ct JOIN Clips c ON c.Id = ct.ClipId GROUP BY ct.TagId;")
+            .ToList();
+        var lastUsed = new Dictionary<TagId, DateTime>();
+        foreach (var (tag, _, text) in usage)
+        {
+            // Recording dates are written by DbTime; a date alone (older test data) reads too.
+            if (DateTime.TryParse(text, CultureInfo.InvariantCulture, DateTimeStyles.None, out var time))
+                lastUsed[new TagId(tag)] = time;
+        }
+        return new TagCatalog(vocabulary, hotkeys, usage.ToDictionary(u => new TagId(u.TagId), u => u.Count))
+        {
+            Colours = colours,
+            LastUsed = lastUsed,
+        };
     }
 
     public BoxId AddBox(TagId? parent, string name, BoxRule rule) =>
@@ -85,9 +101,9 @@ public sealed class SqliteTagStore(SqliteConnectionFactory connections) : ITagSt
 
     public int CountClipsInBox(BoxId box) => CountClips(box.Value);
 
-    public void DeleteTag(TagId tag) => Delete(tag.Value);
+    public void DeleteTag(TagId tag) => Retire(tag.Value);
 
-    public void DeleteBox(BoxId box) => Delete(box.Value);
+    public void DeleteBox(BoxId box) => Retire(box.Value);
 
     // A new box or tag goes last among its siblings.
     private long Add(string kind, long? parentId, string name, string? rule)
@@ -118,7 +134,7 @@ public sealed class SqliteTagStore(SqliteConnectionFactory connections) : ITagSt
         var siblings = connection.Query<long>(
             """
             SELECT n.Id FROM Nodes n JOIN Nodes me ON me.Id = @id
-            WHERE n.ParentId IS me.ParentId AND n.Kind = me.Kind
+            WHERE n.ParentId IS me.ParentId AND n.Kind = me.Kind AND n.Retired = 0
             ORDER BY n.SortOrder, n.Id;
             """, new { id }, transaction).ToList();
         var from = siblings.IndexOf(id);
@@ -139,14 +155,12 @@ public sealed class SqliteTagStore(SqliteConnectionFactory connections) : ITagSt
             Below + " SELECT COUNT(DISTINCT ClipId) FROM ClipTags WHERE TagId IN (SELECT Id FROM Below);", new { id });
     }
 
-    // Children first is not needed: SQLite checks the parent links when the statement ends.
-    private void Delete(long id)
+    // Retires the node and everything below it (spec §6): they leave the Tag Manager and free their
+    // hotkeys, while clips keep them. The rows stay, so an id is never given to a new tag.
+    private void Retire(long id)
     {
         using var connection = connections.Open();
-        using var transaction = connection.BeginTransaction();
-        connection.Execute(Below + " DELETE FROM ClipTags WHERE TagId IN (SELECT Id FROM Below);", new { id }, transaction);
-        connection.Execute(Below + " DELETE FROM Nodes WHERE Id IN (SELECT Id FROM Below);", new { id }, transaction);
-        transaction.Commit();
+        connection.Execute(Below + " UPDATE Nodes SET Retired = 1, Hotkey = NULL WHERE Id IN (SELECT Id FROM Below);", new { id });
     }
 
     private sealed class NodeRow
@@ -159,5 +173,6 @@ public sealed class SqliteTagStore(SqliteConnectionFactory connections) : ITagSt
         public string? Hotkey { get; init; }
         public string? Rule { get; init; }
         public bool Required { get; init; }
+        public bool Retired { get; init; }
     }
 }

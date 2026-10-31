@@ -43,17 +43,9 @@ public sealed class ClipEdit
 
     public void DeleteMarker(int number) => Change(Current with { Markers = ClipMarkers.Delete(Current.Markers, number) });
 
-    // Rules of a changed vocabulary apply from now on; deleted tags leave the clip and its history.
-    public void UseVocabulary(TagVocabulary vocabulary)
-    {
-        _rules = new TagRules(vocabulary);
-        var known = vocabulary.InManagerOrder.ToHashSet();
-        Current = Current with { Tags = Current.Tags.Intersect(known) };
-        var history = _undo.Reverse().Select(c => c with { Tags = c.Tags.Intersect(known) }).ToList();
-        _undo.Clear();
-        foreach (var state in history)
-            _undo.Push(state);
-    }
+    // Rules of a changed vocabulary apply from now on. A tag deleted meanwhile stays on the clip: an
+    // opened clip is already in the library, where deleted tags are retired, not removed (spec §6).
+    public void UseVocabulary(TagVocabulary vocabulary) => _rules = new TagRules(vocabulary);
 
     public bool Undo()
     {
