@@ -16,8 +16,13 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     private readonly ScanScheduler _scans;
     private readonly IDialogs _dialogs;
     private readonly FileOperations _files;
-    // Folders whose first-scan question is open, so a second scan does not ask again meanwhile.
-    private readonly HashSet<long> _asking = [];
+    // First-scan questions, asked one at a time (spec §4). A folder is in _queued from the moment
+    // a scan reports it until its question closes, so a second scan does not ask again meanwhile.
+    private readonly Queue<PendingFirstScan> _questions = new();
+    private readonly HashSet<long> _queued = [];
+    // Folders already answered: a scan report from before the answer may still list them.
+    private readonly HashSet<long> _answered = [];
+    private bool _isAsking;
 
     // What the last scan found, e.g. files still recording.
     [ObservableProperty]
@@ -91,18 +96,39 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     private async Task OnScannedAsync(ScanReport report)
     {
         ScanSummary = ScanNotice.Describe(report);
-        foreach (var pending in report.PendingFirstScans.Where(p => _asking.Add(p.Folder.Id)))
+        foreach (var pending in report.PendingFirstScans.Where(p => !_answered.Contains(p.Folder.Id) && _queued.Add(p.Folder.Id)))
+            _questions.Enqueue(pending);
+        await AskQueuedAsync();
+        await Session.RefreshHomeAsync();
+    }
+
+    // Closing a question without answering asks again on the next scan.
+    private async Task AskQueuedAsync()
+    {
+        if (_isAsking)
+            return;
+        _isAsking = true;
+        try
         {
-            try
+            while (_questions.TryDequeue(out var pending))
             {
-                if (await _dialogs.AskFirstScanAsync(pending) is { } choice)
-                    await _scans.CompleteFirstScanAsync(pending.Folder.Id, choice);
-            }
-            finally
-            {
-                _asking.Remove(pending.Folder.Id);
+                var folderId = pending.Folder.Id;
+                try
+                {
+                    if (await _dialogs.AskFirstScanAsync(pending) is not { } choice)
+                        continue;
+                    _answered.Add(folderId);
+                    await _scans.CompleteFirstScanAsync(folderId, choice);
+                }
+                finally
+                {
+                    _queued.Remove(folderId);
+                }
             }
         }
-        await Session.RefreshHomeAsync();
+        finally
+        {
+            _isAsking = false;
+        }
     }
 }

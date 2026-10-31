@@ -202,25 +202,25 @@ Fermez tout programme qui pourrait l'utiliser, puis relancez Yeetle.</value>
     <value>Passer en revue seulement les clips enregistrés à partir de cette date ; garder les plus anciens</value>
   </data>
   <data name="ScanAdded" xml:space="preserve">
-    <value>{0} nouveaux clips</value>
+    <value>{0} clip(s) ajouté(s)</value>
   </data>
   <data name="ScanChanged" xml:space="preserve">
-    <value>{0} modifiés : {1}</value>
+    <value>{0} modifié(s) : {1}</value>
   </data>
   <data name="ScanMissing" xml:space="preserve">
-    <value>{0} manquants</value>
+    <value>{0} manquant(s)</value>
   </data>
   <data name="StillRecordingOne" xml:space="preserve">
-    <value>1 fichier semble encore en cours d'enregistrement.</value>
+    <value>1 fichier semble encore en cours d'enregistrement</value>
   </data>
   <data name="StillRecordingMany" xml:space="preserve">
-    <value>{0} fichiers semblent encore en cours d'enregistrement.</value>
+    <value>{0} fichiers semblent encore en cours d'enregistrement</value>
   </data>
   <data name="ScanOffline" xml:space="preserve">
     <value>Hors ligne : {0}</value>
   </data>
   <data name="HomeNewClips" xml:space="preserve">
-    <value>{0} nouveaux clips en attente</value>
+    <value>{0} nouveau(x) clip(s) en attente</value>
   </data>
   <data name="HomeNoNewClips" xml:space="preserve">
     <value>Aucun nouveau clip à passer en revue. Ajoutez un dossier source, ou enregistrez-en !</value>

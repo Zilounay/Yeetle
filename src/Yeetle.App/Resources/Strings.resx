@@ -202,7 +202,7 @@ Close any program that may be using it, then start Yeetle again.</value>
     <value>Review only clips recorded from this date; keep the older ones</value>
   </data>
   <data name="ScanAdded" xml:space="preserve">
-    <value>{0} new clips</value>
+    <value>{0} clip(s) added</value>
   </data>
   <data name="ScanChanged" xml:space="preserve">
     <value>{0} changed: {1}</value>
@@ -211,16 +211,16 @@ Close any program that may be using it, then start Yeetle again.</value>
     <value>{0} missing</value>
   </data>
   <data name="StillRecordingOne" xml:space="preserve">
-    <value>1 file looks like it is still recording.</value>
+    <value>1 file looks like it is still recording</value>
   </data>
   <data name="StillRecordingMany" xml:space="preserve">
-    <value>{0} files look like they are still recording.</value>
+    <value>{0} files look like they are still recording</value>
   </data>
   <data name="ScanOffline" xml:space="preserve">
     <value>Offline: {0}</value>
   </data>
   <data name="HomeNewClips" xml:space="preserve">
-    <value>{0} new clips waiting</value>
+    <value>{0} new clip(s) waiting</value>
   </data>
   <data name="HomeNoNewClips" xml:space="preserve">
     <value>No new clips to review. Add a source folder, or record some!</value>
