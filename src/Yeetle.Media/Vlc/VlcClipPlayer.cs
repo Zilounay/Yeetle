@@ -124,7 +124,15 @@ public sealed class VlcClipPlayer : IClipPlayer, IDisposable
                 using var media = CreateMedia(path, startPaused: false);
                 player.Play(media);
             }
-            WaitForPicture(player, startTime, preloaded ? PreloadedStartTimeout : ColdStartTimeout);
+            var moving = WaitForPicture(player, startTime, preloaded ? PreloadedStartTimeout : ColdStartTimeout);
+            // A file VLC cannot read never moves and never gets a length, and looping would retry it
+            // without end: it is stopped and reported instead.
+            if (!moving && player.Length <= 0 && player.VideoTrackCount <= 0)
+            {
+                player.Stop();
+                if (shown.IsActive)
+                    SetState(PlaybackState.Error);
+            }
             if (shown.IsActive)
                 shown.BringToFront();
             if (!previous.IsActive) // unless a later switch is already bringing it back
@@ -342,12 +350,17 @@ public sealed class VlcClipPlayer : IClipPlayer, IDisposable
     // VLC's clock moving past where it started is the moment the new picture is on screen: the
     // POC's traced screen captures showed both happen together (#3). Its Vout event comes earlier,
     // when the window exists but may still be black. Polls because TimeChanged only fires every
-    // few hundred milliseconds.
-    private static void WaitForPicture(MediaPlayer player, long startTime, TimeSpan timeout)
+    // few hundred milliseconds. True once the picture moves; false when the timeout passed first.
+    private static bool WaitForPicture(MediaPlayer player, long startTime, TimeSpan timeout)
     {
         var watch = Stopwatch.StartNew();
-        while (player.Time <= Math.Max(StartOfClip, startTime) && watch.Elapsed < timeout)
+        while (player.Time <= Math.Max(StartOfClip, startTime))
+        {
+            if (watch.Elapsed >= timeout)
+                return false;
             Thread.Sleep(PicturePollInterval);
+        }
+        return true;
     }
 
     private void SetState(PlaybackState state)

@@ -100,6 +100,7 @@
         <!-- Clip strip: two clips before and after the current one (spec §5). -->
         <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" Margin="16,14,16,16" IsVisible="{Binding Session.IsActive}">
             <Button Content="‹" VerticalAlignment="Stretch" ToolTip.Tip="{x:Static res:Strings.StripEarlier}"
+                    AutomationProperties.Name="{x:Static res:Strings.StripEarlier}"
                     Command="{Binding Session.StripEarlierCommand}" />
             <ItemsControl Grid.Column="1" ItemsSource="{Binding Session.Strip}">
                 <ItemsControl.ItemsPanel>
@@ -129,6 +130,7 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
             <Button Grid.Column="2" Content="›" VerticalAlignment="Stretch" ToolTip.Tip="{x:Static res:Strings.StripLater}"
+                    AutomationProperties.Name="{x:Static res:Strings.StripLater}"
                     Command="{Binding Session.StripLaterCommand}" />
         </Grid>
     </Grid>

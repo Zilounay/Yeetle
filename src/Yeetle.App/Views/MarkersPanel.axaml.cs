@@ -18,7 +18,7 @@ public partial class MarkersPanel : UserControl
         // Label fields: Enter saves, Esc puts the old label back; both hand the keys back to the
         // hotkeys. Leaving a field saves it too.
         List.AddHandler(KeyDownEvent, OnLabelKeyDown, RoutingStrategies.Bubble);
-        List.AddHandler(LostFocusEvent, (_, e) => Commit(e.Source), RoutingStrategies.Bubble);
+        List.AddHandler(LostFocusEvent, (_, e) => CommitLater(e.Source), RoutingStrategies.Bubble);
     }
 
     private void Watch(MarkersPanelViewModel? viewModel)
@@ -46,18 +46,20 @@ public partial class MarkersPanel : UserControl
 
     private void OnLabelKeyDown(object? sender, KeyEventArgs e)
     {
-        if (e.Key is not (Key.Enter or Key.Escape) || e.Source is not TextBox)
+        if (e.Key is not (Key.Enter or Key.Escape) || e.Source is not TextBox { DataContext: MarkerItemViewModel item })
             return;
         e.Handled = true;
-        if (e.Key == Key.Escape && e.Source is TextBox { DataContext: MarkerItemViewModel item })
+        if (e.Key == Key.Escape)
             item.Label = item.SavedLabel;
-        // Leaving the field saves the label (LostFocus).
-        TopLevel.GetTopLevel(this)?.Focus();
+        // The panel takes the focus, which saves the label (LostFocus) and lets hotkeys work again:
+        // they pause only while a text field has the focus.
+        Focus();
     }
 
-    private void Commit(object? source)
+    // Saving rebuilds the list, so it waits until the focus has finished moving.
+    private void CommitLater(object? source)
     {
         if (source is TextBox { DataContext: MarkerItemViewModel item })
-            _viewModel?.CommitLabel(item);
+            Dispatcher.UIThread.Post(() => _viewModel?.CommitLabel(item));
     }
 }

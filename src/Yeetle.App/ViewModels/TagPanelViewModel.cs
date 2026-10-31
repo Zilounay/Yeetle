@@ -68,6 +68,9 @@ public sealed partial class TagPanelViewModel : ViewModelBase
     // Set when Keep was refused because a visible required box is empty; cleared by any change.
     private bool _showRequiredWarning;
 
+    // Tag keys that clash with an action; shown for as long as the session runs.
+    private string _hotkeyProblems = string.Empty;
+
     public TagPanelViewModel(LoadedSettings settings, IDialogs dialogs)
     {
         _dialogs = dialogs;
@@ -82,7 +85,7 @@ public sealed partial class TagPanelViewModel : ViewModelBase
     {
         _session = session;
         _tagKeys.Clear();
-        Message = string.Empty;
+        _hotkeyProblems = string.Empty;
         IsTyping = false;
         if (session is not null)
         {
@@ -94,8 +97,9 @@ public sealed partial class TagPanelViewModel : ViewModelBase
                 else
                     _tagKeys.Add((key, tag));
             }
-            Message = string.Join(Environment.NewLine, clashes);
+            _hotkeyProblems = string.Join(Environment.NewLine, clashes);
         }
+        ShowMessage(string.Empty);
         Refresh();
     }
 
@@ -155,18 +159,21 @@ public sealed partial class TagPanelViewModel : ViewModelBase
         {
             if (_session?.CurrentReview is { } review && !review.Tags.Contains(suggestion.Tag))
                 _session.SelectTag(suggestion.Tag);
-            Message = string.Empty;
         }
         else if (TypedText.Trim().Length > 0)
         {
-            Message = string.Empty;
             _dialogs.ShowTagManager(TypedText.Trim());
         }
-        IsTyping = false;
+        CloseTyping();
     }
 
+    // Whatever was typed is dropped, with its message.
     [RelayCommand]
-    private void CloseTyping() => IsTyping = false;
+    private void CloseTyping()
+    {
+        IsTyping = false;
+        ShowMessage(string.Empty);
+    }
 
     public void MoveSuggestion(int step)
     {
@@ -185,8 +192,11 @@ public sealed partial class TagPanelViewModel : ViewModelBase
         foreach (var tag in TagSearch.Find(vocabulary, value))
             Suggestions.Add(new TagSuggestion(tag, string.Join(PathSeparator, vocabulary.PathOf(tag))));
         SelectedSuggestion = Suggestions.FirstOrDefault();
-        Message = Suggestions.Count == 0 && value.Trim().Length > 0 ? string.Format(Strings.NoTagMatch, value.Trim()) : string.Empty;
+        ShowMessage(Suggestions.Count == 0 && value.Trim().Length > 0 ? string.Format(Strings.NoTagMatch, value.Trim()) : string.Empty);
     }
+
+    private void ShowMessage(string typing) =>
+        Message = string.Join(Environment.NewLine, new[] { _hotkeyProblems, typing }.Where(m => m.Length > 0));
 
     private void Toggle(TagId tag)
     {

@@ -62,6 +62,7 @@
         </Style>
         <Style Selector="Border.key">
             <Setter Property="Background" Value="{StaticResource KeyBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="CornerRadius" Value="4" />
             <Setter Property="Padding" Value="5,1" />
         </Style>
@@ -99,7 +100,8 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="vm:TagNodeViewModel">
-                                    <Button Classes="chip" Classes.selected="{Binding IsSelected}" Command="{Binding Select}">
+                                    <Button Classes="chip" Classes.selected="{Binding IsSelected}" Command="{Binding Select}"
+                                            AutomationProperties.Name="{Binding Name}">
                                         <StackPanel Orientation="Horizontal" Spacing="6">
                                             <Ellipse Width="{StaticResource DotSize}" Height="{StaticResource DotSize}"
                                                      Fill="{Binding ColourBrush}" IsVisible="{Binding HasColour}"
@@ -119,7 +121,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="vm:TagNodeViewModel">
                                 <StackPanel Margin="{StaticResource NestedIndent}" Spacing="6">
-                                    <Button Classes="plain" Command="{Binding ToggleExpandedCommand}">
+                                    <Button Classes="plain" Command="{Binding ToggleExpandedCommand}" AutomationProperties.Name="{Binding UnderTitle}">
                                         <StackPanel Orientation="Horizontal" Spacing="6">
                                             <TextBlock Text="{Binding ExpandGlyph}" />
                                             <TextBlock Text="{Binding UnderTitle}" Opacity="{StaticResource SecondaryTextOpacity}" />
