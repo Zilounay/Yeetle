@@ -17,9 +17,20 @@
 
 ## Tech
 
-C# on .NET 10, Avalonia 12, SQLite, FFmpeg and a VLC-based player. Windows first.
+C# on .NET 10, Avalonia 12, SQLite and a VLC-based player. Windows first.
 
 The full product and technical specification is in [`docs/SPEC.md`](docs/SPEC.md). Work is tracked in [GitHub Issues](https://github.com/Zilounay/Yeetle/issues), grouped by milestone.
+
+## Trying it on a throwaway library
+
+Yeetle keeps its database, `settings.json`, backups and logs in `%LOCALAPPDATA%\Yeetle`. To try something without touching that, point it at another folder first:
+
+```powershell
+$env:YEETLE_DATA_FOLDER = "$env:TEMP\YeetleTest"
+dotnet run --project src/Yeetle.Desktop
+```
+
+That copy uses only the given folder and can run beside the real one. It still reads and changes the clip files of the source folders you add to it, so add a folder of copies.
 
 ## License
 

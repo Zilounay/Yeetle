@@ -15,14 +15,15 @@ internal static class Program
     [STAThread]
     public static int Main(string[] args)
     {
-        using var instance = new SingleInstance();
+        // One instance per data folder, so a test copy on a throwaway folder can run beside the real one.
+        using var instance = new SingleInstance(AppPaths.Default.Root);
         if (!instance.IsFirst)
         {
             instance.ActivateFirst();
             return 0;
         }
         // Read before anything starts, since every part may depend on the settings.
-        var settings = new JsonSettingsStore(JsonSettingsStore.DefaultPath).Load();
+        var settings = new JsonSettingsStore(AppPaths.Default.Settings).Load();
         using var services = Composition.CreateServices(settings, AppPaths.Default, instance);
         return BuildAvaloniaApp(services).StartWithClassicDesktopLifetime(args);
     }

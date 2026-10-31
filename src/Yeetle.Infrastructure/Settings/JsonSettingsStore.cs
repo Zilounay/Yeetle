@@ -3,13 +3,10 @@ using Yeetle.Application.Settings;
 
 namespace Yeetle.Infrastructure.Settings;
 
-// settings.json under %LOCALAPPDATA%\Yeetle (spec §10). The file is meant to be edited by hand,
-// so comments and trailing commas are accepted.
+// settings.json, beside the database (AppPaths.Settings, spec §10). The file is meant to be
+// edited by hand, so comments and trailing commas are accepted.
 public sealed class JsonSettingsStore(string path) : ISettingsStore
 {
-    private const string AppFolderName = "Yeetle";
-    private const string FileName = "settings.json";
-
     private const string Header = """
         // Yeetle settings. Edit while Yeetle is closed; delete a line to get its default back.
         //
@@ -28,9 +25,6 @@ public sealed class JsonSettingsStore(string path) : ISettingsStore
         AllowTrailingCommas = true,
         WriteIndented = true,
     };
-
-    public static string DefaultPath { get; } = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppFolderName, FileName);
 
     public LoadedSettings Load()
     {
