@@ -16,15 +16,19 @@
     <ProjectReference Include="..\Yeetle.Domain\Yeetle.Domain.csproj" />
   </ItemGroup>
 
-  <!-- User-facing text (English, French in Strings.fr.resx). The Strings class is generated at build. -->
+  <!-- User-facing text (English, French in Strings.fr.resx). The Strings class is checked in, so the
+       IDE sees it without a build; Rider and Visual Studio regenerate it when Strings.resx is saved.
+       After editing the resx in a text editor, regenerate it from the IDE (StringsTests catch a stale one). -->
   <ItemGroup>
     <EmbeddedResource Update="Resources\Strings.resx">
-      <StronglyTypedFileName>$(IntermediateOutputPath)Strings.Designer.cs</StronglyTypedFileName>
-      <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
-      <StronglyTypedNamespace>Yeetle.App.Resources</StronglyTypedNamespace>
-      <StronglyTypedClassName>Strings</StronglyTypedClassName>
-      <PublicClass>true</PublicClass>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <Compile Update="Resources\Strings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>

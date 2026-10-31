@@ -142,13 +142,11 @@
         </Border>
 
         <!-- Top right: how the clip sounds; hidden on the home screen, where nothing plays. -->
-        <Border Classes="block" HorizontalAlignment="Right" VerticalAlignment="Top" DataContext="{Binding Player}"
-                IsVisible="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ShowControls}"
-                x:DataType="vm:PlayerViewModel">
+        <Border Classes="block" HorizontalAlignment="Right" VerticalAlignment="Top" IsVisible="{Binding ShowControls}">
             <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="6">
                 <TextBlock Classes="label" Text="{x:Static res:Strings.AudioTrack}" />
-                <ComboBox Grid.Column="1" Width="240" ItemsSource="{Binding AudioTracks}"
-                          SelectedItem="{Binding SelectedAudioTrack}">
+                <ComboBox Grid.Column="1" Width="240" ItemsSource="{Binding Player.AudioTracks}"
+                          SelectedItem="{Binding Player.SelectedAudioTrack}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate x:DataType="playback:AudioTrack">
                             <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
@@ -156,8 +154,8 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
                 <TextBlock Grid.Row="1" Classes="label" Text="{x:Static res:Strings.AudioOutput}" />
-                <ComboBox Grid.Row="1" Grid.Column="1" Width="240" ItemsSource="{Binding AudioDevices}"
-                          SelectedItem="{Binding SelectedAudioDevice}">
+                <ComboBox Grid.Row="1" Grid.Column="1" Width="240" ItemsSource="{Binding Player.AudioDevices}"
+                          SelectedItem="{Binding Player.SelectedAudioDevice}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate x:DataType="playback:AudioDevice">
                             <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
