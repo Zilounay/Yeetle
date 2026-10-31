@@ -31,6 +31,23 @@ public class ClipEditTests
     }
 
     [Fact]
+    public void A_tag_deleted_while_the_clip_is_open_stays_on_it_and_is_named_as_retired()
+    {
+        var edit = Open();
+        edit.SelectTag(Zil);
+        var withoutZil = new TagVocabulary(
+            Create().BoxesUnder(null).Concat(Create().InManagerOrder.SelectMany(t => Create().BoxesUnder(t))),
+            Create().InManagerOrder.Where(t => t != Zil).Select(t => Create().Tag(t)),
+            [new RetiredTag(Zil, "ZiL")]);
+
+        edit.UseVocabulary(withoutZil);
+        edit.SelectTag(Funny);
+
+        Assert.Equal(new HashSet<TagId> { Zil, Funny }, edit.Current.Tags);
+        Assert.Equal(["Funny", "ZiL"], withoutZil.NamesOf(edit.Current.Tags));
+    }
+
+    [Fact]
     public void A_change_to_the_same_value_leaves_no_undo_step()
     {
         var edit = Open();

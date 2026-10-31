@@ -18,11 +18,14 @@ public partial class MainWindow : Window
             if (ViewModel is not { } viewModel)
                 return;
             var overlay = new VideoOverlayWindow { DataContext = viewModel };
+            // The controls window only shows with the controls: the app starts on the home page, where
+            // there is no video to lay them over.
+            overlay.SetShown(viewModel.ShowControls);
             overlay.Follow(this, Player.Video);
             viewModel.PropertyChanged += (_, e) =>
             {
-                if (e.PropertyName == nameof(MainWindowViewModel.ShowPlayer))
-                    overlay.SetShown(viewModel.ShowPlayer);
+                if (e.PropertyName == nameof(MainWindowViewModel.ShowControls))
+                    overlay.SetShown(viewModel.ShowControls);
             };
             _ = viewModel.StartAsync();
         };

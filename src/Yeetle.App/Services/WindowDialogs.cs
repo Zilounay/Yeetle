@@ -6,11 +6,13 @@ using Yeetle.App.Views;
 using Yeetle.Application.Files;
 using Yeetle.Application.Library;
 using Yeetle.Application.Sessions;
+using Yeetle.Application.Shell;
 
 namespace Yeetle.App.Services;
 
 // Each dialog is modal over the active window, except the Tag Manager.
-public sealed class WindowDialogs(Func<SourceFoldersViewModel> createSourceFolders, Func<TagManagerViewModel> createTagManager)
+public sealed class WindowDialogs(
+    Func<SourceFoldersViewModel> createSourceFolders, Func<TagManagerViewModel> createTagManager, IShell shell)
     : IDialogs
 {
     // Not modal: the Tag Manager stays open beside a running session (spec §5).
@@ -68,16 +70,35 @@ public sealed class WindowDialogs(Func<SourceFoldersViewModel> createSourceFolde
 
     public Task ShowMarkerSheetAsync(string text) => ShowAsync<object>(new MarkerSheetWindow(text));
 
-    public Task<bool> ShowFileResultsAsync(string title, IReadOnlyList<FileOutcome> outcomes, bool canRestoreNames) =>
-        ShowAsync<bool>(new FileResultsWindow { DataContext = new FileResultsViewModel(title, outcomes, canRestoreNames) });
+    public Task<bool> ShowFileResultsAsync(string title, IReadOnlyList<FileOutcome> outcomes, bool canRestoreNames,
+        string? showInFolder = null) =>
+        ShowAsync<bool>(new FileResultsWindow
+        {
+            DataContext = new FileResultsViewModel(title, outcomes, canRestoreNames,
+                showInFolder is null ? null : () => shell.ShowInFolder(showInFolder)),
+        });
 
     public Task<FirstScanChoice?> AskFirstScanAsync(PendingFirstScan pending) =>
         ShowAsync<FirstScanChoice?>(new FirstScanWindow { DataContext = new FirstScanViewModel(pending) });
+
+    // Raised around every modal dialog, so the controls over the video can step aside and never
+    // cover it.
+    public static event EventHandler? DialogOpening;
+
+    public static event EventHandler? DialogClosed;
 
     private static async Task<T?> ShowAsync<T>(Window dialog)
     {
         if (ActiveWindow() is not { } owner)
             return default;
-        return await dialog.ShowDialog<T?>(owner);
+        DialogOpening?.Invoke(null, EventArgs.Empty);
+        try
+        {
+            return await dialog.ShowDialog<T?>(owner);
+        }
+        finally
+        {
+            DialogClosed?.Invoke(null, EventArgs.Empty);
+        }
     }
 }

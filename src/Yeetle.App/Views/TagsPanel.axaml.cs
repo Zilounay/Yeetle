@@ -15,6 +15,8 @@ public partial class TagsPanel : UserControl
         InitializeComponent();
         DataContextChanged += (_, _) => Watch(DataContext as TagPanelViewModel);
         TypedBox.KeyDown += OnTypedKeyDown;
+        // A click picks the suggestion under the pointer, like Enter on the highlighted one.
+        SuggestionList.Tapped += (_, _) => _viewModel?.ApplyTypedCommand.Execute(null);
     }
 
     private void Watch(TagPanelViewModel? viewModel)

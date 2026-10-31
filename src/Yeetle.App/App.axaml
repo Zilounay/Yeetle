@@ -2,7 +2,31 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Yeetle.App.App"
              RequestedThemeVariant="Default">
+    <Application.Resources>
+        <!-- Icons come from Windows' own icon font: Segoe Fluent Icons on Windows 11, the older
+             Segoe MDL2 Assets on Windows 10, which has the same code points. -->
+        <FontFamily x:Key="IconFont">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
+        <x:String x:Key="IconPlay">&#xE768;</x:String>
+        <x:String x:Key="IconPause">&#xE769;</x:String>
+        <x:String x:Key="IconPrevious">&#xE892;</x:String>
+        <x:String x:Key="IconNext">&#xE893;</x:String>
+        <x:String x:Key="IconUndo">&#xE7A7;</x:String>
+        <x:String x:Key="IconMarker">&#xE7C1;</x:String>
+        <x:String x:Key="IconVolume">&#xE767;</x:String>
+        <x:String x:Key="IconMute">&#xE74F;</x:String>
+        <x:String x:Key="IconTheatre">&#xE740;</x:String>
+        <x:String x:Key="IconAudioTrack">&#xE8D6;</x:String>
+        <x:String x:Key="IconAudioOutput">&#xE7F5;</x:String>
+        <x:String x:Key="IconSearch">&#xE721;</x:String>
+        <x:String x:Key="IconFolder">&#xE838;</x:String>
+    </Application.Resources>
     <Application.Styles>
         <FluentTheme />
+        <Style Selector="TextBlock.icon">
+            <Setter Property="FontFamily" Value="{StaticResource IconFont}" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
     </Application.Styles>
 </Application>
