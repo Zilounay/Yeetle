@@ -9,12 +9,15 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        HotkeyRouting.Attach(this, () => ViewModel?.Player);
+        HotkeyRouting.Attach(this, () => ViewModel);
         Opened += (_, _) =>
         {
-            if (ViewModel is { } viewModel)
-                new VideoOverlayWindow { DataContext = viewModel.Player }.Follow(this, Player.Video);
+            if (ViewModel is not { } viewModel)
+                return;
+            new VideoOverlayWindow { DataContext = viewModel }.Follow(this, Player.Video);
+            _ = viewModel.StartAsync();
         };
+        Activated += (_, _) => ViewModel?.OnActivated();
         Closing += (_, _) => ViewModel?.OnClosing();
     }
 

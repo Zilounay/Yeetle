@@ -4,6 +4,7 @@ using Yeetle.App.ViewModels;
 using Yeetle.Application.Clips;
 using Yeetle.Application.Data;
 using Yeetle.Application.Diagnostics;
+using Yeetle.Application.Library;
 using Yeetle.Application.Playback;
 using Yeetle.Application.Settings;
 using Yeetle.Application.Shell;
@@ -24,22 +25,31 @@ internal static class Composition
             .AddSingleton(settings)
             .AddSingleton(settings.Values)
             .AddSingleton(settings.Values.Backups)
+            .AddSingleton(settings.Values.Library)
             .AddSingleton(paths)
             .AddSingleton(TimeProvider.System)
             .AddSingleton(activation)
             // Application
             .AddSingleton<ClipNavigator>()
+            .AddSingleton<LibraryScanner>()
+            .AddSingleton<ScanScheduler>()
+            .AddSingleton<SourceFolders>()
             // Infrastructure
             .AddSingleton<ILog, FileLog>()
             .AddSingleton<SqliteConnectionFactory>()
             .AddSingleton<IBackups, SqliteBackups>()
             .AddSingleton<IDatabaseStartup, SqliteDatabaseStartup>()
             .AddSingleton<IShell, WindowsShell>()
+            .AddSingleton<ILibraryStore, SqliteLibraryStore>()
+            .AddSingleton<IClipFiles, FileSystemClipFiles>()
+            .AddSingleton<IRecorderCheck, ObsRecorderCheck>()
             .AddSingleton<IClipFolderReader, FileSystemClipFolderReader>()
             // Media
             .AddSingleton<IClipPlayer, VlcClipPlayer>()
             // App
             .AddSingleton<IFolderPicker, StorageFolderPicker>()
+            .AddSingleton<IDialogs>(s => new WindowDialogs(s.GetRequiredService<SourceFoldersViewModel>))
+            .AddTransient<SourceFoldersViewModel>()
             .AddSingleton<PlayerViewModel>()
             .AddSingleton<MainWindowViewModel>()
             .AddTransient<RecoveryViewModel>()

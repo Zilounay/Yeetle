@@ -39,6 +39,10 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
     [ObservableProperty]
     private string _message = Strings.NoFolderOpen;
 
+    // What the last scan found, e.g. files still recording.
+    [ObservableProperty]
+    private string _notice = string.Empty;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(PlayPauseLabel))]
     private bool _isPlaying;
@@ -84,8 +88,6 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
         _settings = settings.Values.Player;
         Speeds = PlaybackSpeeds.All.Select(s => new SpeedOptionViewModel(s)).ToList();
         Actions = CreateActions();
-        Hotkeys = new HotkeyMap(settings.Values.Hotkeys, Actions.Keys.ToHashSet());
-        ReportSettingsProblems(settings);
 
         _player.StateChanged += OnPlayerStateChanged;
         _player.AudioChanged += OnPlayerAudioChanged;
@@ -100,10 +102,8 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
 
     public IReadOnlyList<IVideoScreen> Screens => _player.Screens;
 
-    // What each hotkey action does, by its name in the settings file.
+    // What each player hotkey action does, by its name in the settings file.
     public IReadOnlyDictionary<string, ICommand> Actions { get; }
-
-    public HotkeyMap Hotkeys { get; }
 
     public IReadOnlyList<SpeedOptionViewModel> Speeds { get; }
 
@@ -222,12 +222,9 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
         SyncPosition();
     }
 
-    private void ReportSettingsProblems(LoadedSettings settings)
-    {
-        var problems = Hotkeys.Problems.Prepend(settings.Problem).OfType<string>().ToList();
-        if (problems.Count > 0)
-            Message = _settingsProblem = string.Format(Strings.SettingsProblem, settings.Location, string.Join(ProblemSeparator, problems));
-    }
+    // The settings file could not be fully read; shown until it is fixed.
+    public void ShowSettingsProblem(string location, IEnumerable<string> problems) =>
+        Message = _settingsProblem = string.Format(Strings.SettingsProblem, location, string.Join(ProblemSeparator, problems));
 
     [RelayCommand]
     private void CycleAudioTrack()

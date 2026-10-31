@@ -20,7 +20,7 @@ public partial class VideoOverlayWindow : Window
     public VideoOverlayWindow()
     {
         InitializeComponent();
-        HotkeyRouting.Attach(this, () => DataContext as PlayerViewModel);
+        HotkeyRouting.Attach(this, () => DataContext as IHotkeyTarget);
         // The slider's thumb handles pointer events itself, so handled events are listened to too.
         SeekBar.AddHandler(PointerPressedEvent, (_, _) => SetScrubbing(true), RoutingStrategies.Tunnel, true);
         SeekBar.AddHandler(PointerReleasedEvent, (_, _) => SetScrubbing(false), RoutingStrategies.Tunnel, true);
@@ -59,7 +59,7 @@ public partial class VideoOverlayWindow : Window
 
     private void SetScrubbing(bool scrubbing)
     {
-        if (DataContext is PlayerViewModel viewModel)
-            viewModel.IsScrubbing = scrubbing;
+        if (DataContext is MainWindowViewModel viewModel)
+            viewModel.Player.IsScrubbing = scrubbing;
     }
 }
