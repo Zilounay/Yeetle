@@ -125,13 +125,13 @@ public sealed partial class TagPanelViewModel : ViewModelBase
     public void ClearRequiredWarning() => _showRequiredWarning = false;
 
     // A tag hotkey toggles that tag on the current clip.
-    public ICommand? FindTagCommand(KeyModifiers modifiers, PhysicalKey key, string? symbol)
+    public ICommand? FindTagCommand(KeyPress press)
     {
         if (_session?.CurrentReview is null)
             return null;
         foreach (var (hotkey, tag) in _tagKeys)
         {
-            if (hotkey.Matches(modifiers, key, symbol))
+            if (hotkey.Matches(press))
                 return new RelayCommand(() => Toggle(tag));
         }
         return null;

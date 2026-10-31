@@ -23,9 +23,12 @@ public static class HotkeyNames
         PhysicalKey.AltLeft, PhysicalKey.AltRight, PhysicalKey.MetaLeft, PhysicalKey.MetaRight,
     ];
 
-    // Null for a modifier on its own, which waits for the real key.
+    // Null for a modifier on its own, which waits for the real key. Shift is left out on the number
+    // row, which needs it to type digits on AZERTY; such keys match with or without it.
     public static string? FromKey(KeyModifiers modifiers, PhysicalKey key)
     {
+        if (Hotkey.IsNumberRow(key))
+            modifiers &= ~KeyModifiers.Shift;
         if (key == PhysicalKey.None || ModifierKeys.Contains(key))
             return null;
         var name = key is >= PhysicalKey.A and <= PhysicalKey.Z ? LetterKeyPrefix + key : key.ToString();

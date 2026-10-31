@@ -36,6 +36,6 @@ public sealed class HotkeyMap
     // "Ctrl + M" and "Ctrl+M" are the same key.
     private static string WithoutSpaces(string text) => string.Concat(text.Where(c => !char.IsWhiteSpace(c)));
 
-    public string? Find(KeyModifiers modifiers, PhysicalKey position, string? symbol) =>
-        _bindings.FirstOrDefault(b => b.Key.Matches(modifiers, position, symbol)).Action;
+    public string? Find(KeyPress press) =>
+        _bindings.FirstOrDefault(b => b.Key.Matches(press)).Action;
 }

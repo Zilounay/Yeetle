@@ -58,8 +58,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     public IReadOnlyDictionary<string, ICommand> Actions { get; }
 
     // Actions from the settings file first, then the tag hotkeys of a running session.
-    public ICommand? FindCommand(KeyModifiers modifiers, PhysicalKey key, string? symbol) =>
-        Hotkeys.Find(modifiers, key, symbol) is { } action ? Actions[action] : Session.Tags.FindTagCommand(modifiers, key, symbol);
+    public ICommand? FindCommand(KeyPress press) =>
+        Hotkeys.Find(press) is { } action ? Actions[action] : Session.Tags.FindTagCommand(press);
 
     // File operations cut short by a crash are checked first (spec §9), then a scan runs (spec §4),
     // then an interrupted session is offered back (spec §5).

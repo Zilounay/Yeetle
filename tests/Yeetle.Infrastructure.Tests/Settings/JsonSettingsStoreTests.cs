@@ -24,6 +24,30 @@ public sealed class JsonSettingsStoreTests : IDisposable
     }
 
     [Fact]
+    public void Former_default_keys_are_replaced_and_own_keys_kept()
+    {
+        Write("""
+            {
+              "hotkeys": { "Undo": ["Ctrl+KeyZ"], "Speed1": ["Digit1"], "Rescan": ["Ctrl+F5"] }
+            }
+            """);
+
+        var hotkeys = new JsonSettingsStore(SettingsPath).Load().Values.Hotkeys;
+
+        Assert.Equal(["Ctrl+Z"], hotkeys[HotkeyActions.Undo]);
+        Assert.Empty(hotkeys[HotkeyActions.Speed(1)]);
+        Assert.Equal(["Ctrl+F5"], hotkeys[HotkeyActions.Rescan]);
+    }
+
+    [Fact]
+    public void Keys_are_written_readably()
+    {
+        new JsonSettingsStore(SettingsPath).Load();
+
+        Assert.Contains("\"Ctrl+Z\"", File.ReadAllText(SettingsPath));
+    }
+
+    [Fact]
     public void Values_left_out_of_the_file_take_their_defaults()
     {
         Write("""

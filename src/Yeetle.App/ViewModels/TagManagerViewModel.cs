@@ -182,26 +182,26 @@ public sealed partial class TagManagerViewModel : ViewModelBase
     }
 
     // Called by the view for the key pressed while waiting for a hotkey. Esc cancels.
-    public async Task CaptureHotkeyAsync(KeyModifiers modifiers, PhysicalKey key, string? symbol)
+    public async Task CaptureHotkeyAsync(KeyPress press)
     {
         if (SelectedTag is not { } tag)
             return;
-        if (key == PhysicalKey.Escape)
+        if (press.Position == PhysicalKey.Escape)
         {
             IsCapturingHotkey = false;
             return;
         }
-        if (HotkeyNames.FromKey(modifiers, key) is not { } text)
+        if (HotkeyNames.FromKey(press.Modifiers, press.Position) is not { } text)
             return;
         IsCapturingHotkey = false;
         // One key, one action (spec §14): keys of the settings file come first.
-        if (_actionKeys.Find(modifiers, key, symbol) is { } action)
+        if (_actionKeys.Find(press) is { } action)
         {
             Message = string.Format(Strings.HotkeyTakenByAction, HotkeyLabels.Short(text), action);
             return;
         }
         var other = _catalog.Hotkeys.FirstOrDefault(h =>
-            h.Key != tag && Hotkey.Parse(h.Value) is { } used && used.Matches(modifiers, key, symbol));
+            h.Key != tag && Hotkey.Parse(h.Value) is { } used && used.Matches(press));
         if (other.Value is not null)
         {
             Message = string.Format(Strings.HotkeyTakenByTag, HotkeyLabels.Short(text), _catalog.Vocabulary.Tag(other.Key).Name);
