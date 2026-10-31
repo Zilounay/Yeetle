@@ -102,7 +102,7 @@ A session runs through every New clip, oldest recording first, one clip at a tim
 
 **Layout (decided in #9).** Dark theme throughout; Keep is green, Yeet red, Skip grey.
 
-- Top bar: the Yeetle name, the Session / Explorer / Tag Manager tabs (Explorer greyed out during a session), the counter with a progress bar, the Stop session button (Esc) and Settings.
+- Top bar: the Yeetle name, the Session / Explorer tabs (Explorer greyed out during a session), the counter with a progress bar, then Rescan, Tag Manager, Folders, the Stop session button (Esc) and Settings. The Tag Manager opens as its own window beside the main one, so it stays reachable during a session.
 - Left, taking most of the width: the video at 16:9. Over it, in the transparent overlay window (section 13): the position and filename with the recording date at top left, the audio-track picker at top right, and at the bottom the Yeet / Skip / Keep buttons above a control block (seek bar with marker ticks, previous / play-pause / next, Add marker, speed buttons, mute, volume, theatre mode). Each button shows its key.
 - Under the video: the clip strip, five cards between two scroll arrows.
 - Right column: a Tags panel (the Type a tag button, then one group per visible box with its rules, e.g. "Counter-Strike 2 › Map · pick one · required", and its chips with their hotkeys) and a Markers panel (time and label, with inline editing). Carried-over tags have a dashed outline, a carried-over icon and a remove cross. An empty required box that blocked Keep is outlined red with "Press Keep again to keep anyway."
@@ -134,7 +134,7 @@ Session ends (Stop, or last clip reached)
 
 Discarding drops every decision, tag and marker made in the session; the clips stay New.
 
-**Summary and prompt layouts (decided in #9).** The summary is a centred page: four count cards (Reviewed, Kept, Yeeted, Skipped), then collapsible Kept / Yeeted / Skipped lists (name, tags, marker count), then Discard session and Commit N decisions. The delete prompt states the file count and total size, the Recycle Bin warning and the file list, with "Keep the files" as the safe choice next to "Delete N files". The rename prompt shows a current name → new name table with notes for shortened or numbered names, warns that editing projects will show renamed files as offline, and offers "Keep current names" or "Rename N files".
+**Summary and prompt layouts (decided in #9).** The summary and the prompts are dialog windows over the session screen, since the video is a native window and would cover a page drawn in the main window. The summary shows four count cards (Reviewed, Kept, Yeeted, Skipped), then collapsible Kept / Yeeted / Skipped lists (name, tags, marker count), then Discard session and Commit N decisions. The delete prompt states the file count and total size, the Recycle Bin warning and the file list, with "Keep the files" as the safe choice next to "Delete N files". The rename prompt shows a current name → new name table with notes for shortened or numbered names, warns that editing projects will show renamed files as offline, and offers "Keep current names" or "Rename N files".
 
 ## 6. Tagging model
 
@@ -178,7 +178,7 @@ Boxes (in brackets) are never put on a clip or in a filename; everything else is
 
 **Tag Manager.** Reachable from Settings and from the main screens, even during a session. It shows the whole vocabulary visually as nested boxes and chips, with fast creation, rename, delete, colour, hotkey, pick one/many and Required. Its order is the order used in renamed filenames.
 
-**Tag Manager layout (decided in #9).** On the left, the vocabulary as nested cards: each box card has a drag handle, its name, a Pick one / Pick many switch and a Required checkbox, then its tag chips (colour dot and hotkey) and a "+ Tag" button. Boxes under a tag are indented below that tag, with "+ Box under <tag>"; collapsed tags show "N boxes below" and Expand. A "+ New top-level box" button ends the list. On the right, a panel for the selected tag: its path, name, colour, hotkey (press a key to change), how many clips it is on, its filename form, and Delete tag.
+**Tag Manager layout (decided in #9).** On the left, the vocabulary as nested cards: each box card has its name, a Pick one / Pick many switch and a Required checkbox, then its tag chips (colour dot and hotkey) and a "+ Tag" button. Boxes under a tag are indented below that tag, with "+ Box under <tag>"; collapsed tags show "N boxes below" and Expand. A "+ New top-level box" button ends the list. On the right, a panel for the selected tag or box: its path, name, colour, hotkey (press a key to change), how many clips it is on, its filename form, Move up / Move down (the order used in filenames), and Delete.
 
 **Names and filenames.** Tag names can use any characters and alphabets, Cyrillic included. Only when renaming files does Yeetle build a filename-safe version: it removes the characters Windows forbids (`\ / : * ? " < > |`), control characters and trailing dots or spaces, avoids reserved names such as CON or NUL, and keeps letters as they are. Box names never appear in filenames. Case-insensitive search is done in C#, since SQLite only folds A–Z.
 
@@ -225,7 +225,7 @@ The Explorer is the second half of Yeetle: a virtual library of every clip in th
 
 **Filters.** Tag filters (same box = OR, different boxes = AND, a parent tag matches clips tagged with its children). A decision filter: Kept by default, plus New, Yeeted. A file-state filter: Missing, Offline, Deleted, Needs attention. A text search over filenames and marker labels. An "incomplete" filter lists clips with an empty required box.
 
-**Selection and actions.** Explorer-standard behavior: click, Ctrl/Shift multi-select, Ctrl+A, drag-select, arrow keys, Del, F2. Right-click shows the genuine Windows context menu for the files (Open with, Send to, etc.) with Yeetle's own entries on top. Actions:
+**Selection and actions.** Explorer-standard behavior: click, Ctrl/Shift multi-select, Ctrl+A and arrow keys; Enter opens and Del deletes (the Keep and Yeet keys). Right-click shows the genuine Windows context menu for the files (Open with, Send to, etc.) with Yeetle's own entries on top. Actions:
 
 - Open: the clip opens in Yeetle's player/editor, without carousel or Skip. Tags, markers and the Keep/Yeet decision are editable and saved immediately, with undo.
 - Show in folder; open in the default Windows player.
@@ -269,7 +269,7 @@ The database holds the user's work, so it is backed up automatically, upgraded c
 | Item | Format | Notes |
 | --- | --- | --- |
 | Library database | SQLite (`yeetle.db`) | Clips, folders, tags and boxes, markers, session journal, file-operation log |
-| App settings | JSON file | Kept outside the database so a broken database does not also lose the source folders |
+| App settings | JSON file (`settings.json`, beside the database) | Kept outside the database so a broken database does not also lose the source folders. For testing, the `YEETLE_DATA_FOLDER` environment variable moves everything in this table to another folder |
 | Telemetry | Separate SQLite file | So restoring a backup does not roll it back, and a telemetry problem never blocks the app |
 | Backups | SQLite copies | See below |
 | Logs | Text files | Keep full file paths locally; paths are removed only if logs are ever sent |
@@ -411,7 +411,9 @@ Playback keys follow VLC where they do not clash with review actions; every key 
 | Marker window (Explorer) | Ctrl+M | |
 | Settings | Ctrl+, | |
 
-Later additions (not MVP): Tab to move focus across tag chips and Backspace to remove the focused tag.
+Letters with Ctrl (Ctrl+Z, Ctrl+R, Ctrl+M) follow the letter printed on the key, so they work on AZERTY too; number-row keys match with or without Shift, since AZERTY types digits with Shift.
+
+Later additions (not MVP): Tab to move focus across tag chips and Backspace to remove the focused tag; drag-select (rubber band) and F2 in the Explorer.
 
 ## 15. Build plan
 
