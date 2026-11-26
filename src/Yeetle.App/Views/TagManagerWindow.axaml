@@ -143,6 +143,15 @@
                 <TextBlock FontSize="20" FontWeight="Bold" Text="{x:Static res:Strings.TagManagerTitle}" />
                 <TextBlock Text="{x:Static res:Strings.TagManagerHint}" TextWrapping="Wrap"
                            Opacity="{StaticResource SecondaryTextOpacity}" />
+                <!-- The user's tags file, editable outside Yeetle (spec §6). -->
+                <WrapPanel Margin="0,6,0,0" ItemSpacing="8" LineSpacing="6">
+                    <Button Content="{x:Static res:Strings.OpenTagFile}" Command="{Binding OpenTagFileCommand}"
+                            ToolTip.Tip="{x:Static res:Strings.TagFileHint}" />
+                    <Button Content="{x:Static res:Strings.ImportTagFile}" Command="{Binding ImportTagFileCommand}"
+                            ToolTip.Tip="{x:Static res:Strings.TagFileHint}" />
+                </WrapPanel>
+                <TextBlock Text="{Binding TagFileMessage}" TextWrapping="Wrap"
+                           IsVisible="{Binding TagFileMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             </StackPanel>
             <!-- Text typed in the session's tag box that matched nothing (spec §6). -->
             <Border DockPanel.Dock="Top" Background="{StaticResource NoticeBrush}" CornerRadius="8" Padding="12,8"

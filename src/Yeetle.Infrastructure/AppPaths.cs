@@ -20,6 +20,9 @@ public sealed class AppPaths(string root)
 
     public string Settings => Path.Combine(Root, "settings.json");
 
+    // The user's own tags file (spec §6), written from the default one at first start.
+    public string Tags => Path.Combine(Root, "tags.json");
+
     public string Backups => Path.Combine(Root, "Backups");
 
     public string Logs => Path.Combine(Root, "Logs");

@@ -3,6 +3,7 @@ using Yeetle.Application.Data;
 using Yeetle.Application.Tagging;
 using Yeetle.Domain.Tagging;
 using Yeetle.Infrastructure.Data;
+using Yeetle.Infrastructure.Tagging;
 
 namespace Yeetle.Infrastructure.Tests.Data;
 
@@ -100,7 +101,8 @@ public class TagStoreTests : IDisposable
             connection.Execute("INSERT INTO ClipTags (ClipId, TagId) VALUES (1, @cs), (1, @dust), (2, @dota);",
                 new { cs = cs.Value, dust = dust.Value, dota = dota.Value });
         }
-        var manager = new TagManager(store, store, _data.Backups, _data.Log);
+        var tagFiles = new TagFileImport(new JsonTagFiles(_data.Paths), new SqliteVocabularyImportStore(_data.Connections), _data.Log);
+        var manager = new TagManager(store, store, tagFiles, _data.Backups, _data.Log);
         var changes = 0;
         manager.Changed += (_, _) => changes++;
 

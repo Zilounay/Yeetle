@@ -2580,5 +2580,59 @@ namespace Yeetle.App.Resources {
                 return ResourceManager.GetString("YeetTip", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open tags file.
+        /// </summary>
+        public static string OpenTagFile {
+            get {
+                return ResourceManager.GetString("OpenTagFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add tags from file.
+        /// </summary>
+        public static string ImportTagFile {
+            get {
+                return ResourceManager.GetString("ImportTagFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your tags are also kept in a file you can edit with any text editor (tags.json). Yeetle adds what is new in it at every start, or now with Add tags from file. It never removes or renames anything: do that here.
+        /// </summary>
+        public static string TagFileHint {
+            get {
+                return ResourceManager.GetString("TagFileHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} tags added from the tags file.
+        /// </summary>
+        public static string TagFileAdded {
+            get {
+                return ResourceManager.GetString("TagFileAdded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The tags file has nothing new.
+        /// </summary>
+        public static string TagFileNothingNew {
+            get {
+                return ResourceManager.GetString("TagFileNothingNew", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The tags file could not be read: {0}.
+        /// </summary>
+        public static string TagFileProblem {
+            get {
+                return ResourceManager.GetString("TagFileProblem", resourceCulture);
+            }
+        }
     }
 }

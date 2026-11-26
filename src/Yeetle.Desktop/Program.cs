@@ -38,6 +38,7 @@ internal static class Program
             {
                 Services = new AppServices(
                     services.GetRequiredService<IDatabaseStartup>(),
+                    services.GetRequiredService<Application.Tagging.TagFileImport>(),
                     services.GetRequiredService<Application.Diagnostics.IAppActivation>(),
                     services.GetRequiredService<MainWindowViewModel>,
                     services.GetRequiredService<RecoveryViewModel>),
