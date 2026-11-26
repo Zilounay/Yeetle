@@ -89,6 +89,18 @@ public sealed class ReviewSession
         _requiredWarningShown = false;
     }
 
+    // Jumps to a clip already reached, like pressing Back or Skip several times (#68). A clip not
+    // reached yet cannot be jumped to, so sticky tags keep coming from the clip just before.
+    public bool CanGoTo(int index) => index >= 0 && index < _clips.Count && _clips[index].Visited;
+
+    public void GoTo(int index)
+    {
+        if (!CanGoTo(index) || index == Position)
+            return;
+        Position = index;
+        _requiredWarningShown = false;
+    }
+
     public void SelectTag(TagId tag) => ChangeTags(_rules.Select(CurrentOrThrow().Tags, tag));
 
     public void DeselectTag(TagId tag) => ChangeTags(_rules.Deselect(CurrentOrThrow().Tags, tag));

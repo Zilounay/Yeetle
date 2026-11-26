@@ -874,4 +874,10 @@ On ne pourra plus le choisir. Les {1} clip(s) qui l'ont déjà le gardent sous c
   <data name="TagFileProblem" xml:space="preserve">
     <value>Le fichier de tags n'a pas pu être lu : {0}</value>
   </data>
+  <data name="TimelineTip" xml:space="preserve">
+    <value>{0} · {1} · {2}</value>
+  </data>
+  <data name="TimelineName" xml:space="preserve">
+    <value>Clips de la session</value>
+  </data>
 </root>

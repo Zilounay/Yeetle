@@ -2634,5 +2634,23 @@ namespace Yeetle.App.Resources {
                 return ResourceManager.GetString("TagFileProblem", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} · {1} · {2}.
+        /// </summary>
+        public static string TimelineTip {
+            get {
+                return ResourceManager.GetString("TimelineTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Session clips.
+        /// </summary>
+        public static string TimelineName {
+            get {
+                return ResourceManager.GetString("TimelineName", resourceCulture);
+            }
+        }
     }
 }

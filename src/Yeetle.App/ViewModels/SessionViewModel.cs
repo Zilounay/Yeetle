@@ -34,7 +34,7 @@ public sealed partial class SessionViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsHome))]
     [NotifyCanExecuteChangedFor(nameof(KeepCommand), nameof(YeetCommand), nameof(SkipCommand), nameof(BackCommand),
-        nameof(UndoCommand), nameof(StopCommand), nameof(StartCommand))]
+        nameof(UndoCommand), nameof(StopCommand), nameof(StartCommand), nameof(GoToClipCommand))]
     private bool _isActive;
 
     [ObservableProperty]
@@ -62,6 +62,10 @@ public sealed partial class SessionViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _progressTip = string.Empty;
+
+    // One cell per clip of the session, for the timeline under the top bar (#68).
+    [ObservableProperty]
+    private IReadOnlyList<TimelineCell> _timeline = [];
 
     [ObservableProperty]
     private string _clipName = string.Empty;
@@ -211,6 +215,10 @@ public sealed partial class SessionViewModel : ViewModelBase
             await AskEndAsync(session);
     }
 
+    // A click in the timeline: back (or forward again) to a clip already reached (#68).
+    [RelayCommand(CanExecute = nameof(IsActive))]
+    private void GoToClip(int index) => _session?.GoTo(index);
+
     // Moves the strip without changing the clip, back to the session's first clip at most.
     [RelayCommand]
     private void StripEarlier() => MoveStrip(-1);
@@ -279,6 +287,7 @@ public sealed partial class SessionViewModel : ViewModelBase
         Markers.Attach(null);
         IsActive = false;
         Strip.Clear();
+        Timeline = [];
         Counter = ClipName = ClipDate = string.Empty;
         // The player lets go of the session's files, which may be deleted or renamed next.
         await _player.ReleaseFilesAsync();
@@ -369,6 +378,12 @@ public sealed partial class SessionViewModel : ViewModelBase
         ClipDate = string.Format(Strings.ClipDateFormat, clip.RecordedAt);
         _stripCentre = shown;
         FillStrip();
+        Timeline = session.Reviews.Select((review, i) =>
+        {
+            var state = ClipCardViewModel.BadgeFor(review, isCurrent: i == shown);
+            var tip = string.Format(Strings.TimelineTip, i + 1, session.Clip(review.Clip).FileName, ClipCardViewModel.TextFor(state));
+            return new TimelineCell(state, tip, session.CanGoTo(i));
+        }).ToList();
         Tags.ClearRequiredWarning();
         Tags.Refresh();
         Markers.Refresh();
