@@ -92,8 +92,27 @@ public sealed class SqliteSessionStore(SqliteConnectionFactory connections, Time
     {
         using var connection = connections.Open();
         using var transaction = connection.BeginTransaction();
-        foreach (var clip in clips.Where(c => c.Visited || c.Decision != Decision.New))
+        var handled = clips.Select((clip, position) => (clip, position)).Where(c => c.clip.Visited || c.clip.Decision != Decision.New);
+        foreach (var (clip, position) in handled)
         {
+            // The sessions history (#72): what was decided then, and the tags then.
+            connection.Execute(
+                """
+                INSERT INTO SessionClips (SessionId, ClipId, Position, Decision, ReviewedAt)
+                VALUES (@sessionId, @clipId, @position, @decision, @reviewedAt);
+                """,
+                new
+                {
+                    sessionId, clipId = clip.Clip.Value, position, decision = clip.Decision.ToString(),
+                    // The clip on screen when the session ended was seen, not left: it counts from then.
+                    reviewedAt = DbTime.Write(clip.ReviewedAt ?? now),
+                }, transaction);
+            connection.Execute(
+                """
+                INSERT INTO SessionClipTags (SessionId, ClipId, TagId)
+                SELECT @sessionId, @clipId, Id FROM Nodes WHERE Id = @tagId AND Kind = 'Tag' AND Retired = 0;
+                """,
+                clip.Tags.Select(t => new { sessionId, clipId = clip.Clip.Value, tagId = t.Value }), transaction);
             connection.Execute(
                 """
                 UPDATE Clips SET Decision = @decision,
@@ -115,6 +134,26 @@ public sealed class SqliteSessionStore(SqliteConnectionFactory connections, Time
         }
         Close(connection, sessionId, Committed, now, transaction);
         transaction.Commit();
+    }
+
+    // Committed sessions that recorded their clips, most recent first (#72).
+    public IReadOnlyList<PastSession> History()
+    {
+        using var connection = connections.Open();
+        var sessions = connection.Query<(long Id, string StartedAt, string EndedAt)>(
+            """
+            SELECT s.Id, s.StartedAt, s.EndedAt FROM Sessions s
+            WHERE s.Outcome = 'Committed' AND EXISTS (SELECT 1 FROM SessionClips sc WHERE sc.SessionId = s.Id)
+            ORDER BY s.StartedAt DESC, s.Id DESC;
+            """).ToList();
+        var clips = connection.Query<(long SessionId, long ClipId, int Position, string Decision, string? ReviewedAt)>(
+                "SELECT SessionId, ClipId, Position, Decision, ReviewedAt FROM SessionClips ORDER BY SessionId, Position;")
+            .ToLookup(c => c.SessionId);
+        var tags = connection.Query<(long SessionId, long ClipId, long TagId)>("SELECT SessionId, ClipId, TagId FROM SessionClipTags;")
+            .ToLookup(t => (t.SessionId, t.ClipId), t => new TagId(t.TagId));
+        return sessions.Select(s => new PastSession(s.Id, DbTime.Read(s.StartedAt), DbTime.Read(s.EndedAt),
+            clips[s.Id].Select(c => new PastReview(new ClipId(c.ClipId), c.Position, Enum.Parse<Decision>(c.Decision),
+                c.ReviewedAt is { } at ? DbTime.Read(at) : null, tags[(s.Id, c.ClipId)].ToImmutableHashSet())).ToList())).ToList();
     }
 
     public void Discard(long sessionId, DateTime now)
@@ -168,7 +207,8 @@ public sealed class SqliteSessionStore(SqliteConnectionFactory connections, Time
             snapshot.Position,
             snapshot.Clips.Select(c => new ClipDto(c.Clip.Value, c.Decision.ToString(),
                 c.Tags.Select(t => t.Value).ToList(), c.CarriedOver.Select(t => t.Value).ToList(), c.Visited,
-                c.Markers.Select(m => new MarkerDto(m.Number, (long)m.Position.TotalMilliseconds, m.Label)).ToList())).ToList()));
+                c.Markers.Select(m => new MarkerDto(m.Number, (long)m.Position.TotalMilliseconds, m.Label)).ToList(),
+                c.ReviewedAt is { } at ? DbTime.Write(at) : null)).ToList()));
 
         public static SessionSnapshot Read(string json)
         {
@@ -182,13 +222,16 @@ public sealed class SqliteSessionStore(SqliteConnectionFactory connections, Time
                 // Journals written before markers existed have none.
                 Markers = (c.Markers ?? []).Select(m => new Marker(m.Number, TimeSpan.FromMilliseconds(m.PositionMs), m.Label))
                     .ToImmutableList(),
+                // Journals written before decision times were kept have none (#72).
+                ReviewedAt = c.ReviewedAt is { } at ? DbTime.Read(at) : null,
             }).ToList());
         }
 
         private sealed record SnapshotDto(int Position, List<ClipDto> Clips);
 
         private sealed record ClipDto(
-            long Id, string Decision, List<long> Tags, List<long> CarriedOver, bool Visited, List<MarkerDto>? Markers);
+            long Id, string Decision, List<long> Tags, List<long> CarriedOver, bool Visited, List<MarkerDto>? Markers,
+            string? ReviewedAt = null);
 
         private sealed record MarkerDto(int Number, long PositionMs, string Label);
     }

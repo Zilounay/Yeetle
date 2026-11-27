@@ -246,6 +246,8 @@ The Explorer is the second half of Yeetle: a virtual library of every clip in th
 
 **Drag out.** Dragging a selection hands the real files to the target (Windows Explorer, Premiere Pro, DaVinci Resolve, a browser upload, another folder) as a copy, never a move. Missing, Offline and Deleted clips are left out of the drag with a short notice.
 
+**Sessions history (decided in #72).** A "Clips | Sessions" switch at the top of the filter column shows the same library from the sessions' side. In Sessions mode the column lists every committed session, most recent first, with its date and time, duration and Kept / Yeeted / Skipped counts; picking one lists the clips it handled in the same table, in review order: a Reviewed column (time of the decision, with the day when it differs from the session's) instead of the recording date, and the decision taken then as the badge (Kept, Yeeted, Skipped). The tags shown are the current ones, with a small sign when they changed since; a clip decided otherwise since shows "now Kept" (or Yeeted, New) next to its badge. Search, tag filters, a decision filter (Kept / Yeeted / Skipped then), sorting and every action work as in Clips mode. A clip wiped and reviewed again appears in both sessions. Only committed sessions are recorded; discarded ones never appear, nor sessions committed before this was built.
+
 ## 9. File operations and safety
 
 Delete and rename are the only two things Yeetle ever does to a file, and both run one file at a time with every result recorded.
@@ -277,14 +279,14 @@ The database holds the user's work, so it is backed up automatically, upgraded c
 
 | Item | Format | Notes |
 | --- | --- | --- |
-| Library database | SQLite (`yeetle.db`) | Clips, folders, tags and boxes, markers, session journal, file-operation log |
+| Library database | SQLite (`yeetle.db`) | Clips, folders, tags and boxes, markers, session journal, sessions history, file-operation log |
 | App settings | JSON file (`settings.json`, beside the database) | Kept outside the database so a broken database does not also lose the source folders. For testing, the `YEETLE_DATA_FOLDER` environment variable moves everything in this table to another folder |
 | Tags file | JSON file (`tags.json`, beside the database) | Written from the starter vocabulary at first start; editable by hand; only ever adds tags (section 6) |
 | Telemetry | Separate SQLite file | So restoring a backup does not roll it back, and a telemetry problem never blocks the app |
 | Backups | SQLite copies | See below |
 | Logs | Text files | Keep full file paths locally; paths are removed only if logs are ever sent |
 
-**Main tables (first draft).** Clips, SourceFolders, Nodes (tags and boxes in one tree: kind, parent, name, order, colour, hotkey, pick one/many, required, retired), ClipTags, ImportedPaths (each box and tag path a tags file brought, and its node), Markers, SessionJournal, FileOperations. The schema version is stored in the database.
+**Main tables (first draft).** Clips, SourceFolders, Nodes (tags and boxes in one tree: kind, parent, name, order, colour, hotkey, pick one/many, required, retired), ClipTags, ImportedPaths (each box and tag path a tags file brought, and its node), Markers, SessionJournal, SessionClips and SessionClipTags (what each committed session handled: position, decision then, review time, tags then; #72), FileOperations. The schema version is stored in the database.
 
 **Migrations.** Numbered SQL scripts run in order at startup, before anything else touches the data. A backup is taken before every migration. A migration never drops user data. An older Yeetle that finds a newer schema refuses to open it with a clear message instead of damaging it.
 

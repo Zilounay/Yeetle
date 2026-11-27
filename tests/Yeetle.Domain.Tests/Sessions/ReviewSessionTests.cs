@@ -265,4 +265,21 @@ public class ReviewSessionTests
 
         Assert.Equal(before, session.Clips);
     }
+
+    [Fact]
+    public void Each_decision_and_skip_records_when_it_happened()
+    {
+        var now = new DateTime(2026, 11, 27, 21, 0, 0);
+        var session = new ReviewSession(new TagRules(Create()), Enumerable.Range(1, 3).Select(i => new ClipId(i)))
+        {
+            Clock = () => now,
+        };
+
+        TagAndKeep(session);
+        now = now.AddMinutes(1);
+        session.Skip();
+
+        Assert.Equal([new DateTime(2026, 11, 27, 21, 0, 0), new DateTime(2026, 11, 27, 21, 1, 0), (DateTime?)null],
+            session.Clips.Select(c => c.ReviewedAt));
+    }
 }

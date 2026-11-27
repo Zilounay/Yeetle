@@ -40,11 +40,15 @@ public interface ISessionStore
     UnfinishedSession? FindUnfinished();
 
     // Saves decisions and tags in one transaction and clears the journal. Visited clips left
-    // New are marked skipped, so they come first next time.
+    // New are marked skipped, so they come first next time. The clips it handled are recorded for
+    // the sessions history (#72).
     void Commit(long sessionId, IReadOnlyList<ClipReview> clips, DateTime now);
 
     // Drops everything the session did; its clips stay as they were.
     void Discard(long sessionId, DateTime now);
+
+    // Committed sessions that recorded their clips, most recent first (#72).
+    IReadOnlyList<PastSession> History();
 }
 
 public interface ITagStore

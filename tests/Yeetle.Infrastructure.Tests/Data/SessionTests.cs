@@ -180,6 +180,62 @@ public class SessionTests : IDisposable
     }
 
     [Fact]
+    public async Task A_commit_records_what_the_session_decided_for_the_history()
+    {
+        await AddClips("a", "b", "c");
+        var session = (await Service().StartAsync())!;
+        session.Yeet();  // a
+        session.Skip();  // b
+        session.Keep();  // c
+        await Service().CommitAsync(session.Id, session.Reviews);
+
+        var past = Assert.Single(_store.History());
+        Assert.Equal(session.Id, past.Id);
+        Assert.Equal([0, 1, 2], past.Clips.Select(c => c.Position));
+        Assert.Equal([Domain.Clips.Decision.Yeeted, Domain.Clips.Decision.New, Domain.Clips.Decision.Kept],
+            past.Clips.Select(c => c.Decision));
+        Assert.All(past.Clips, c => Assert.Equal(_data.Clock.GetLocalNow().DateTime, c.ReviewedAt));
+        Assert.Equal((1, 1, 1), (past.Kept, past.Yeeted, past.Skipped));
+    }
+
+    [Fact]
+    public async Task Discarded_sessions_are_not_in_the_history_and_a_wiped_clip_shows_in_both_reviews()
+    {
+        await AddClips("a");
+        var discarded = (await Service().StartAsync())!;
+        discarded.Keep();
+        await Service().DiscardAsync(discarded.Id);
+        Assert.Empty(_store.History());
+
+        var first = (await Service().StartAsync())!;
+        first.Keep();
+        await Service().CommitAsync(first.Id, first.Reviews);
+        var clip = first.Reviews[0].Clip;
+        new SqliteExplorerStore(_data.Connections).Wipe([clip]);
+        var second = (await Service().StartAsync())!;
+        second.Yeet();
+        await Service().CommitAsync(second.Id, second.Reviews);
+
+        var history = _store.History();
+        Assert.Equal([second.Id, first.Id], history.Select(s => s.Id));
+        Assert.Equal([Domain.Clips.Decision.Yeeted, Domain.Clips.Decision.Kept], history.Select(s => Assert.Single(s.Clips).Decision));
+    }
+
+    [Fact]
+    public async Task Decision_times_survive_a_crash()
+    {
+        await AddClips("a", "b");
+        var service = Service();
+        var session = (await service.StartAsync())!;
+        session.Keep();
+        await service.FlushJournalAsync();
+
+        var resumed = await Service().ResumeAsync(_store.FindUnfinished()!);
+
+        Assert.Equal(_data.Clock.GetLocalNow().DateTime, resumed.Reviews[0].ReviewedAt);
+    }
+
+    [Fact]
     public async Task No_session_starts_without_new_clips() => Assert.Null(await Service().StartAsync());
 
     private sealed class NotRecording : IRecorderCheck

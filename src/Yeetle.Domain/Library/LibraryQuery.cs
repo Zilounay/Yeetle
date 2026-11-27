@@ -67,7 +67,7 @@ public static class LibraryQuery
         return Sort(matching, sort, descending).ToList();
     }
 
-    private static bool ContainsText(LibraryClip clip, string text)
+    internal static bool ContainsText(LibraryClip clip, string text)
     {
         var compare = CultureInfo.InvariantCulture.CompareInfo;
         return compare.IndexOf(clip.FileName, text, IgnoreCase) >= 0
