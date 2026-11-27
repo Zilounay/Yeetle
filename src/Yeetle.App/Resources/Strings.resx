@@ -892,4 +892,7 @@ It can no longer be picked. The {1} clip(s) that already carry it keep it under 
   <data name="DiscardAndUpdate" xml:space="preserve">
     <value>Discard and update</value>
   </data>
+  <data name="TagFilterCount" xml:space="preserve">
+    <value>({0})</value>
+  </data>
 </root>
