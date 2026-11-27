@@ -742,17 +742,8 @@ On ne pourra plus le choisir. Les {1} clip(s) qui l'ont déjà le gardent sous c
   <data name="OpenInYeetle" xml:space="preserve">
     <value>Ouvrir</value>
   </data>
-  <data name="OpenInYeetleTip" xml:space="preserve">
-    <value>Ouvre le clip dans le lecteur de Yeetle pour changer ses tags, marqueurs et décision (Entrée)</value>
-  </data>
   <data name="ShowInFolder" xml:space="preserve">
     <value>Afficher dans le dossier</value>
-  </data>
-  <data name="OpenWithDefaultApp" xml:space="preserve">
-    <value>Lecteur Windows</value>
-  </data>
-  <data name="OpenWithDefaultAppTip" xml:space="preserve">
-    <value>Ouvre le fichier dans l'application vidéo de Windows</value>
   </data>
   <data name="RenameByTags" xml:space="preserve">
     <value>Renommer selon les tags…</value>

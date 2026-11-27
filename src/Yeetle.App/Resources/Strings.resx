@@ -742,17 +742,8 @@ It can no longer be picked. The {1} clip(s) that already carry it keep it under 
   <data name="OpenInYeetle" xml:space="preserve">
     <value>Open</value>
   </data>
-  <data name="OpenInYeetleTip" xml:space="preserve">
-    <value>Opens the clip in Yeetle's player to change its tags, markers and decision (Enter)</value>
-  </data>
   <data name="ShowInFolder" xml:space="preserve">
     <value>Show in folder</value>
-  </data>
-  <data name="OpenWithDefaultApp" xml:space="preserve">
-    <value>Windows player</value>
-  </data>
-  <data name="OpenWithDefaultAppTip" xml:space="preserve">
-    <value>Opens the file in the app Windows uses for videos</value>
   </data>
   <data name="RenameByTags" xml:space="preserve">
     <value>Rename by tags…</value>

@@ -230,14 +230,14 @@ The Explorer is the second half of Yeetle: a virtual library of every clip in th
 
 **View.** A list, newest recording first. Each row shows the shortened name, recording date, duration and tags. Sorting by date, duration or name. The list is virtualized. A thumbnail grid is a later feature (section 2).
 
-**Layout (decided in #9).** The top bar holds the tabs (Session shows how many clips are New), a search box over filenames and marker labels, Rescan and Settings. A filter column on the left lists the tag boxes as nested checkboxes, then Decision, File state and Incomplete. The main area has a selection toolbar (count, Open, Show in folder, Set Kept, Set Yeeted, Markers, Rename by tags, Restore names, Wipe data, Delete), the Name / Recording date / Duration / Tags table (Missing or Offline clips dimmed with a state badge), and a footer with the match count and a drag-out hint. The marker window is a small window with the text block and a Copy all button.
+**Layout (decided in #9).** The top bar holds the tabs (Session shows how many clips are New), a search box over filenames and marker labels, Rescan and Settings. A filter column on the left lists the tag boxes as nested checkboxes, then Decision, File state and Incomplete. The main area has a selection toolbar (count, Show in folder, Set Kept, Set Yeeted, Markers, Rename by tags, Restore names, Wipe data, Delete), the Name / Recording date / Duration / Tags table (Missing or Offline clips dimmed with a state badge), and a footer with the match count and a drag-out hint. The marker window is a small window with the text block and a Copy all button.
 
 **Filters.** Tag filters (same box = OR, different boxes = AND, a parent tag matches clips tagged with its children). A decision filter: Kept by default, plus New, Yeeted. A file-state filter: Missing, Offline, Deleted, Needs attention. A text search over filenames and marker labels. An "incomplete" filter lists clips with an empty required box.
 
-**Selection and actions.** Explorer-standard behavior: click, Ctrl/Shift multi-select, Ctrl+A and arrow keys; Enter opens and Del deletes (the Keep and Yeet keys). Right-click shows the genuine Windows context menu for the files (Open with, Send to, etc.) with Yeetle's own entries on top. Actions:
+**Selection and actions.** Explorer-standard behavior: click, Ctrl/Shift multi-select, Ctrl+A and arrow keys; Enter opens and Del deletes (the Keep and Yeet keys). Right-click shows the genuine Windows context menu for the files (Open with, Send to, etc.) with Yeetle's own entries on top, only those that apply to the selection. Actions:
 
 - Open: the clip opens in Yeetle's player/editor, without carousel or Skip. Tags, markers and the Keep/Yeet decision are editable and saved immediately, with undo. A clip whose file is not on disk (Missing, Offline, Deleted) opens with its name, why it cannot play and Back to library only: no playback, decision or tagging (#79).
-- Show in folder; open in the default Windows player.
+- Show in folder, for one clip, in the toolbar and the right-click menu. The toolbar has no Open or Windows player button: Enter, a double-click or the menu open a clip, and Windows' own menu offers Open with (#80).
 - Set Kept / Yeeted (un-yeeting is just setting Kept).
 - Delete from disk (section 9).
 - Rename by tags and Restore original name (section 9).

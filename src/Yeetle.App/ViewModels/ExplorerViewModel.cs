@@ -167,12 +167,16 @@ public sealed partial class ExplorerViewModel : ViewModelBase
 
     public bool HasSingleSelection => _selected.Count == 1;
 
-    // Yeetle's own entries on top of the Windows context menu, in the order RunMenuEntryAsync expects.
-    public IReadOnlyList<string> MenuEntries { get; } =
-    [
-        Strings.OpenInYeetle, Strings.ShowMarkers, Strings.SetKept, Strings.SetYeeted, Strings.RenameByTags,
-        Strings.RestoreNames, Strings.WipeData, Strings.DeleteFromDisk,
-    ];
+    // Yeetle's own entries on top of the Windows context menu, in this order. Only those that apply
+    // to the selection are offered: Open and Show in folder need a single clip (#80).
+    private IEnumerable<(string Label, IRelayCommand Command)> MenuEntries() =>
+        new (string Label, IRelayCommand Command)[]
+        {
+            (Strings.OpenInYeetle, OpenCommand), (Strings.ShowInFolder, ShowInFolderCommand),
+            (Strings.ShowMarkers, ShowMarkersCommand), (Strings.SetKept, SetKeptCommand), (Strings.SetYeeted, SetYeetedCommand),
+            (Strings.RenameByTags, RenameByTagsCommand), (Strings.RestoreNames, RestoreNamesCommand),
+            (Strings.WipeData, WipeCommand), (Strings.DeleteFromDisk, DeleteCommand),
+        }.Where(entry => entry.Command.CanExecute(null));
 
     // Raised to open a clip in the editor (spec §8).
     public event EventHandler<ClipId>? OpenRequested;
@@ -205,7 +209,7 @@ public sealed partial class ExplorerViewModel : ViewModelBase
         OnPropertyChanged(nameof(HasSingleSelection));
         foreach (var command in new IRelayCommand[]
                  {
-                     OpenCommand, ShowInFolderCommand, OpenWithDefaultAppCommand, SetKeptCommand, SetYeetedCommand,
+                     OpenCommand, ShowInFolderCommand, SetKeptCommand, SetYeetedCommand,
                      ShowMarkersCommand, RenameByTagsCommand, RestoreNamesCommand, WipeCommand, DeleteCommand,
                  })
             command.NotifyCanExecuteChanged();
@@ -225,8 +229,9 @@ public sealed partial class ExplorerViewModel : ViewModelBase
     public async Task ShowMenuAsync(nint window, int screenX, int screenY)
     {
         var paths = _selected.All(r => r.Clip.State == FileState.Present) ? _selected.Select(r => r.Clip.FullPath).ToList() : [];
-        if (_shell.ShowFileMenu(window, screenX, screenY, paths, MenuEntries) is { } entry)
-            await RunMenuEntryAsync(entry);
+        var entries = MenuEntries().ToList();
+        if (_shell.ShowFileMenu(window, screenX, screenY, paths, entries.Select(e => e.Label).ToList()) is { } chosen)
+            await RunAsync(entries[chosen].Command);
     }
 
     [RelayCommand]
@@ -256,9 +261,6 @@ public sealed partial class ExplorerViewModel : ViewModelBase
 
     [RelayCommand(CanExecute = nameof(HasSingleSelection))]
     private void ShowInFolder() => _shell.ShowInFolder(_selected[0].Clip.FullPath);
-
-    [RelayCommand(CanExecute = nameof(HasSingleSelection))]
-    private void OpenWithDefaultApp() => _shell.OpenWithDefaultApp(_selected[0].Clip.FullPath);
 
     [RelayCommand(CanExecute = nameof(HasSelection))]
     private Task SetKeptAsync() => SetDecisionAsync(Decision.Kept);
@@ -333,22 +335,11 @@ public sealed partial class ExplorerViewModel : ViewModelBase
         Notice = string.Format(Strings.FilesDeleted, outcomes.Count(o => o.Succeeded));
     });
 
-    private async Task RunMenuEntryAsync(int entry)
+    private static async Task RunAsync(IRelayCommand command)
     {
-        var command = entry switch
-        {
-            0 => OpenCommand,
-            1 => ShowMarkersCommand,
-            2 => SetKeptCommand,
-            3 => SetYeetedCommand,
-            4 => RenameByTagsCommand,
-            5 => RestoreNamesCommand,
-            6 => WipeCommand,
-            _ => (System.Windows.Input.ICommand)DeleteCommand,
-        };
-        if (command is IAsyncRelayCommand asyncCommand && asyncCommand.CanExecute(null))
+        if (command is IAsyncRelayCommand asyncCommand)
             await asyncCommand.ExecuteAsync(null);
-        else if (command.CanExecute(null))
+        else
             command.Execute(null);
     }
 
