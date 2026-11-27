@@ -149,13 +149,21 @@ public sealed partial class SessionViewModel : ViewModelBase
     }
 
     // Asked when the window closes mid-session. False keeps the app open.
-    public async Task<bool> ConfirmCloseAsync()
+    public Task<bool> ConfirmCloseAsync() =>
+        ConfirmLeaveAsync(Strings.CloseDuringSessionMessage, Strings.SaveAndLeave, Strings.DiscardAndLeave);
+
+    // Before restarting into an update (#22): the same choice as when closing.
+    public Task<bool> ConfirmUpdateAsync() =>
+        ConfirmLeaveAsync(Strings.UpdateDuringSessionMessage, Strings.SaveAndUpdate, Strings.DiscardAndUpdate);
+
+    // Save / Discard / Cancel when a running session has to end. True once it has ended (or when
+    // none runs); false keeps it going.
+    private async Task<bool> ConfirmLeaveAsync(string message, string save, string discard)
     {
         if (_session is not { } session)
             return true;
-        var choice = await _dialogs.ChooseAsync(Strings.CloseDuringSessionTitle,
-            Summary(Strings.CloseDuringSessionMessage, session),
-            [(Strings.SaveAndLeave, Ending.Save), (Strings.DiscardAndLeave, Ending.Discard)]);
+        var choice = await _dialogs.ChooseAsync(Strings.CloseDuringSessionTitle, Summary(message, session),
+            [(save, Ending.Save), (discard, Ending.Discard)]);
         return choice is { } ending && await EndAsync(ending);
     }
 

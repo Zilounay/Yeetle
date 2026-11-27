@@ -1,5 +1,6 @@
 using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
+using Velopack;
 using Yeetle.App;
 using Yeetle.App.ViewModels;
 using Yeetle.Application.Data;
@@ -15,6 +16,9 @@ internal static class Program
     [STAThread]
     public static int Main(string[] args)
     {
+        // First of all (#22): when the installer or an update runs Yeetle to finish its work, this
+        // does it and exits, before any window or lock exists.
+        VelopackApp.Build().Run();
         // One instance per data folder, so a test copy on a throwaway folder can run beside the real one.
         using var instance = new SingleInstance(AppPaths.Default.Root);
         if (!instance.IsFirst)

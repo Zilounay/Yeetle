@@ -880,4 +880,28 @@ It can no longer be picked. The {1} clip(s) that already carry it keep it under 
   <data name="TimelineName" xml:space="preserve">
     <value>Session clips</value>
   </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Update to {0}</value>
+  </data>
+  <data name="UpdateTip" xml:space="preserve">
+    <value>Yeetle {0} is available: download it and restart</value>
+  </data>
+  <data name="UpdateDownloading" xml:space="preserve">
+    <value>Downloading the update… {0}%</value>
+  </data>
+  <data name="UpdateFailed" xml:space="preserve">
+    <value>Update failed, try again</value>
+  </data>
+  <data name="UpdateFailedTip" xml:space="preserve">
+    <value>Yeetle {0} could not be downloaded. Check the connection and click to try again.</value>
+  </data>
+  <data name="UpdateDuringSessionMessage" xml:space="preserve">
+    <value>{0} kept, {1} yeeted, {2} skipped so far. Save these decisions before updating? Yeetle restarts with the new version.</value>
+  </data>
+  <data name="SaveAndUpdate" xml:space="preserve">
+    <value>Save and update</value>
+  </data>
+  <data name="DiscardAndUpdate" xml:space="preserve">
+    <value>Discard and update</value>
+  </data>
 </root>

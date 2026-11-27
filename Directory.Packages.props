@@ -12,6 +12,8 @@
     <PackageVersion Include="Dapper" Version="2.1.89" />
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.14" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+    <!-- Installer and updates (#22). The vpk tool in the release workflow must use the same version. -->
+    <PackageVersion Include="Velopack" Version="1.2.161" />
   </ItemGroup>
   <ItemGroup Label="Player">
     <PackageVersion Include="LibVLCSharp" Version="3.10.2" />

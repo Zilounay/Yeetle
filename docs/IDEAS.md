@@ -20,3 +20,7 @@ Add new entries at the end of their section, one line each, with the date and wh
 
 - **Export the vocabulary to a tags file.** `tags.json` is written once and never follows Tag Manager changes; an export button would write the current vocabulary in the same format, to share or back up. (2026-11-26, while building #65)
 - **Colours and hotkeys in the tags file.** The format only has names, pick one/many and required for now. (2026-11-26, while building #65)
+
+## Release
+
+- **Smaller installer.** The first package is about 110 MB (self-contained .NET, Avalonia, and every LibVLC plugin). Leaving out LibVLC plugins Yeetle never uses (streaming, visualisations, subtitles renderers…) and trimming could cut it a lot. (2026-11-27, while building #22)

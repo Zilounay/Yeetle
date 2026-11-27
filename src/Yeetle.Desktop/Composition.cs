@@ -10,6 +10,7 @@ using Yeetle.Application.Sessions;
 using Yeetle.Application.Settings;
 using Yeetle.Application.Shell;
 using Yeetle.Application.Tagging;
+using Yeetle.Application.Updates;
 using Yeetle.Infrastructure;
 using Yeetle.Infrastructure.Clips;
 using Yeetle.Infrastructure.Data;
@@ -17,6 +18,7 @@ using Yeetle.Infrastructure.Diagnostics;
 using Yeetle.Infrastructure.Files;
 using Yeetle.Infrastructure.Shell;
 using Yeetle.Infrastructure.Tagging;
+using Yeetle.Infrastructure.Updates;
 using Yeetle.Media.Vlc;
 
 namespace Yeetle.Desktop;
@@ -44,6 +46,7 @@ internal static class Composition
             .AddSingleton<FileOperations>()
             .AddSingleton<TagManager>()
             .AddSingleton<TagFileImport>()
+            .AddSingleton<UpdateChecker>()
             // Infrastructure
             .AddSingleton<ILog, FileLog>()
             .AddSingleton<SqliteConnectionFactory>()
@@ -62,6 +65,7 @@ internal static class Composition
             .AddSingleton<ITagFiles, JsonTagFiles>()
             .AddSingleton<IFileOperationStore, SqliteFileOperationStore>()
             .AddSingleton<IFileSystem, WindowsFileSystem>()
+            .AddSingleton<IAppUpdates, VelopackUpdates>()
             // Media
             .AddSingleton<IClipPlayer, VlcClipPlayer>()
             .AddSingleton<IDurationReader, VlcDurationReader>()

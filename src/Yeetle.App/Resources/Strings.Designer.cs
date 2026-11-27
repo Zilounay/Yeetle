@@ -710,6 +710,15 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Discard and update.
+        /// </summary>
+        public static string DiscardAndUpdate {
+            get {
+                return ResourceManager.GetString("DiscardAndUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Discard.
         /// </summary>
         public static string DiscardSession {
@@ -1943,6 +1952,15 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Save and update.
+        /// </summary>
+        public static string SaveAndUpdate {
+            get {
+                return ResourceManager.GetString("SaveAndUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} clip(s) added.
         /// </summary>
         public static string ScanAdded {
@@ -2497,6 +2515,60 @@ namespace Yeetle.App.Resources {
         public static string Unmute {
             get {
                 return ResourceManager.GetString("Unmute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update to {0}.
+        /// </summary>
+        public static string UpdateAvailable {
+            get {
+                return ResourceManager.GetString("UpdateAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Downloading the update… {0}%.
+        /// </summary>
+        public static string UpdateDownloading {
+            get {
+                return ResourceManager.GetString("UpdateDownloading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} kept, {1} yeeted, {2} skipped so far. Save these decisions before updating? Yeetle restarts with the new version..
+        /// </summary>
+        public static string UpdateDuringSessionMessage {
+            get {
+                return ResourceManager.GetString("UpdateDuringSessionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update failed, try again.
+        /// </summary>
+        public static string UpdateFailed {
+            get {
+                return ResourceManager.GetString("UpdateFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yeetle {0} could not be downloaded. Check the connection and click to try again..
+        /// </summary>
+        public static string UpdateFailedTip {
+            get {
+                return ResourceManager.GetString("UpdateFailedTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yeetle {0} is available: download it and restart.
+        /// </summary>
+        public static string UpdateTip {
+            get {
+                return ResourceManager.GetString("UpdateTip", resourceCulture);
             }
         }
         

@@ -1,0 +1,91 @@
+name: Release
+
+# Publishes an installer and one-click update to GitHub Releases (#22, spec §12, docs/RELEASING.md).
+# Runs when a version tag is pushed: v0.0.1, v0.1.0, v1.0.0 (plain X.Y.Z, no -beta).
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  issues: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  # The installer and the app's update check use this id; the app goes to %LOCALAPPDATA%\YeetleApp,
+  # apart from the user's data in %LOCALAPPDATA%\Yeetle, which an uninstall must never delete.
+  PACK_ID: YeetleApp
+  PACK_TITLE: Yeetle
+  PACK_AUTHORS: ZiL
+  # Same version as the Velopack package in Directory.Packages.props.
+  VPK_VERSION: 1.2.161
+  RUNTIME: win-x64
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - name: Read the version from the tag
+        id: version
+        shell: pwsh
+        run: |
+          $version = '${{ github.ref_name }}'.TrimStart('v')
+          if ($version -notmatch '^\d+\.\d+\.\d+$') { throw "Tag '${{ github.ref_name }}' is not vX.Y.Z." }
+          "value=$version" >> $env:GITHUB_OUTPUT
+          "major=$($version.Split('.')[0])" >> $env:GITHUB_OUTPUT
+
+      # Release gate (CLAUDE.md, decided on #22): 0.x versions are betas and always go out;
+      # v1.0.0 and later wait until no open issue carries the release blocker label.
+      - name: Refuse v1.0+ while release blockers are open
+        if: ${{ fromJSON(steps.version.outputs.major) >= 1 }}
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $open = gh issue list --repo '${{ github.repository }}' --label 'release blocker' --state open --json number --jq length
+          if ([int]$open -gt 0) { throw "$open open release blocker(s): close them, or ZiL removes the label, before v1.0+." }
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: '**/*.csproj'
+
+      - name: Build and test
+        run: |
+          dotnet restore Yeetle.slnx
+          dotnet build Yeetle.slnx --configuration Release --no-restore -warnaserror -p:VersionPrefix=${{ steps.version.outputs.value }}
+          dotnet test --solution Yeetle.slnx --configuration Release --no-build
+
+      - name: Publish the app
+        run: >
+          dotnet publish src/Yeetle.Desktop --configuration Release --runtime ${{ env.RUNTIME }} --self-contained
+          -p:VersionPrefix=${{ steps.version.outputs.value }} --output publish
+
+      - name: Install vpk
+        run: dotnet tool install --global vpk --version ${{ env.VPK_VERSION }}
+
+      # The previous release lets vpk build a small delta update next to the full package. The
+      # first release has none, and without it only the delta is missing: never a reason to stop.
+      - name: Download the previous release
+        continue-on-error: true
+        run: vpk download github --repoUrl https://github.com/${{ github.repository }} --token ${{ github.token }} --outputDir releases
+
+      - name: Pack
+        run: >
+          vpk pack --packId ${{ env.PACK_ID }} --packVersion ${{ steps.version.outputs.value }} --packDir publish
+          --mainExe Yeetle.exe --packTitle ${{ env.PACK_TITLE }} --packAuthors ${{ env.PACK_AUTHORS }} --outputDir releases
+
+      - name: Upload to GitHub Releases
+        run: >
+          vpk upload github --repoUrl https://github.com/${{ github.repository }} --token ${{ github.token }}
+          --outputDir releases --tag ${{ github.ref_name }} --releaseName "Yeetle ${{ steps.version.outputs.value }}" --publish
