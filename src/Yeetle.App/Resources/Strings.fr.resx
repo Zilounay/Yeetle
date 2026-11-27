@@ -695,7 +695,7 @@ On ne pourra plus le choisir. Les {1} clip(s) qui l'ont déjà le gardent sous c
     <value>Glissez la sélection dans votre logiciel de montage, un dossier ou une page d'envoi : les fichiers sont copiés, jamais déplacés.</value>
   </data>
   <data name="EditorFileNotPresent" xml:space="preserve">
-    <value>Le fichier de ce clip n'est pas sur le disque ; ses tags, marqueurs et décision restent modifiables.</value>
+    <value>Le fichier de ce clip n'est pas sur le disque : impossible de le lire, de décider ou de le taguer. Remettez le fichier en place, puis rouvrez-le.</value>
   </data>
   <data name="EditorSaveFailed" xml:space="preserve">
     <value>La dernière modification n'a pas pu être enregistrée : {0}</value>

@@ -22,8 +22,14 @@ public sealed partial class EditorViewModel : ViewModelBase
     private ClipEditor? _editor;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(KeepCommand), nameof(YeetCommand), nameof(UndoCommand), nameof(CloseCommand))]
+    [NotifyCanExecuteChangedFor(nameof(CloseCommand))]
     private bool _isOpen;
+
+    // A clip whose file is not on disk opens with its name and why it cannot play, and nothing to
+    // play, decide or tag (#79).
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(KeepCommand), nameof(YeetCommand), nameof(UndoCommand))]
+    private bool _isFilePresent;
 
     [ObservableProperty]
     private string _clipName = string.Empty;
@@ -87,24 +93,26 @@ public sealed partial class EditorViewModel : ViewModelBase
         _editor = editor;
         editor.Changed += OnChanged;
         editor.SaveFailed += OnSaveFailed;
-        Tags.Attach(editor);
-        Markers.Attach(editor);
+        var present = editor.Clip.State == FileState.Present;
+        Tags.Attach(present ? editor : null);
+        Markers.Attach(present ? editor : null);
         ClipName = editor.Clip.FileName;
         ClipDate = string.Format(Strings.ClipDateFormat, editor.Clip.RecordedAt);
-        Notice = editor.Clip.State == FileState.Present ? string.Empty : Strings.EditorFileNotPresent;
-        _navigator.Load([editor.Clip.FullPath]);
+        Notice = present ? string.Empty : Strings.EditorFileNotPresent;
+        _navigator.Load(present ? [editor.Clip.FullPath] : []);
+        IsFilePresent = present;
         IsOpen = true;
         OnChanged(editor, EventArgs.Empty);
         return true;
     }
 
-    [RelayCommand(CanExecute = nameof(IsOpen))]
+    [RelayCommand(CanExecute = nameof(IsFilePresent))]
     private void Keep() => _editor?.SetDecision(Decision.Kept);
 
-    [RelayCommand(CanExecute = nameof(IsOpen))]
+    [RelayCommand(CanExecute = nameof(IsFilePresent))]
     private void Yeet() => _editor?.SetDecision(Decision.Yeeted);
 
-    [RelayCommand(CanExecute = nameof(IsOpen))]
+    [RelayCommand(CanExecute = nameof(IsFilePresent))]
     private void Undo() => _editor?.Undo();
 
     [RelayCommand(CanExecute = nameof(IsOpen))]
@@ -122,6 +130,7 @@ public sealed partial class EditorViewModel : ViewModelBase
             return Closing;
         _editor = null;
         IsOpen = false;
+        IsFilePresent = false;
         editor.Changed -= OnChanged;
         editor.SaveFailed -= OnSaveFailed;
         Tags.Attach(null);

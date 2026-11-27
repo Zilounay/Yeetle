@@ -746,7 +746,7 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This clip&apos;s file is not on disk; its tags, markers and decision can still be changed..
+        ///   Looks up a localized string similar to This clip&apos;s file is not on disk, so it cannot be played, decided or tagged. Bring the file back, then open it again..
         /// </summary>
         public static string EditorFileNotPresent {
             get {
