@@ -71,6 +71,13 @@ public sealed partial class EditorViewModel : ViewModelBase
     // Raised when the editor closes, so the window can show the list again.
     public event EventHandler? Closed;
 
+    // Done once the last clip's changes are saved and its file let go. Closing does that behind the
+    // page switch, so the next page shows at once (#78).
+    public Task Closing { get; private set; } = Task.CompletedTask;
+
+    // Leaving for another page: closes without raising Closed.
+    public Task LeaveAsync() => CloseEditorAsync();
+
     // False when the clip is gone from the library.
     public async Task<bool> OpenAsync(ClipId clip)
     {
@@ -101,25 +108,34 @@ public sealed partial class EditorViewModel : ViewModelBase
     private void Undo() => _editor?.Undo();
 
     [RelayCommand(CanExecute = nameof(IsOpen))]
-    private async Task CloseAsync()
+    private void Close()
     {
-        await CloseEditorAsync();
+        _ = CloseEditorAsync();
         Closed?.Invoke(this, EventArgs.Empty);
     }
 
-    // Every change is saved before the player lets go of the file.
-    private async Task CloseEditorAsync()
+    // The screen lets go of the clip at once; saving and releasing the file follow in the
+    // background, and Closing tells when they are done.
+    private Task CloseEditorAsync()
     {
         if (_editor is not { } editor)
-            return;
+            return Closing;
         _editor = null;
         IsOpen = false;
         editor.Changed -= OnChanged;
         editor.SaveFailed -= OnSaveFailed;
         Tags.Attach(null);
         Markers.Attach(null);
+        return Closing = FinishClosingAsync(Closing, editor);
+    }
+
+    // The player lets go of the file while the last changes are saved.
+    private async Task FinishClosingAsync(Task previous, ClipEditor editor)
+    {
+        await previous;
+        var release = _player.ReleaseFilesAsync();
         await editor.FlushAsync();
-        await _player.ReleaseFilesAsync();
+        await release;
     }
 
     private async Task ReloadTagsAsync()

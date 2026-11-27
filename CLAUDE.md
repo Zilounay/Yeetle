@@ -10,6 +10,7 @@ Yeetle is a Windows desktop app (C#, .NET 10, Avalonia 12) for reviewing, taggin
 4. A clip's file state (Present / Missing / Offline / Deleted / Needs attention) and its decision (New / Kept / Yeeted) are separate fields. Never merge them.
 5. No cloud services, accounts or network calls other than the update check and the opt-out usage statistics described in the spec.
 6. No long-running work on the UI thread: scanning, FFmpeg, database and file I/O are async or on background work.
+7. The UI is always instant (#78). A click switches the page or opens the window first; the slow work follows in the background. What is still loading shows as placeholders (`Border.skeleton`, light grey bars that pulse) or the thin `ProgressBar.busy`. Lists that did not change are not rebuilt (update items in place), and long lists are virtualized. When a lag is reported, measure it first, then fix the cause.
 
 ## Solution layout
 

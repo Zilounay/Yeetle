@@ -123,7 +123,12 @@ public sealed partial class SessionViewModel : ViewModelBase
             return;
         NewCount = await _sessions.CountNewAsync();
         HomeText = NewCount > 0 ? string.Format(Strings.HomeNewClips, NewCount) : Strings.HomeNoNewClips;
+        IsHomeLoaded = true;
     }
+
+    // Until the first count arrives, a placeholder shows in place of the home text (#78).
+    [ObservableProperty]
+    private bool _isHomeLoaded;
 
     // After a crash: Resume / Commit / Discard (spec §5). Closing the question asks again next start.
     public async Task OfferUnfinishedAsync()

@@ -19,6 +19,8 @@
         <x:String x:Key="IconAudioOutput">&#xE7F5;</x:String>
         <x:String x:Key="IconSearch">&#xE721;</x:String>
         <x:String x:Key="IconFolder">&#xE838;</x:String>
+        <!-- Placeholders shown where something is still loading (#78): light grey bars on the dark pages. -->
+        <SolidColorBrush x:Key="SkeletonBrush" Color="#3A4049" />
     </Application.Resources>
     <Application.Styles>
         <FluentTheme />
@@ -27,6 +29,51 @@
             <Setter Property="FontSize" Value="16" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+        <!-- A placeholder bar, in the shape of the text it stands for, that slowly pulses until the
+             content arrives (#78). Height and width are set where it is used. -->
+        <Style Selector="Border.skeleton">
+            <Setter Property="Background" Value="{StaticResource SkeletonBrush}" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Height" Value="12" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Style.Animations>
+                <!-- Slow on purpose: a calm pulse, not a blink. -->
+                <Animation Duration="0:0:1.4" IterationCount="Infinite" PlaybackDirection="Alternate" Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.35" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="0.8" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <!-- A thin bar for work that runs while the page stays usable (#78). It fades in only after a
+             moment, so quick work does not flash it. Shown by the "on" class. -->
+        <Style Selector="ProgressBar.busy">
+            <Setter Property="IsIndeterminate" Value="True" />
+            <Setter Property="MinHeight" Value="2" />
+            <Setter Property="Height" Value="2" />
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+        </Style>
+        <Style Selector="ProgressBar.busy.on">
+            <Style.Animations>
+                <!-- Invisible for the first 300 ms, then fades in. -->
+                <Animation Duration="0:0:0.5" FillMode="Forward">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0" />
+                    </KeyFrame>
+                    <KeyFrame Cue="60%">
+                        <Setter Property="Opacity" Value="0" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
         </Style>
     </Application.Styles>
 </Application>

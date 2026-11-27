@@ -3,6 +3,7 @@
              xmlns:vm="using:Yeetle.App.ViewModels"
              xmlns:res="using:Yeetle.App.Resources"
              xmlns:library="using:Yeetle.Domain.Library"
+             xmlns:views="using:Yeetle.App.Views"
              x:Class="Yeetle.App.Views.ExplorerView"
              x:DataType="vm:ExplorerViewModel">
     <!-- Layout decided in #9 (spec §8): filters on the left; selection toolbar, the clip table and
@@ -58,9 +59,29 @@
                     <StackPanel>
                         <TextBlock FontSize="16" FontWeight="Bold" Text="{x:Static res:Strings.FiltersTitle}" />
                         <TextBlock Classes="section" Text="{x:Static res:Strings.FilterTags}" />
-                        <TextBlock Text="{x:Static res:Strings.NoTagsToFilter}" Opacity="{StaticResource SecondaryTextOpacity}"
-                                   IsVisible="{Binding !HasTagFilters}" />
+                        <!-- Placeholders until the first load (#78). -->
+                        <StackPanel Spacing="10" Margin="0,6,0,0" IsVisible="{Binding !IsLoaded}">
+                            <Border Classes="skeleton" Width="90" />
+                            <Border Classes="skeleton" Width="150" />
+                            <Border Classes="skeleton" Width="120" />
+                            <Border Classes="skeleton" Width="140" />
+                            <Border Classes="skeleton" Width="100" />
+                        </StackPanel>
+                        <TextBlock Text="{x:Static res:Strings.NoTagsToFilter}" Opacity="{StaticResource SecondaryTextOpacity}">
+                            <TextBlock.IsVisible>
+                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                    <Binding Path="IsLoaded" />
+                                    <Binding Path="!HasTagFilters" />
+                                </MultiBinding>
+                            </TextBlock.IsVisible>
+                        </TextBlock>
+                        <!-- Over a thousand lines with the starter tags: only those on screen are created (#78). -->
                         <ItemsControl ItemsSource="{Binding TagFilters}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="vm:TagFilterItem">
                                     <Panel Margin="{Binding Indent}">
@@ -146,7 +167,27 @@
 
             <Panel>
                 <TextBlock Margin="8,16" Text="{x:Static res:Strings.NoClipsMatch}" Opacity="{StaticResource SecondaryTextOpacity}"
-                           IsVisible="{Binding IsEmpty}" />
+                           IsVisible="{Binding ShowEmpty}" />
+                <!-- Placeholder rows until the first load (#78), in the columns of the real ones. -->
+                <ItemsControl IsVisible="{Binding !IsLoaded}" Margin="8,6" ItemsSource="{x:Static views:Placeholders.ExplorerRows}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="Thickness">
+                            <Grid ColumnSpacing="12" Height="32">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3*" />
+                                    <ColumnDefinition Width="{StaticResource DateColumn}" />
+                                    <ColumnDefinition Width="{StaticResource DurationColumn}" />
+                                    <ColumnDefinition Width="2*" />
+                                </Grid.ColumnDefinitions>
+                                <Border Classes="skeleton" HorizontalAlignment="Stretch" Margin="{Binding}" />
+                                <Border Grid.Column="1" Classes="skeleton" Width="110" />
+                                <Border Grid.Column="2" Classes="skeleton" Width="44" />
+                                <Border Grid.Column="3" Classes="skeleton" Width="120" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <ProgressBar Classes="busy" Classes.on="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalAlignment="Top" />
                 <!-- Multiple: click, Ctrl+click, Shift+click and Ctrl+A select as in Windows Explorer.
                      The list is virtualized. -->
                 <ListBox x:Name="List" ItemsSource="{Binding Rows}" SelectionMode="Multiple" Background="Transparent">

@@ -14,9 +14,9 @@ public sealed class ClipLibrary(IExplorerStore store, ITagStore tags, IBackups b
     // Raised on the caller's thread after a change made here or in an opened clip.
     public event EventHandler? Changed;
 
-    public Task<IReadOnlyList<LibraryClip>> LoadAsync() => Task.Run(store.LoadClips);
-
-    public Task<TagCatalog> LoadCatalogAsync() => Task.Run(tags.LoadCatalog);
+    // The clips and the tags in one background step, so the Explorer shows both together.
+    public Task<(IReadOnlyList<LibraryClip> Clips, TagCatalog Catalog)> LoadWithCatalogAsync() =>
+        Task.Run(() => (store.LoadClips(), tags.LoadCatalog()));
 
     public async Task SetDecisionAsync(IReadOnlyCollection<ClipId> clips, Decision decision)
     {

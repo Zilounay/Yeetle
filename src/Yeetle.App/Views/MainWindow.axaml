@@ -169,9 +169,15 @@
                 BorderBrush="{StaticResource LineBrush}" BorderThickness="1" IsVisible="{Binding ShowHome}">
             <StackPanel Spacing="18">
                 <TextBlock FontSize="22" FontWeight="SemiBold" HorizontalAlignment="Center" TextAlignment="Center"
-                           TextWrapping="Wrap" Text="{Binding Session.HomeText}" />
+                           TextWrapping="Wrap" Text="{Binding Session.HomeText}" IsVisible="{Binding Session.IsHomeLoaded}" />
+                <!-- Until the count of new clips arrives (#78): a placeholder as tall as the text. -->
+                <Border Classes="skeleton" Width="300" Height="22" Margin="0,4" HorizontalAlignment="Center"
+                        IsVisible="{Binding !Session.IsHomeLoaded}" />
                 <Button Classes="start" HorizontalAlignment="Center" Content="{x:Static res:Strings.StartSession}"
                         Command="{Binding Session.StartCommand}" />
+                <!-- Starting scans first, then loads the clips (#78). -->
+                <ProgressBar Classes="busy" Classes.on="{Binding Session.StartCommand.IsRunning}" Width="200"
+                             IsVisible="{Binding Session.StartCommand.IsRunning}" />
                 <TextBlock HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
                            Opacity="{StaticResource SecondaryTextOpacity}" Text="{Binding Session.Notice}"
                            IsVisible="{Binding ShowSessionNotice}" />
