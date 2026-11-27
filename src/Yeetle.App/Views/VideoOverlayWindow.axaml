@@ -173,16 +173,18 @@
 
         <!-- Bottom: the decision, then three small control blocks (sound, playback, speed), then the
              seek bar. Each block is its own tinted card, so most of the picture stays clear (#62). -->
-        <StackPanel VerticalAlignment="Bottom" Spacing="10" IsVisible="{Binding ShowControls}">
+        <StackPanel VerticalAlignment="Bottom" Spacing="10">
             <!-- The decision for this clip: in a session, then for a clip opened from the Explorer,
-                 where the current decision is outlined and there is no Skip (spec §8). -->
+                 where the current decision is outlined and there is no Skip (spec §8). A clip whose
+                 file is not on disk only keeps Back to library (#79). -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12" IsVisible="{Binding IsEditorPage}">
                 <Button Classes="decision skip" Content="{x:Static res:Strings.BackToLibrary}" Command="{Binding Editor.CloseCommand}"
                         ToolTip.Tip="{x:Static res:Strings.BackToLibraryTip}" />
                 <Button Classes="decision yeet" Classes.current="{Binding Editor.IsYeeted}" Content="{x:Static res:Strings.Yeet}"
-                        Command="{Binding Editor.YeetCommand}" />
+                        Command="{Binding Editor.YeetCommand}" IsVisible="{Binding ShowControls}" />
                 <Button Classes="decision keep" Classes.current="{Binding Editor.IsKept}" Content="{x:Static res:Strings.Keep}"
-                        Command="{Binding Editor.KeepCommand}" ToolTip.Tip="{x:Static res:Strings.EditorSavedHint}" />
+                        Command="{Binding Editor.KeepCommand}" ToolTip.Tip="{x:Static res:Strings.EditorSavedHint}"
+                        IsVisible="{Binding ShowControls}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12" IsVisible="{Binding IsSessionPage}">
                 <Button Classes="decision yeet" Content="{x:Static res:Strings.Yeet}" Command="{Binding Session.YeetCommand}"
@@ -194,7 +196,7 @@
             </StackPanel>
 
             <!-- Equal side columns keep the playback block in the exact middle, under Skip. -->
-            <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="10">
+            <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="10" IsVisible="{Binding ShowControls}">
                 <!-- Left: how the clip sounds. -->
                 <Border Grid.Column="0" Classes="block" HorizontalAlignment="Left" VerticalAlignment="Bottom" Padding="8,6">
                     <StackPanel Orientation="Horizontal" Spacing="8">
@@ -296,7 +298,7 @@
 
             <!-- Position, with the marker ticks just above the seek bar; hovering a tick shows its
                  label (spec §7). Same margin as the slider, so a tick sits where the thumb would. -->
-            <Border Classes="block" Padding="12,4,12,6">
+            <Border Classes="block" Padding="12,4,12,6" IsVisible="{Binding ShowControls}">
                 <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
                     <ItemsControl Grid.Column="1" Margin="10,0" ItemsSource="{Binding SideMarkers.Ticks}">
                         <ItemsControl.ItemsPanel>

@@ -236,7 +236,7 @@ The Explorer is the second half of Yeetle: a virtual library of every clip in th
 
 **Selection and actions.** Explorer-standard behavior: click, Ctrl/Shift multi-select, Ctrl+A and arrow keys; Enter opens and Del deletes (the Keep and Yeet keys). Right-click shows the genuine Windows context menu for the files (Open with, Send to, etc.) with Yeetle's own entries on top. Actions:
 
-- Open: the clip opens in Yeetle's player/editor, without carousel or Skip. Tags, markers and the Keep/Yeet decision are editable and saved immediately, with undo.
+- Open: the clip opens in Yeetle's player/editor, without carousel or Skip. Tags, markers and the Keep/Yeet decision are editable and saved immediately, with undo. A clip whose file is not on disk (Missing, Offline, Deleted) opens with its name, why it cannot play and Back to library only: no playback, decision or tagging (#79).
 - Show in folder; open in the default Windows player.
 - Set Kept / Yeeted (un-yeeting is just setting Kept).
 - Delete from disk (section 9).

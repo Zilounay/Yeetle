@@ -96,7 +96,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
         editor.PropertyChanged += (_, e) =>
         {
             OnPropertyChanged(nameof(HasInfo));
-            if (e.PropertyName == nameof(EditorViewModel.IsOpen))
+            if (e.PropertyName is nameof(EditorViewModel.IsOpen) or nameof(EditorViewModel.IsFilePresent))
                 OnLayoutChanged();
         };
         // Decisions changed or wiped in the Explorer change how many clips wait for a session.
@@ -142,7 +142,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     // page of its own shows instead of a black video area with a message over it (#62).
     public bool CollapsePlayer => ShowHome;
 
-    public bool ShowSidePanels => !IsTheatre && (IsEditorOpen || (IsSessionPage && Session.IsActive));
+    // Tags and markers only for a clip that can play (#79).
+    public bool ShowSidePanels => !IsTheatre && ShowControls;
 
     // The clip strip is hidden for now: it added little (#62). Its code stays for a later return.
     public bool ShowStrip => false;
@@ -153,8 +154,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
 
     public bool ShowScanSummary => ScanSummary.Length > 0;
 
-    // The playback controls: while a session runs or a clip is open.
-    public bool ShowControls => IsEditorOpen || (IsSessionPage && Session.IsActive);
+    // The window over the video: while a session runs or a clip is open.
+    public bool ShowOverlay => IsEditorOpen || (IsSessionPage && Session.IsActive);
+
+    // The playback and decision controls: not for a clip whose file is not on disk (#79), which
+    // only shows why and Back to library.
+    public bool ShowControls => (IsEditorOpen && Editor.IsFilePresent) || (IsSessionPage && Session.IsActive);
 
     // The editor page shows at once; its clip follows a moment later (#78).
     private bool IsEditorOpen => IsEditorPage && Editor.IsOpen;
@@ -319,7 +324,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
         foreach (var name in new[]
                  {
                      nameof(IsSessionPage), nameof(IsExplorerPage), nameof(IsEditorPage), nameof(ShowPlayer), nameof(CollapsePlayer),
-                     nameof(ShowSidePanels), nameof(ShowStrip), nameof(ShowHome), nameof(ShowControls),
+                     nameof(ShowSidePanels), nameof(ShowStrip), nameof(ShowHome), nameof(ShowOverlay), nameof(ShowControls),
                      nameof(ShowSessionNotice), nameof(SideTags), nameof(SideMarkers), nameof(HasInfo),
                  })
             OnPropertyChanged(name);

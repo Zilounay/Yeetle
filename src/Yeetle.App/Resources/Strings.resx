@@ -695,7 +695,7 @@ It can no longer be picked. The {1} clip(s) that already carry it keep it under 
     <value>Drag the selection into your editor, a folder or an upload page: the files are copied, never moved.</value>
   </data>
   <data name="EditorFileNotPresent" xml:space="preserve">
-    <value>This clip's file is not on disk; its tags, markers and decision can still be changed.</value>
+    <value>This clip's file is not on disk, so it cannot be played, decided or tagged. Bring the file back, then open it again.</value>
   </data>
   <data name="EditorSaveFailed" xml:space="preserve">
     <value>The last change could not be saved: {0}</value>
