@@ -16,17 +16,18 @@ using Yeetle.Domain.Tagging;
 
 namespace Yeetle.App.ViewModels;
 
-// A tag chip in a box card. Boxes under the tag are drawn below the card, and can be folded away.
-public sealed partial class TagNodeViewModel(
-    Tag tag, string? colour, string? hotkey, IReadOnlyList<BoxCardViewModel> boxes, bool isExpanded, ICommand select)
+// A tag chip in a box card. Clicking a tag with boxes under it selects it and opens them below
+// the card; clicking it again closes them (#81).
+public sealed partial class TagNodeViewModel(Tag tag, string? colour, string? hotkey, bool hasBoxes, ICommand select)
     : ViewModelBase
 {
     [ObservableProperty]
     private bool _isSelected;
 
+    // On the path to the selection: its boxes are open below the card.
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ExpandGlyph))]
-    private bool _isExpanded = isExpanded;
+    private bool _isOpen;
 
     public TagId Id { get; } = tag.Id;
     public string Name { get; } = tag.Name;
@@ -34,14 +35,9 @@ public sealed partial class TagNodeViewModel(
     public bool HasColour => ColourBrush is not null;
     public string? Hotkey { get; } = hotkey is null ? null : HotkeyLabels.Short(hotkey);
     public bool HasHotkey => Hotkey is not null;
-    public IReadOnlyList<BoxCardViewModel> Boxes { get; } = boxes;
-    public bool HasBoxes => Boxes.Count > 0;
-    public string UnderTitle => string.Format(Strings.BoxesUnderTag, Name, Boxes.Count);
-    public string ExpandGlyph => IsExpanded ? "▾" : "▸";
+    public bool HasBoxes { get; } = hasBoxes;
+    public string ExpandGlyph => IsOpen ? "▾" : "▸";
     public ICommand Select { get; } = select;
-
-    [RelayCommand]
-    private void ToggleExpanded() => IsExpanded = !IsExpanded;
 }
 
 // A box: its name, its Pick one / Pick many switch and Required flag, and its tags.
@@ -57,6 +53,11 @@ public sealed partial class BoxCardViewModel : ViewModelBase
 
     [ObservableProperty]
     private bool _isSelected;
+
+    // The boxes under this card's open tag, shown below its chips (#81).
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasOpenBoxes))]
+    private IReadOnlyList<BoxCardViewModel> _openBoxes = [];
 
     public BoxCardViewModel(Box box, string title, IReadOnlyList<TagNodeViewModel> tags, ICommand select, ICommand addTag,
         Action<BoxCardViewModel> rulesChanged)
@@ -76,7 +77,10 @@ public sealed partial class BoxCardViewModel : ViewModelBase
     public string Title { get; }
     public bool IsNamed { get; }
     public IReadOnlyList<TagNodeViewModel> Tags { get; }
-    public IReadOnlyList<TagNodeViewModel> TagsWithBoxes => Tags.Where(t => t.HasBoxes).ToList();
+    public bool HasOpenBoxes => OpenBoxes.Count > 0;
+
+    // The tag whose boxes are open, if any.
+    public TagId? OpenTag { get; set; }
     public ICommand Select { get; }
     public ICommand AddTag { get; }
 
@@ -97,8 +101,6 @@ public sealed partial class TagManagerViewModel : ViewModelBase
     private readonly IDialogs _dialogs;
     private readonly IShell _shell;
     private readonly HotkeyMap _actionKeys;
-    // Tags start folded, so a large vocabulary (hundreds of champions) stays easy to scan.
-    private readonly HashSet<TagId> _expanded = [];
     private TagCatalog _catalog = TagCatalog.Empty;
 
     [ObservableProperty]
@@ -110,6 +112,10 @@ public sealed partial class TagManagerViewModel : ViewModelBase
 
     [ObservableProperty]
     private bool _isEmpty;
+
+    // Until the first load, placeholders show in place of the cards (#78).
+    [ObservableProperty]
+    private bool _isLoaded;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasTagSelected), nameof(HasSelection))]
@@ -181,6 +187,7 @@ public sealed partial class TagManagerViewModel : ViewModelBase
         foreach (var box in vocabulary.BoxesUnder(null))
             Boxes.Add(Card(box));
         IsEmpty = Boxes.Count == 0;
+        IsLoaded = true;
         if (SelectedTag is { } tag && !vocabulary.InManagerOrder.Contains(tag))
             SelectedTag = null;
         if (SelectedBox is { } selectedBox && AllCards().All(c => c.Id != selectedBox))
@@ -261,7 +268,6 @@ public sealed partial class TagManagerViewModel : ViewModelBase
     {
         if (SelectedTag is not { } tag)
             return;
-        _expanded.Add(tag);
         var box = await _tags.AddBoxAsync(tag, Strings.NewBoxName, BoxRule.PickMany);
         await SelectAndRenameAsync(box: box);
     }
@@ -272,7 +278,6 @@ public sealed partial class TagManagerViewModel : ViewModelBase
     {
         if (SelectedTag is not { } tag)
             return;
-        _expanded.Add(tag);
         var box = _catalog.Vocabulary.BoxesUnder(tag).FirstOrDefault(b => !b.IsNamed)?.Id
                   ?? await _tags.AddBoxAsync(tag, string.Empty, BoxRule.PickMany);
         await AddTagAsync(box);
@@ -372,8 +377,11 @@ public sealed partial class TagManagerViewModel : ViewModelBase
         NameFocusRequested?.Invoke(this, EventArgs.Empty);
     }
 
+    // Clicking the selected tag or box again unselects it, which closes the boxes under it (#81).
     private async Task SelectAsync(TagId? tag, BoxId? box)
     {
+        if ((tag is not null && tag == SelectedTag) || (box is not null && box == SelectedBox))
+            (tag, box) = (null, null);
         // A name being typed is saved before the selection moves on.
         await CommitNameAsync();
         IsCapturingHotkey = false;
@@ -385,6 +393,7 @@ public sealed partial class TagManagerViewModel : ViewModelBase
 
     private void ShowSelection()
     {
+        OpenPath(Boxes, PathToSelection());
         foreach (var card in AllCards())
         {
             card.IsSelected = card.Id == SelectedBox;
@@ -417,23 +426,39 @@ public sealed partial class TagManagerViewModel : ViewModelBase
         }
     }
 
+    // The selected tag and the tags above it, or the tags above the selected box: their boxes are open.
+    private HashSet<TagId> PathToSelection()
+    {
+        var vocabulary = _catalog.Vocabulary;
+        var start = SelectedTag ?? (SelectedBox is { } box ? vocabulary.Box(box).ParentTag : null);
+        return start is { } tag ? vocabulary.AncestorsOf(tag).Prepend(tag).ToHashSet() : [];
+    }
+
+    // Opens the boxes under each tag on the path, one level at a time. Cards already open stay as
+    // they are, so a click only creates what was not on screen yet.
+    private void OpenPath(IEnumerable<BoxCardViewModel> cards, HashSet<TagId> path)
+    {
+        foreach (var card in cards)
+        {
+            foreach (var node in card.Tags)
+                node.IsOpen = path.Contains(node.Id);
+            var open = card.Tags.FirstOrDefault(t => t.IsOpen && t.HasBoxes)?.Id;
+            if (open != card.OpenTag)
+            {
+                card.OpenTag = open;
+                card.OpenBoxes = open is { } tag ? _catalog.Vocabulary.BoxesUnder(tag).Select(Card).ToList() : [];
+            }
+            OpenPath(card.OpenBoxes, path);
+        }
+    }
+
+    // Only the box and its chips: the boxes under its tags are made when they open (#81).
     private BoxCardViewModel Card(Box box)
     {
         var vocabulary = _catalog.Vocabulary;
         var tags = vocabulary.TagsIn(box.Id).Select(tag => new TagNodeViewModel(tag,
             _catalog.Colours.GetValueOrDefault(tag.Id), _catalog.Hotkeys.GetValueOrDefault(tag.Id),
-            vocabulary.BoxesUnder(tag.Id).Select(Card).ToList(), _expanded.Contains(tag.Id),
-            new AsyncRelayCommand(() => SelectAsync(tag.Id, null)))).ToList();
-        foreach (var node in tags)
-            node.PropertyChanged += (_, e) =>
-            {
-                if (e.PropertyName != nameof(TagNodeViewModel.IsExpanded))
-                    return;
-                if (node.IsExpanded)
-                    _expanded.Add(node.Id);
-                else
-                    _expanded.Remove(node.Id);
-            };
+            vocabulary.BoxesUnder(tag.Id).Any(), new AsyncRelayCommand(() => SelectAsync(tag.Id, null)))).ToList();
         return new BoxCardViewModel(box, BoxTitle(box), tags, new AsyncRelayCommand(() => SelectAsync(null, box.Id)),
             new AsyncRelayCommand(() => AddTagAsync(box.Id)), card => _ = SaveRulesAsync(card));
     }
@@ -454,7 +479,7 @@ public sealed partial class TagManagerViewModel : ViewModelBase
         while (pending.TryPop(out var card))
         {
             yield return card;
-            foreach (var child in card.Tags.SelectMany(t => t.Boxes))
+            foreach (var child in card.OpenBoxes)
                 pending.Push(child);
         }
     }
