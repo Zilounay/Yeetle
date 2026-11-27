@@ -33,7 +33,7 @@ public sealed class SessionService(
             clips.Select(c => new ClipReview(c.Id, Domain.Clips.Decision.New, c.Tags, [], Visited: false)
             {
                 Markers = c.Markers,
-            }), position: 0);
+            }), position: 0) { Clock = () => Now };
         var session = Create(id, review, clips, catalog);
         Journal(id, session.Snapshot());
         log.Info($"Session {id} started with {clips.Count} clips.");
@@ -47,7 +47,10 @@ public sealed class SessionService(
         var known = clips.Select(c => c.Id).ToHashSet();
         // A clip wiped from the library meanwhile simply leaves the session.
         var reviews = unfinished.Snapshot.Clips.Where(c => known.Contains(c.Clip)).ToList();
-        var review = new ReviewSession(new TagRules(catalog.Vocabulary), reviews, unfinished.Snapshot.Position);
+        var review = new ReviewSession(new TagRules(catalog.Vocabulary), reviews, unfinished.Snapshot.Position)
+        {
+            Clock = () => Now,
+        };
         // Tags deleted since the journal was written are dropped.
         review.UseVocabulary(catalog.Vocabulary);
         log.Info($"Session {unfinished.Id} resumed.");
@@ -68,6 +71,9 @@ public sealed class SessionService(
         });
         log.Info($"Session {sessionId} committed.");
     }
+
+    // The sessions history (#72), read in the background.
+    public Task<IReadOnlyList<PastSession>> LoadHistoryAsync() => Task.Run(store.History);
 
     public async Task DiscardAsync(long sessionId)
     {

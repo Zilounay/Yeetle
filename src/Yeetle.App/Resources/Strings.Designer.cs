@@ -463,6 +463,15 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reviewed.
+        /// </summary>
+        public static string ColumnReviewed {
+            get {
+                return ResourceManager.GetString("ColumnReviewed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Tags.
         /// </summary>
         public static string ColumnTags {
@@ -561,6 +570,24 @@ namespace Yeetle.App.Resources {
         public static string DecisionNew {
             get {
                 return ResourceManager.GetString("DecisionNew", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to now {0}.
+        /// </summary>
+        public static string DecisionNow {
+            get {
+                return ResourceManager.GetString("DecisionNow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Decided otherwise since this session. The badge shows what was decided then..
+        /// </summary>
+        public static string DecisionNowTip {
+            get {
+                return ResourceManager.GetString("DecisionNowTip", resourceCulture);
             }
         }
         
@@ -773,6 +800,33 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clips.
+        /// </summary>
+        public static string ExplorerModeClips {
+            get {
+                return ResourceManager.GetString("ExplorerModeClips", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sessions.
+        /// </summary>
+        public static string ExplorerModeSessions {
+            get {
+                return ResourceManager.GetString("ExplorerModeSessions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clips: the library as it is now. Sessions: what each past session decided..
+        /// </summary>
+        public static string ExplorerModeTip {
+            get {
+                return ResourceManager.GetString("ExplorerModeTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} file(s).
         /// </summary>
         public static string FileListTitle {
@@ -832,6 +886,15 @@ namespace Yeetle.App.Resources {
         public static string FilterFileState {
             get {
                 return ResourceManager.GetString("FilterFileState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In this session.
+        /// </summary>
+        public static string FilterInSession {
+            get {
+                return ResourceManager.GetString("FilterInSession", resourceCulture);
             }
         }
         
@@ -1331,6 +1394,15 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No sessions yet. Every session you commit from now on is listed here..
+        /// </summary>
+        public static string NoPastSessions {
+            get {
+                return ResourceManager.GetString("NoPastSessions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No source folders yet. Add the folder where OBS saves your clips..
         /// </summary>
         public static string NoSourceFolders {
@@ -1439,6 +1511,24 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} min · {1} kept · {2} yeeted · {3} skipped.
+        /// </summary>
+        public static string PastSessionDetail {
+            get {
+                return ResourceManager.GetString("PastSessionDetail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0:dddd d MMMM, HH:mm}.
+        /// </summary>
+        public static string PastSessionTitle {
+            get {
+                return ResourceManager.GetString("PastSessionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Pause.
         /// </summary>
         public static string Pause {
@@ -1453,6 +1543,15 @@ namespace Yeetle.App.Resources {
         public static string PendingTagHint {
             get {
                 return ResourceManager.GetString("PendingTagHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pick a session on the left to see the clips it handled..
+        /// </summary>
+        public static string PickASession {
+            get {
+                return ResourceManager.GetString("PickASession", resourceCulture);
             }
         }
         
@@ -1871,11 +1970,29 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0:g}.
+        /// </summary>
+        public static string ReviewedDayTimeFormat {
+            get {
+                return ResourceManager.GetString("ReviewedDayTimeFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reviewed.
         /// </summary>
         public static string ReviewedLabel {
             get {
                 return ResourceManager.GetString("ReviewedLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0:t}.
+        /// </summary>
+        public static string ReviewedTimeFormat {
+            get {
+                return ResourceManager.GetString("ReviewedTimeFormat", resourceCulture);
             }
         }
         
@@ -2366,6 +2483,15 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Tags changed since this session. These are the current tags..
+        /// </summary>
+        public static string TagsChangedTip {
+            get {
+                return ResourceManager.GetString("TagsChangedTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Theatre.
         /// </summary>
         public static string Theatre {
@@ -2479,6 +2605,15 @@ namespace Yeetle.App.Resources {
         public static string UnknownDuration {
             get {
                 return ResourceManager.GetString("UnknownDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to —.
+        /// </summary>
+        public static string UnknownTime {
+            get {
+                return ResourceManager.GetString("UnknownTime", resourceCulture);
             }
         }
         

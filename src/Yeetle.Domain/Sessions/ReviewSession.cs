@@ -15,6 +15,9 @@ public sealed record ClipReview(
 {
     // In position order. Markers are never carried over to the next clip.
     public ImmutableList<Marker> Markers { get; init; } = [];
+
+    // When it was last decided or skipped in this session; null while not left yet (#72).
+    public DateTime? ReviewedAt { get; init; }
 }
 
 public enum KeepOutcome
@@ -32,6 +35,9 @@ public sealed class ReviewSession
     private readonly Stack<(ImmutableList<ClipReview> Clips, int Position)> _undo = new();
     private ImmutableList<ClipReview> _clips;
     private bool _requiredWarningShown;
+
+    // The time of each decision or skip, kept with the clip for the sessions history (#72).
+    public Func<DateTime> Clock { get; init; } = () => DateTime.Now;
 
     public ReviewSession(TagRules rules, IEnumerable<ClipId> clips)
         : this(rules, clips.Select(c => new ClipReview(c, Decision.New, [], [], Visited: false)), position: 0)
@@ -77,7 +83,9 @@ public sealed class ReviewSession
     // Moves on without deciding: the clip stays New.
     public void Skip()
     {
-        CurrentOrThrow();
+        // Not an undo step of its own: Undo still goes back to the last decision or change.
+        var current = CurrentOrThrow();
+        _clips = _clips.SetItem(Position, current with { ReviewedAt = Clock() });
         MoveNext();
     }
 
@@ -153,7 +161,7 @@ public sealed class ReviewSession
     {
         var current = CurrentOrThrow();
         SaveUndo();
-        _clips = _clips.SetItem(Position, current with { Decision = decision });
+        _clips = _clips.SetItem(Position, current with { Decision = decision, ReviewedAt = Clock() });
         MoveNext();
     }
 

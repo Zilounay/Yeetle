@@ -895,4 +895,49 @@ It can no longer be picked. The {1} clip(s) that already carry it keep it under 
   <data name="TagFilterCount" xml:space="preserve">
     <value>({0})</value>
   </data>
+  <data name="ExplorerModeClips" xml:space="preserve">
+    <value>Clips</value>
+  </data>
+  <data name="ExplorerModeSessions" xml:space="preserve">
+    <value>Sessions</value>
+  </data>
+  <data name="ExplorerModeTip" xml:space="preserve">
+    <value>Clips: the library as it is now. Sessions: what each past session decided.</value>
+  </data>
+  <data name="PastSessionTitle" xml:space="preserve">
+    <value>{0:dddd d MMMM, HH:mm}</value>
+  </data>
+  <data name="PastSessionDetail" xml:space="preserve">
+    <value>{0} min · {1} kept · {2} yeeted · {3} skipped</value>
+  </data>
+  <data name="NoPastSessions" xml:space="preserve">
+    <value>No sessions yet. Every session you commit from now on is listed here.</value>
+  </data>
+  <data name="PickASession" xml:space="preserve">
+    <value>Pick a session on the left to see the clips it handled.</value>
+  </data>
+  <data name="FilterInSession" xml:space="preserve">
+    <value>In this session</value>
+  </data>
+  <data name="ColumnReviewed" xml:space="preserve">
+    <value>Reviewed</value>
+  </data>
+  <data name="ReviewedTimeFormat" xml:space="preserve">
+    <value>{0:t}</value>
+  </data>
+  <data name="ReviewedDayTimeFormat" xml:space="preserve">
+    <value>{0:g}</value>
+  </data>
+  <data name="DecisionNow" xml:space="preserve">
+    <value>now {0}</value>
+  </data>
+  <data name="DecisionNowTip" xml:space="preserve">
+    <value>Decided otherwise since this session. The badge shows what was decided then.</value>
+  </data>
+  <data name="TagsChangedTip" xml:space="preserve">
+    <value>Tags changed since this session. These are the current tags.</value>
+  </data>
+  <data name="UnknownTime" xml:space="preserve">
+    <value>—</value>
+  </data>
 </root>

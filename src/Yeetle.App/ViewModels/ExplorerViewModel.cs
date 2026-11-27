@@ -9,20 +9,75 @@ using Yeetle.Application.Sessions;
 using Yeetle.Application.Shell;
 using Yeetle.Domain.Clips;
 using Yeetle.Domain.Library;
+using Yeetle.Domain.Sessions;
 using Yeetle.Domain.Tagging;
 
 namespace Yeetle.App.ViewModels;
 
 // One row of the clip list: name, recording date, duration and tags; Missing, Offline and Deleted
-// clips are dimmed with a badge (spec §8, layout from #9).
-public sealed class ExplorerRowViewModel(LibraryClip clip, string tags)
+// clips are dimmed with a badge (spec §8, layout from #9). In the sessions history (#72) the date
+// is when the clip was reviewed and the badge the decision taken then, with what changed since.
+public sealed class ExplorerRowViewModel
 {
-    public LibraryClip Clip { get; } = clip;
-    public string Name { get; } = clip.FileName;
-    public string Date { get; } = string.Format(Strings.ClipDateFormat, clip.RecordedAt);
-    public string Duration { get; } = clip.Duration is { } duration ? TimeFormat.Clip(duration) : Strings.UnknownDuration;
-    public string Tags { get; } = tags;
-    public string StateBadge { get; } = clip.State switch
+    public ExplorerRowViewModel(LibraryClip clip, string tags)
+        : this(clip, tags, string.Format(Strings.ClipDateFormat, clip.RecordedAt), clip.Decision switch
+        {
+            Decision.New => Strings.DecisionNew,
+            Decision.Yeeted => Strings.DecisionYeeted,
+            _ => string.Empty,
+        })
+    {
+    }
+
+    private ExplorerRowViewModel(LibraryClip clip, string tags, string date, string decisionBadge)
+    {
+        Clip = clip;
+        Tags = tags;
+        Date = date;
+        DecisionBadge = decisionBadge;
+        IsYeeted = clip.Decision == Decision.Yeeted;
+    }
+
+    // A clip of a past session: the time it was reviewed (with the day when the session ran past
+    // midnight or was resumed later), the decision taken then, always shown, and what changed since.
+    public static ExplorerRowViewModel ForSession(SessionRow row, string tags, DateTime sessionStart)
+    {
+        var reviewed = row.Review.ReviewedAt is { } at
+            ? string.Format(at.Date == sessionStart.Date ? Strings.ReviewedTimeFormat : Strings.ReviewedDayTimeFormat, at)
+            : Strings.UnknownTime;
+        var then = row.Review.Decision switch
+        {
+            Decision.Kept => Strings.BadgeKept,
+            Decision.Yeeted => Strings.DecisionYeeted,
+            _ => Strings.BadgeSkipped,
+        };
+        return new ExplorerRowViewModel(row.Clip, tags, reviewed, then)
+        {
+            IsYeeted = row.Review.Decision == Decision.Yeeted,
+            IsKept = row.Review.Decision == Decision.Kept,
+            DecisionNow = row.DecisionChanged ? string.Format(Strings.DecisionNow, NowWord(row.Clip.Decision)) : string.Empty,
+            TagsChanged = row.TagsChanged,
+        };
+    }
+
+    private static string NowWord(Decision decision) => decision switch
+    {
+        Decision.Kept => Strings.BadgeKept,
+        Decision.Yeeted => Strings.DecisionYeeted,
+        _ => Strings.DecisionNew,
+    };
+
+    public LibraryClip Clip { get; }
+    public string Name => Clip.FileName;
+    public string Date { get; }
+    public string Duration => Clip.Duration is { } duration ? TimeFormat.Clip(duration) : Strings.UnknownDuration;
+    public string Tags { get; }
+    // What a past session's clip became since: "now Kept" (#72).
+    public string DecisionNow { get; private init; } = string.Empty;
+    public bool HasDecisionNow => DecisionNow.Length > 0;
+    public bool TagsChanged { get; private init; }
+    public bool IsKept { get; private init; }
+    public string StateBadge => Clip.State switch
     {
         FileState.Missing => Strings.StateMissing,
         FileState.Offline => Strings.StateOffline,
@@ -33,14 +88,19 @@ public sealed class ExplorerRowViewModel(LibraryClip clip, string tags)
     public bool HasStateBadge => StateBadge.Length > 0;
     public bool IsDimmed => Clip.State != FileState.Present;
     // Shown when New or Yeeted clips are listed, so they stand out from Kept ones.
-    public string DecisionBadge { get; } = clip.Decision switch
-    {
-        Decision.New => Strings.DecisionNew,
-        Decision.Yeeted => Strings.DecisionYeeted,
-        _ => string.Empty,
-    };
+    public string DecisionBadge { get; }
     public bool HasDecisionBadge => DecisionBadge.Length > 0;
-    public bool IsYeeted => Clip.Decision == Decision.Yeeted;
+    public bool IsYeeted { get; private init; }
+}
+
+// A committed session in the Explorer's Sessions mode (#72): when it started, how long it took and
+// what it decided.
+public sealed class PastSessionViewModel(PastSession session)
+{
+    public PastSession Session { get; } = session;
+    public string Title { get; } = string.Format(Strings.PastSessionTitle, session.StartedAt);
+    public string Detail { get; } = string.Format(Strings.PastSessionDetail,
+        Math.Max(1, (int)Math.Round(session.Duration.TotalMinutes)), session.Kept, session.Yeeted, session.Skipped);
 }
 
 // A node of the tag filter tree (#83): a box title, or a tag to tick. What sits under a tag is
@@ -90,7 +150,10 @@ public sealed partial class ExplorerViewModel : ViewModelBase
     private readonly PlayerViewModel _player;
     private readonly IDialogs _dialogs;
     private readonly IShell _shell;
+    private readonly SessionService _sessions;
     private IReadOnlyList<LibraryClip> _all = [];
+    private Dictionary<ClipId, LibraryClip> _byId = [];
+    private IReadOnlyList<PastSession> _history = [];
     private TagCatalog _catalog = TagCatalog.Empty;
     private IReadOnlyList<ExplorerRowViewModel> _selected = [];
     // Set while the filters are filled in, so each change does not query again.
@@ -147,8 +210,52 @@ public sealed partial class ExplorerViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(ShowEmpty))]
     private bool _isEmpty;
 
-    public ExplorerViewModel(ClipLibrary library, FileOperations files, PlayerViewModel player, IDialogs dialogs, IShell shell)
+    // The sessions history (#72): the same table, seen from the sessions' side. The filter column
+    // then lists the committed sessions, and the filters apply inside the session picked.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsClipsMode), nameof(NameHeader), nameof(DateHeader), nameof(DurationHeader),
+        nameof(ShowPickASession), nameof(ShowEmpty))]
+    private bool _isSessionsMode;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasPastSessions), nameof(ShowNoPastSessions), nameof(ShowPickASession))]
+    private IReadOnlyList<PastSessionViewModel> _pastSessions = [];
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowPickASession))]
+    private PastSessionViewModel? _selectedSession;
+
+    // The decisions taken in the session picked; New there means skipped.
+    [ObservableProperty]
+    private bool _showSessionKept = true;
+
+    [ObservableProperty]
+    private bool _showSessionYeeted = true;
+
+    [ObservableProperty]
+    private bool _showSessionSkipped = true;
+
+    // Review order by default.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NameHeader), nameof(DateHeader), nameof(DurationHeader))]
+    private SessionSort _sessionSort = SessionSort.Position;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NameHeader), nameof(DateHeader), nameof(DurationHeader))]
+    private bool _sessionDescending;
+
+    public bool IsClipsMode => !IsSessionsMode;
+
+    public bool HasPastSessions => PastSessions.Count > 0;
+
+    public bool ShowNoPastSessions => IsLoaded && !HasPastSessions;
+
+    public bool ShowPickASession => IsSessionsMode && HasPastSessions && SelectedSession is null;
+
+    public ExplorerViewModel(ClipLibrary library, FileOperations files, PlayerViewModel player, IDialogs dialogs, IShell shell,
+        SessionService sessions)
     {
+        _sessions = sessions;
         _library = library;
         _files = files;
         _player = player;
@@ -174,12 +281,12 @@ public sealed partial class ExplorerViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isBusy;
 
-    public bool ShowEmpty => IsLoaded && IsEmpty;
+    public bool ShowEmpty => IsLoaded && IsEmpty && !ShowPickASession;
 
     public bool HasTagFilters => AllTagFilters().Any(f => f.IsTag);
 
     public string NameHeader => Strings.ColumnName + Arrow(LibrarySort.Name);
-    public string DateHeader => Strings.ColumnRecorded + Arrow(LibrarySort.RecordedAt);
+    public string DateHeader => (IsSessionsMode ? Strings.ColumnReviewed : Strings.ColumnRecorded) + Arrow(LibrarySort.RecordedAt);
     public string DurationHeader => Strings.ColumnDuration + Arrow(LibrarySort.Duration);
 
     public bool HasSelection => _selected.Count > 0;
@@ -207,7 +314,11 @@ public sealed partial class ExplorerViewModel : ViewModelBase
         IsBusy = true;
         try
         {
+            var history = _sessions.LoadHistoryAsync();
             (_all, var catalog) = await _library.LoadWithCatalogAsync();
+            _byId = _all.ToDictionary(c => c.Id);
+            _history = await history;
+            FillPastSessions();
             FillTagFilters(catalog);
             _catalog = catalog;
             CountTags();
@@ -257,10 +368,25 @@ public sealed partial class ExplorerViewModel : ViewModelBase
     [RelayCommand]
     private void SortBy(LibrarySort column)
     {
+        if (IsSessionsMode)
+        {
+            // A session reads in review order: a column starts in its natural order, a second click
+            // turns it around.
+            var sort = ForSession(column);
+            SessionDescending = sort == SessionSort && !SessionDescending;
+            SessionSort = sort;
+            return;
+        }
         // The same column again turns the order around; dates start newest first.
         Descending = column == Sort ? !Descending : column != LibrarySort.Name;
         Sort = column;
     }
+
+    [RelayCommand]
+    private void ShowClips() => IsSessionsMode = false;
+
+    [RelayCommand]
+    private void ShowSessions() => IsSessionsMode = true;
 
     [RelayCommand]
     private void ClearFilters()
@@ -271,6 +397,7 @@ public sealed partial class ExplorerViewModel : ViewModelBase
         (ShowKept, ShowNew, ShowYeeted) = (true, false, false);
         (ShowPresent, ShowMissing, ShowOffline, ShowDeleted, ShowNeedsAttention) = (true, true, true, false, true);
         IncompleteOnly = false;
+        (ShowSessionKept, ShowSessionYeeted, ShowSessionSkipped) = (true, true, true);
         SearchText = string.Empty;
         _loading = false;
         Apply();
@@ -465,11 +592,62 @@ public sealed partial class ExplorerViewModel : ViewModelBase
     {
         if (!_loading && e.PropertyName is nameof(SearchText) or nameof(ShowKept) or nameof(ShowNew) or nameof(ShowYeeted)
                 or nameof(ShowPresent) or nameof(ShowMissing) or nameof(ShowOffline) or nameof(ShowDeleted)
-                or nameof(ShowNeedsAttention) or nameof(IncompleteOnly) or nameof(Sort) or nameof(Descending))
+                or nameof(ShowNeedsAttention) or nameof(IncompleteOnly) or nameof(Sort) or nameof(Descending)
+                or nameof(IsSessionsMode) or nameof(SelectedSession) or nameof(ShowSessionKept) or nameof(ShowSessionYeeted)
+                or nameof(ShowSessionSkipped) or nameof(SessionSort) or nameof(SessionDescending))
             Apply();
     }
 
     private void Apply()
+    {
+        if (IsSessionsMode)
+            ApplySession();
+        else
+            ApplyClips();
+        OnPropertyChanged(nameof(ShowEmpty));
+        OnPropertyChanged(nameof(ShowNoPastSessions));
+    }
+
+    // The clips of the session picked, as they were decided then (#72).
+    private void ApplySession()
+    {
+        if (SelectedSession?.Session is not { } session)
+        {
+            Rows = [];
+            MatchText = string.Empty;
+            IsEmpty = false;
+            SetSelection([]);
+            return;
+        }
+        var decisions = new HashSet<Decision>();
+        if (ShowSessionKept)
+            decisions.Add(Decision.Kept);
+        if (ShowSessionYeeted)
+            decisions.Add(Decision.Yeeted);
+        if (ShowSessionSkipped)
+            decisions.Add(Decision.New);
+        var tags = AllTagFilters().Where(f => f.IsChecked).Select(f => f.Tag).OfType<TagId>().ToList();
+        var vocabulary = _catalog.Vocabulary;
+        var shown = SessionQuery.Apply(session, _byId, decisions, tags, SearchText, vocabulary, SessionSort, SessionDescending);
+        Rows = shown.Select(row => ExplorerRowViewModel.ForSession(row,
+            string.Join(TagSeparator, vocabulary.NamesOf(row.Clip.Tags)), session.StartedAt)).ToList();
+        MatchText = string.Format(Strings.MatchCount, shown.Count, session.Clips.Count);
+        IsEmpty = shown.Count == 0;
+        SetSelection([]);
+    }
+
+    // A committed session never changes, so the list is rebuilt only when sessions were added; the
+    // one picked stays picked (the list control drops its selection when its items are replaced).
+    private void FillPastSessions()
+    {
+        if (_history.Select(s => s.Id).SequenceEqual(PastSessions.Select(p => p.Session.Id)))
+            return;
+        var picked = SelectedSession?.Session.Id;
+        PastSessions = _history.Select(s => new PastSessionViewModel(s)).ToList();
+        SelectedSession = PastSessions.FirstOrDefault(p => p.Session.Id == picked);
+    }
+
+    private void ApplyClips()
     {
         var decisions = new HashSet<Decision>();
         if (ShowKept)
@@ -521,5 +699,15 @@ public sealed partial class ExplorerViewModel : ViewModelBase
         return true;
     }
 
-    private string Arrow(LibrarySort column) => column != Sort ? string.Empty : Descending ? SortDown : SortUp;
+    private string Arrow(LibrarySort column) => IsSessionsMode
+        ? ForSession(column) != SessionSort ? string.Empty : SessionDescending ? SortDown : SortUp
+        : column != Sort ? string.Empty : Descending ? SortDown : SortUp;
+
+    // The same header buttons sort a session: the date column is when the clip was reviewed.
+    private static SessionSort ForSession(LibrarySort column) => column switch
+    {
+        LibrarySort.Name => SessionSort.Name,
+        LibrarySort.Duration => SessionSort.Duration,
+        _ => SessionSort.ReviewedAt,
+    };
 }

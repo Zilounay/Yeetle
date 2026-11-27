@@ -895,4 +895,49 @@ On ne pourra plus le choisir. Les {1} clip(s) qui l'ont déjà le gardent sous c
   <data name="TagFilterCount" xml:space="preserve">
     <value>({0})</value>
   </data>
+  <data name="ExplorerModeClips" xml:space="preserve">
+    <value>Clips</value>
+  </data>
+  <data name="ExplorerModeSessions" xml:space="preserve">
+    <value>Sessions</value>
+  </data>
+  <data name="ExplorerModeTip" xml:space="preserve">
+    <value>Clips : la bibliothèque telle qu'elle est. Sessions : ce que chaque session passée a décidé.</value>
+  </data>
+  <data name="PastSessionTitle" xml:space="preserve">
+    <value>{0:dddd d MMMM, HH:mm}</value>
+  </data>
+  <data name="PastSessionDetail" xml:space="preserve">
+    <value>{0} min · {1} gardé(s) · {2} yeeté(s) · {3} passé(s)</value>
+  </data>
+  <data name="NoPastSessions" xml:space="preserve">
+    <value>Aucune session pour l'instant. Chaque session validée à partir de maintenant apparaît ici.</value>
+  </data>
+  <data name="PickASession" xml:space="preserve">
+    <value>Choisissez une session à gauche pour voir ses clips.</value>
+  </data>
+  <data name="FilterInSession" xml:space="preserve">
+    <value>Dans cette session</value>
+  </data>
+  <data name="ColumnReviewed" xml:space="preserve">
+    <value>Revu</value>
+  </data>
+  <data name="ReviewedTimeFormat" xml:space="preserve">
+    <value>{0:t}</value>
+  </data>
+  <data name="ReviewedDayTimeFormat" xml:space="preserve">
+    <value>{0:g}</value>
+  </data>
+  <data name="DecisionNow" xml:space="preserve">
+    <value>maintenant {0}</value>
+  </data>
+  <data name="DecisionNowTip" xml:space="preserve">
+    <value>Décidé autrement depuis cette session. Le badge montre ce qui a été décidé alors.</value>
+  </data>
+  <data name="TagsChangedTip" xml:space="preserve">
+    <value>Tags modifiés depuis cette session. Ce sont les tags actuels.</value>
+  </data>
+  <data name="UnknownTime" xml:space="preserve">
+    <value>—</value>
+  </data>
 </root>
