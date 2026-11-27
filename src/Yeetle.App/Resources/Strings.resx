@@ -1195,4 +1195,22 @@ It can no longer be picked. The {1} clip(s) that already carry it keep it under 
   <data name="NoKey" xml:space="preserve">
     <value>No key</value>
   </data>
+  <data name="LanguageLabel" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="LanguageHint" xml:space="preserve">
+    <value>Applies at once, no restart needed.</value>
+  </data>
+  <data name="LanguageEnglish" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="LanguageFrench" xml:space="preserve">
+    <value>Français</value>
+  </data>
+  <data name="SwitchOn" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="SwitchOff" xml:space="preserve">
+    <value>Off</value>
+  </data>
 </root>

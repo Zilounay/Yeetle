@@ -131,6 +131,9 @@ public sealed partial class TagFilterItem(string label, TagId? tag, BoxId? box, 
     public bool HasCount => Count > 0;
     public string CountText => string.Format(Strings.TagFilterCount, Count);
 
+    // After a language switch (#20).
+    public void Relocalize() => OnPropertyChanged(nameof(CountText));
+
     public IEnumerable<TagFilterItem> SelfAndBelow() => Children.SelectMany(c => c.SelfAndBelow()).Prepend(this);
 
     // The same boxes and tags, with the same names, in the same order.
@@ -654,13 +657,25 @@ public sealed partial class ExplorerViewModel : ViewModelBase
 
     // A committed session never changes, so the list is rebuilt only when sessions were added; the
     // one picked stays picked (the list control drops its selection when its items are replaced).
-    private void FillPastSessions()
+    private void FillPastSessions(bool force = false)
     {
-        if (_history.Select(s => s.Id).SequenceEqual(PastSessions.Select(p => p.Session.Id)))
+        if (!force && _history.Select(s => s.Id).SequenceEqual(PastSessions.Select(p => p.Session.Id)))
             return;
         var picked = SelectedSession?.Session.Id;
         PastSessions = _history.Select(s => new PastSessionViewModel(s)).ToList();
         SelectedSession = PastSessions.FirstOrDefault(p => p.Session.Id == picked);
+    }
+
+    // After a language switch (#20): every text this page made is made again.
+    public void Relocalize()
+    {
+        FillPastSessions(force: true);
+        foreach (var filter in AllTagFilters())
+            filter.Relocalize();
+        Apply();
+        OnPropertyChanged(nameof(NameHeader));
+        OnPropertyChanged(nameof(DateHeader));
+        OnPropertyChanged(nameof(DurationHeader));
     }
 
     // The defaults chosen in Settings, which also forget the last filters used (#20).

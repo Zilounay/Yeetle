@@ -28,6 +28,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     private readonly ClipDurations _durations;
     private readonly UpdateChecker _updates;
     private readonly LoadedSettings _settings;
+    // The last scan's report, so its summary can be written again in another language.
+    private ScanReport? _lastScan;
     // First-scan questions, asked one at a time (spec §4). A folder is in _queued from the moment
     // a scan reports it until its question closes, so a second scan does not ask again meanwhile.
     private readonly Queue<PendingFirstScan> _questions = new();
@@ -111,6 +113,19 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
         explorer.OpenRequested += (_, clip) => _ = OpenClipAsync(clip);
         editor.Closed += (_, _) => _ = ShowExplorerAsync();
         _isTheatre = settings.Values.Player.TheatreMode;
+        Resources.Loc.Instance.Changed += (_, _) => Relocalize();
+    }
+
+    // After a language switch (#20): every page makes its texts again.
+    private void Relocalize()
+    {
+        if (_lastScan is { } report)
+            ScanSummary = ScanNotice.Describe(report);
+        Player.Relocalize();
+        Session.Relocalize();
+        Explorer.Relocalize();
+        Editor.Relocalize();
+        OnPropertyChanged(string.Empty);
     }
 
     // Whether the info block over the video has anything to show.
@@ -364,6 +379,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
 
     private async Task OnScannedAsync(ScanReport report)
     {
+        _lastScan = report;
         ScanSummary = ScanNotice.Describe(report);
         // Durations of new clips are read in the background (spec §4).
         _ = _durations.FillMissingAsync();

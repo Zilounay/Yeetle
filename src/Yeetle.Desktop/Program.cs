@@ -30,6 +30,8 @@ internal static class Program
             }
             // Read before anything starts, since every part may depend on the settings.
             var settings = new JsonSettingsStore(AppPaths.Default.Settings).Load();
+            // Before any text is made (#20).
+            App.Resources.Loc.Instance.Use(settings.Values.General.Language);
             using var services = Composition.CreateServices(settings, AppPaths.Default, instance);
             exitCode = BuildAvaloniaApp(services).StartWithClassicDesktopLifetime(args);
         }

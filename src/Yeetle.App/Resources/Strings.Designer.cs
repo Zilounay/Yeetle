@@ -1547,6 +1547,42 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to English.
+        /// </summary>
+        public static string LanguageEnglish {
+            get {
+                return ResourceManager.GetString("LanguageEnglish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Français.
+        /// </summary>
+        public static string LanguageFrench {
+            get {
+                return ResourceManager.GetString("LanguageFrench", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Applies at once, no restart needed..
+        /// </summary>
+        public static string LanguageHint {
+            get {
+                return ResourceManager.GetString("LanguageHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Language.
+        /// </summary>
+        public static string LanguageLabel {
+            get {
+                return ResourceManager.GetString("LanguageLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The filters the Explorer opens with. Once you change the filters in the Explorer, it remembers the last ones you used; changing these brings them back..
         /// </summary>
         public static string LibraryViewHint {
@@ -3055,6 +3091,24 @@ namespace Yeetle.App.Resources {
         public static string StripLater {
             get {
                 return ResourceManager.GetString("StripLater", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Off.
+        /// </summary>
+        public static string SwitchOff {
+            get {
+                return ResourceManager.GetString("SwitchOff", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to On.
+        /// </summary>
+        public static string SwitchOn {
+            get {
+                return ResourceManager.GetString("SwitchOn", resourceCulture);
             }
         }
         

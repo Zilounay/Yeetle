@@ -4,7 +4,7 @@
         xmlns:res="using:Yeetle.App.Resources"
         x:Class="Yeetle.App.Views.SessionSummaryWindow"
         x:DataType="vm:SessionSummaryViewModel"
-        Title="{x:Static res:Strings.SessionSummaryTitle}"
+        Title="{res:Tr SessionSummaryTitle}"
         Width="760" Height="640" MinWidth="560" MinHeight="420"
         ShowInTaskbar="False" WindowStartupLocation="CenterOwner"
         RequestedThemeVariant="Dark" Background="#0E1013">
@@ -53,40 +53,40 @@
 
     <DockPanel Margin="24">
         <StackPanel DockPanel.Dock="Top" Spacing="4" Margin="0,0,0,16">
-            <TextBlock FontSize="20" FontWeight="Bold" Text="{x:Static res:Strings.SessionSummaryTitle}" />
-            <TextBlock Classes="secondary" TextWrapping="Wrap" Text="{x:Static res:Strings.SessionSummaryHint}" />
+            <TextBlock FontSize="20" FontWeight="Bold" Text="{res:Tr SessionSummaryTitle}" />
+            <TextBlock Classes="secondary" TextWrapping="Wrap" Text="{res:Tr SessionSummaryHint}" />
         </StackPanel>
 
         <UniformGrid DockPanel.Dock="Top" Columns="4" Margin="0,0,0,16">
             <Border Classes="count">
                 <StackPanel>
                     <TextBlock Classes="number" Text="{Binding Reviewed}" />
-                    <TextBlock Classes="secondary" Text="{x:Static res:Strings.ReviewedLabel}" />
+                    <TextBlock Classes="secondary" Text="{res:Tr ReviewedLabel}" />
                 </StackPanel>
             </Border>
             <Border Classes="count" BorderBrush="{StaticResource KeepBrush}">
                 <StackPanel>
                     <TextBlock Classes="number" Text="{Binding KeptCount}" />
-                    <TextBlock Classes="secondary" Text="{x:Static res:Strings.KeptLabel}" />
+                    <TextBlock Classes="secondary" Text="{res:Tr KeptLabel}" />
                 </StackPanel>
             </Border>
             <Border Classes="count" BorderBrush="{StaticResource YeetBrush}">
                 <StackPanel>
                     <TextBlock Classes="number" Text="{Binding YeetedCount}" />
-                    <TextBlock Classes="secondary" Text="{x:Static res:Strings.YeetedLabel}" />
+                    <TextBlock Classes="secondary" Text="{res:Tr YeetedLabel}" />
                 </StackPanel>
             </Border>
             <Border Classes="count" BorderBrush="{StaticResource SkipBrush}" Margin="0">
                 <StackPanel>
                     <TextBlock Classes="number" Text="{Binding SkippedCount}" />
-                    <TextBlock Classes="secondary" Text="{x:Static res:Strings.SkippedLabel}" />
+                    <TextBlock Classes="secondary" Text="{res:Tr SkippedLabel}" />
                 </StackPanel>
             </Border>
         </UniformGrid>
 
         <Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8" Margin="0,16,0,0">
-            <Button x:Name="BackButton" Content="{x:Static res:Strings.BackToSession}" IsCancel="True" />
-            <Button x:Name="DiscardButton" Grid.Column="2" Content="{x:Static res:Strings.DiscardSession}" />
+            <Button x:Name="BackButton" Content="{res:Tr BackToSession}" IsCancel="True" />
+            <Button x:Name="DiscardButton" Grid.Column="2" Content="{res:Tr DiscardSession}" />
             <Button x:Name="CommitButton" Grid.Column="3" Classes="commit" Content="{Binding CommitLabel}" IsDefault="True" />
         </Grid>
 

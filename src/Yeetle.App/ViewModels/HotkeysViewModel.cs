@@ -23,7 +23,8 @@ public sealed partial class HotkeyActionViewModel(string action, string label) :
     private bool _isCapturing;
 
     public string Action { get; } = action;
-    public string Label { get; } = label;
+    [ObservableProperty]
+    private string _label = label;
     public bool HasNoKey => Keys.Count == 0;
 }
 
@@ -102,6 +103,15 @@ public sealed partial class HotkeysViewModel : ViewModelBase
         StopCapture();
         _ = _settings.ChangeAsync(s => s.Hotkeys[row.Action] = [.. s.Hotkeys[row.Action], text]);
         Fill();
+    }
+
+    // After a language switch (#20).
+    public void Relocalize()
+    {
+        foreach (var row in Actions)
+            row.Label = LabelOf(row.Action);
+        Fill();
+        Message = string.Empty;
     }
 
     [RelayCommand]

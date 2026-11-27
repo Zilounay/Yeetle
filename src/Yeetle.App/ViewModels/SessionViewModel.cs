@@ -117,6 +117,20 @@ public sealed partial class SessionViewModel : ViewModelBase
 
     public ActiveSession? Session => _session;
 
+    // After a language switch (#20): the home text, or the counter, timeline and tag boxes.
+    public void Relocalize()
+    {
+        if (_session is { } session)
+        {
+            Tags.Relocalize();
+            OnSessionChanged(session, EventArgs.Empty);
+        }
+        else
+        {
+            _ = RefreshHomeAsync();
+        }
+    }
+
     public async Task RefreshHomeAsync()
     {
         if (IsActive)

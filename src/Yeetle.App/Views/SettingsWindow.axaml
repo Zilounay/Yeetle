@@ -4,7 +4,7 @@
         xmlns:res="using:Yeetle.App.Resources"
         x:Class="Yeetle.App.Views.SettingsWindow"
         x:DataType="vm:SettingsViewModel"
-        Title="{x:Static res:Strings.SettingsTitle}"
+        Title="{res:Tr SettingsTitle}"
         Width="980" Height="700" MinWidth="720" MinHeight="460"
         WindowStartupLocation="CenterOwner"
         RequestedThemeVariant="Dark">
@@ -18,6 +18,7 @@
         <x:Double x:Key="SecondaryTextOpacity">0.7</x:Double>
         <x:Double x:Key="NumberWidth">140</x:Double>
         <SolidColorBrush x:Key="KeyBrush" Color="#24FFFFFF" />
+        <SolidColorBrush x:Key="AccentBrush" Color="#2F6FD6" />
         <SolidColorBrush x:Key="CapturingBrush" Color="#332F6FD6" />
     </Window.Resources>
 
@@ -60,6 +61,15 @@
         <Style Selector="Grid.capturing">
             <Setter Property="Background" Value="{StaticResource CapturingBrush}" />
         </Style>
+        <Style Selector="Button.language.current /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <!-- The theme writes On / Off in English; these follow the language (#20). -->
+        <Style Selector="ToggleSwitch">
+            <Setter Property="OnContent" Value="{res:Tr SwitchOn}" />
+            <Setter Property="OffContent" Value="{res:Tr SwitchOff}" />
+        </Style>
         <Style Selector="NumericUpDown">
             <Setter Property="Width" Value="{StaticResource NumberWidth}" />
             <Setter Property="HorizontalAlignment" Value="Left" />
@@ -71,7 +81,7 @@
         <Border Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,1,0"
                 Padding="12,18">
             <DockPanel>
-                <TextBlock DockPanel.Dock="Top" Classes="title" Margin="8,0,0,14" Text="{x:Static res:Strings.SettingsTitle}" />
+                <TextBlock DockPanel.Dock="Top" Classes="title" Margin="8,0,0,14" Text="{res:Tr SettingsTitle}" />
                 <TextBlock DockPanel.Dock="Bottom" Classes="hint" Margin="8,12,0,0" Text="{Binding Version}" />
                 <ListBox ItemsSource="{Binding Sections}" SelectedItem="{Binding SelectedSection}" Background="Transparent">
                     <ListBox.ItemTemplate>
@@ -91,12 +101,12 @@
                 <Border Classes="card" IsVisible="{Binding IsLibrary}">
                     <StackPanel Spacing="8">
                         <StackPanel Orientation="Horizontal" Spacing="8">
-                            <Button Content="{x:Static res:Strings.SourceFoldersButton}" Command="{Binding OpenSourceFoldersCommand}" />
-                            <Button Content="{x:Static res:Strings.Rescan}" Command="{Binding RescanCommand}" />
+                            <Button Content="{res:Tr SourceFoldersButton}" Command="{Binding OpenSourceFoldersCommand}" />
+                            <Button Content="{res:Tr Rescan}" Command="{Binding RescanCommand}" />
                         </StackPanel>
-                        <TextBlock Classes="label" Text="{x:Static res:Strings.ExtensionsLabel}" />
+                        <TextBlock Classes="label" Text="{res:Tr ExtensionsLabel}" />
                         <TextBox Text="{Binding ExtensionsText}" />
-                        <TextBlock Classes="hint" Text="{x:Static res:Strings.ExtensionsHint}" />
+                        <TextBlock Classes="hint" Text="{res:Tr ExtensionsHint}" />
                         <TextBlock Classes="problem" Text="{Binding ExtensionsProblem}"
                                    IsVisible="{Binding ExtensionsProblem, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                     </StackPanel>
@@ -105,8 +115,8 @@
                 <!-- Tags -->
                 <Border Classes="card" IsVisible="{Binding IsTags}">
                     <StackPanel Spacing="10">
-                        <TextBlock Classes="hint" Text="{x:Static res:Strings.TagsSectionHint}" />
-                        <Button Content="{x:Static res:Strings.TagManagerTitle}" Command="{Binding OpenTagManagerCommand}" />
+                        <TextBlock Classes="hint" Text="{res:Tr TagsSectionHint}" />
+                        <Button Content="{res:Tr TagManagerTitle}" Command="{Binding OpenTagManagerCommand}" />
                     </StackPanel>
                 </Border>
 
@@ -114,7 +124,7 @@
                 <StackPanel Spacing="16" IsVisible="{Binding IsHotkeys}">
                     <Border Classes="card">
                         <StackPanel Spacing="8">
-                            <TextBlock Classes="hint" Text="{x:Static res:Strings.HotkeysHint}" />
+                            <TextBlock Classes="hint" Text="{res:Tr HotkeysHint}" />
                             <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" Text="{Binding Hotkeys.Message}"
                                        IsVisible="{Binding Hotkeys.Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                             <ItemsControl ItemsSource="{Binding Hotkeys.Actions}">
@@ -123,7 +133,7 @@
                                         <Grid ColumnDefinitions="260,*" Margin="0,3" Classes.capturing="{Binding IsCapturing}">
                                             <TextBlock VerticalAlignment="Center" Text="{Binding Label}" TextWrapping="Wrap" />
                                             <WrapPanel Grid.Column="1" ItemSpacing="6" LineSpacing="4">
-                                                <TextBlock VerticalAlignment="Center" Classes="hint" Text="{x:Static res:Strings.NoKey}"
+                                                <TextBlock VerticalAlignment="Center" Classes="hint" Text="{res:Tr NoKey}"
                                                            IsVisible="{Binding HasNoKey}" />
                                                 <ItemsControl ItemsSource="{Binding Keys}">
                                                     <ItemsControl.ItemsPanel>
@@ -137,14 +147,14 @@
                                                                 <StackPanel Orientation="Horizontal" Spacing="6">
                                                                     <TextBlock VerticalAlignment="Center" Text="{Binding Label}" />
                                                                     <Button Classes="plain" Content="×" Command="{Binding Remove}"
-                                                                            ToolTip.Tip="{x:Static res:Strings.RemoveKeyTip}"
-                                                                            AutomationProperties.Name="{x:Static res:Strings.RemoveKeyTip}" />
+                                                                            ToolTip.Tip="{res:Tr RemoveKeyTip}"
+                                                                            AutomationProperties.Name="{res:Tr RemoveKeyTip}" />
                                                                 </StackPanel>
                                                             </Border>
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
                                                 </ItemsControl>
-                                                <Button Content="{x:Static res:Strings.AddKey}"
+                                                <Button Content="{res:Tr AddKey}"
                                                         Command="{Binding $parent[Window].((vm:SettingsViewModel)DataContext).Hotkeys.StartCaptureCommand}"
                                                         CommandParameter="{Binding}" />
                                             </WrapPanel>
@@ -152,14 +162,14 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                            <Button Margin="0,8,0,0" Content="{x:Static res:Strings.RestoreDefaultKeys}"
+                            <Button Margin="0,8,0,0" Content="{res:Tr RestoreDefaultKeys}"
                                     Command="{Binding Hotkeys.RestoreDefaultsCommand}" />
                         </StackPanel>
                     </Border>
                     <Border Classes="card">
                         <StackPanel Spacing="6">
-                            <TextBlock Classes="label" Text="{x:Static res:Strings.TagHotkeysLabel}" />
-                            <TextBlock Classes="hint" Text="{x:Static res:Strings.TagHotkeysHint}" />
+                            <TextBlock Classes="label" Text="{res:Tr TagHotkeysLabel}" />
+                            <TextBlock Classes="hint" Text="{res:Tr TagHotkeysHint}" />
                             <ItemsControl ItemsSource="{Binding Hotkeys.TagHotkeys}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="vm:TagHotkeyViewModel">
@@ -172,7 +182,7 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                            <Button Content="{x:Static res:Strings.TagManagerTitle}" Command="{Binding Hotkeys.OpenTagManagerCommand}" />
+                            <Button Content="{res:Tr TagManagerTitle}" Command="{Binding Hotkeys.OpenTagManagerCommand}" />
                         </StackPanel>
                     </Border>
                 </StackPanel>
@@ -180,7 +190,7 @@
                 <!-- Player -->
                 <Border Classes="card" IsVisible="{Binding IsPlayer}">
                     <StackPanel Spacing="8">
-                        <TextBlock Classes="label" Text="{x:Static res:Strings.DefaultSpeedLabel}" />
+                        <TextBlock Classes="label" Text="{res:Tr DefaultSpeedLabel}" />
                         <ComboBox ItemsSource="{Binding Speeds}" SelectedItem="{Binding DefaultSpeed}" MinWidth="140">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate x:DataType="vm:SpeedOptionViewModel">
@@ -188,50 +198,50 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <TextBlock Classes="label" Text="{x:Static res:Strings.DefaultVolumeLabel}" />
+                        <TextBlock Classes="label" Text="{res:Tr DefaultVolumeLabel}" />
                         <StackPanel Orientation="Horizontal" Spacing="10">
                             <Slider Width="260" Minimum="0" Maximum="100" Value="{Binding DefaultVolume}" />
                             <TextBlock VerticalAlignment="Center" Text="{Binding DefaultVolume, StringFormat={}{0:0}}" />
                         </StackPanel>
-                        <TextBlock Classes="hint" Text="{x:Static res:Strings.PlayerDefaultsHint}" />
-                        <TextBlock Classes="label" Text="{x:Static res:Strings.SeekStepLabel}" />
+                        <TextBlock Classes="hint" Text="{res:Tr PlayerDefaultsHint}" />
+                        <TextBlock Classes="label" Text="{res:Tr SeekStepLabel}" />
                         <NumericUpDown Value="{Binding SeekSeconds}" Minimum="1" Maximum="60" Increment="1" FormatString="0" />
-                        <TextBlock Classes="label" Text="{x:Static res:Strings.LongSeekStepLabel}" />
+                        <TextBlock Classes="label" Text="{res:Tr LongSeekStepLabel}" />
                         <NumericUpDown Value="{Binding LongSeekSeconds}" Minimum="1" Maximum="600" Increment="5" FormatString="0" />
-                        <TextBlock Classes="label" Text="{x:Static res:Strings.VolumeStepLabel}" />
+                        <TextBlock Classes="label" Text="{res:Tr VolumeStepLabel}" />
                         <NumericUpDown Value="{Binding VolumeStep}" Minimum="1" Maximum="50" Increment="1" FormatString="0" />
                         <ToggleSwitch Margin="0,8,0,0" IsChecked="{Binding StartInTheatreMode}"
-                                      Content="{x:Static res:Strings.TheatreAtStartLabel}" />
-                        <ToggleSwitch IsChecked="{Binding PrepareNeighbours}" Content="{x:Static res:Strings.PrepareNeighboursLabel}" />
-                        <TextBlock Classes="hint" Text="{x:Static res:Strings.PrepareNeighboursHint}" />
+                                      Content="{res:Tr TheatreAtStartLabel}" />
+                        <ToggleSwitch IsChecked="{Binding PrepareNeighbours}" Content="{res:Tr PrepareNeighboursLabel}" />
+                        <TextBlock Classes="hint" Text="{res:Tr PrepareNeighboursHint}" />
                     </StackPanel>
                 </Border>
 
                 <!-- Review -->
                 <Border Classes="card" IsVisible="{Binding IsReview}">
                     <StackPanel Spacing="8">
-                        <ToggleSwitch IsChecked="{Binding StickyTags}" Content="{x:Static res:Strings.StickyTagsLabel}" />
-                        <TextBlock Classes="hint" Text="{x:Static res:Strings.StickyTagsHint}" />
-                        <TextBlock Classes="label" Text="{x:Static res:Strings.MarkerOffsetLabel}" />
+                        <ToggleSwitch IsChecked="{Binding StickyTags}" Content="{res:Tr StickyTagsLabel}" />
+                        <TextBlock Classes="hint" Text="{res:Tr StickyTagsHint}" />
+                        <TextBlock Classes="label" Text="{res:Tr MarkerOffsetLabel}" />
                         <NumericUpDown Value="{Binding MarkerOffsetSeconds}" Minimum="0" Maximum="10" Increment="0.5" FormatString="0.0" />
-                        <TextBlock Classes="hint" Text="{x:Static res:Strings.MarkerOffsetHint}" />
+                        <TextBlock Classes="hint" Text="{res:Tr MarkerOffsetHint}" />
                     </StackPanel>
                 </Border>
 
                 <!-- Explorer filters -->
                 <Border Classes="card" IsVisible="{Binding IsLibraryView}">
                     <StackPanel Spacing="6">
-                        <TextBlock Classes="hint" Text="{x:Static res:Strings.LibraryViewHint}" />
-                        <TextBlock Classes="label" Text="{x:Static res:Strings.FilterDecision}" />
-                        <CheckBox Content="{x:Static res:Strings.KeptLabel}" IsChecked="{Binding DefaultKept}" />
-                        <CheckBox Content="{x:Static res:Strings.DecisionNew}" IsChecked="{Binding DefaultNew}" />
-                        <CheckBox Content="{x:Static res:Strings.DecisionYeeted}" IsChecked="{Binding DefaultYeeted}" />
-                        <TextBlock Classes="label" Text="{x:Static res:Strings.FilterFileState}" />
-                        <CheckBox Content="{x:Static res:Strings.StatePresent}" IsChecked="{Binding DefaultPresent}" />
-                        <CheckBox Content="{x:Static res:Strings.StateMissing}" IsChecked="{Binding DefaultMissing}" />
-                        <CheckBox Content="{x:Static res:Strings.StateOffline}" IsChecked="{Binding DefaultOffline}" />
-                        <CheckBox Content="{x:Static res:Strings.StateDeleted}" IsChecked="{Binding DefaultDeleted}" />
-                        <CheckBox Content="{x:Static res:Strings.StateNeedsAttention}" IsChecked="{Binding DefaultNeedsAttention}" />
+                        <TextBlock Classes="hint" Text="{res:Tr LibraryViewHint}" />
+                        <TextBlock Classes="label" Text="{res:Tr FilterDecision}" />
+                        <CheckBox Content="{res:Tr KeptLabel}" IsChecked="{Binding DefaultKept}" />
+                        <CheckBox Content="{res:Tr DecisionNew}" IsChecked="{Binding DefaultNew}" />
+                        <CheckBox Content="{res:Tr DecisionYeeted}" IsChecked="{Binding DefaultYeeted}" />
+                        <TextBlock Classes="label" Text="{res:Tr FilterFileState}" />
+                        <CheckBox Content="{res:Tr StatePresent}" IsChecked="{Binding DefaultPresent}" />
+                        <CheckBox Content="{res:Tr StateMissing}" IsChecked="{Binding DefaultMissing}" />
+                        <CheckBox Content="{res:Tr StateOffline}" IsChecked="{Binding DefaultOffline}" />
+                        <CheckBox Content="{res:Tr StateDeleted}" IsChecked="{Binding DefaultDeleted}" />
+                        <CheckBox Content="{res:Tr StateNeedsAttention}" IsChecked="{Binding DefaultNeedsAttention}" />
                     </StackPanel>
                 </Border>
 
@@ -239,25 +249,25 @@
                 <StackPanel Spacing="16" IsVisible="{Binding IsData}">
                     <Border Classes="card">
                         <StackPanel Spacing="8">
-                            <TextBlock Classes="label" Text="{x:Static res:Strings.BackupCountsLabel}" />
+                            <TextBlock Classes="label" Text="{res:Tr BackupCountsLabel}" />
                             <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="16" RowSpacing="8">
-                                <TextBlock VerticalAlignment="Center" Text="{x:Static res:Strings.BackupPoolSession}" />
+                                <TextBlock VerticalAlignment="Center" Text="{res:Tr BackupPoolSession}" />
                                 <NumericUpDown Grid.Column="1" Value="{Binding SessionBackups}" Minimum="1"
                                                Maximum="{x:Static vm:SettingsViewModel.BackupCountMaximum}" FormatString="0" />
-                                <TextBlock Grid.Row="1" VerticalAlignment="Center" Text="{x:Static res:Strings.BackupPoolDaily}" />
+                                <TextBlock Grid.Row="1" VerticalAlignment="Center" Text="{res:Tr BackupPoolDaily}" />
                                 <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding DailyBackups}" Minimum="1"
                                                Maximum="{x:Static vm:SettingsViewModel.BackupCountMaximum}" FormatString="0" />
-                                <TextBlock Grid.Row="2" VerticalAlignment="Center" Text="{x:Static res:Strings.BackupPoolSafety}" />
+                                <TextBlock Grid.Row="2" VerticalAlignment="Center" Text="{res:Tr BackupPoolSafety}" />
                                 <NumericUpDown Grid.Row="2" Grid.Column="1" Value="{Binding SafetyBackups}" Minimum="1"
                                                Maximum="{x:Static vm:SettingsViewModel.BackupCountMaximum}" FormatString="0" />
                             </Grid>
-                            <Button Margin="0,6,0,0" Content="{x:Static res:Strings.OpenDataFolder}" Command="{Binding OpenDataFolderCommand}" />
+                            <Button Margin="0,6,0,0" Content="{res:Tr OpenDataFolder}" Command="{Binding OpenDataFolderCommand}" />
                         </StackPanel>
                     </Border>
                     <Border Classes="card">
                         <StackPanel Spacing="8">
-                            <TextBlock Classes="label" Text="{x:Static res:Strings.RestoreBackupLabel}" />
-                            <TextBlock Classes="hint" Text="{x:Static res:Strings.RestoreBackupHint}" />
+                            <TextBlock Classes="label" Text="{res:Tr RestoreBackupLabel}" />
+                            <TextBlock Classes="hint" Text="{res:Tr RestoreBackupHint}" />
                             <ListBox ItemsSource="{Binding BackupChoices}" SelectedItem="{Binding SelectedBackup}" MaxHeight="240"
                                      Background="Transparent">
                                 <ListBox.ItemTemplate>
@@ -266,8 +276,8 @@
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
-                            <Button Content="{x:Static res:Strings.RestoreButton}" Command="{Binding RestoreBackupCommand}" />
-                            <TextBlock Classes="hint" Text="{x:Static res:Strings.RestoreDuringSession}" IsVisible="{Binding !CanRestoreNow}" />
+                            <Button Content="{res:Tr RestoreButton}" Command="{Binding RestoreBackupCommand}" />
+                            <TextBlock Classes="hint" Text="{res:Tr RestoreDuringSession}" IsVisible="{Binding !CanRestoreNow}" />
                             <TextBlock Classes="problem" Text="{Binding RestoreProblem}"
                                        IsVisible="{Binding RestoreProblem, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                         </StackPanel>
@@ -277,12 +287,21 @@
                 <!-- General -->
                 <Border Classes="card" IsVisible="{Binding IsGeneral}">
                     <StackPanel Spacing="8">
-                        <TextBlock Classes="label" Text="{x:Static res:Strings.UpdatesLabel}" />
+                        <TextBlock Classes="label" Text="{res:Tr LanguageLabel}" />
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <!-- Language names stay in their own language, so anyone can find theirs. -->
+                            <Button Classes="language" Classes.current="{Binding IsEnglish}" Content="{res:Tr LanguageEnglish}"
+                                    Command="{Binding UseLanguageCommand}" CommandParameter="{x:Static res:Loc.English}" />
+                            <Button Classes="language" Classes.current="{Binding IsFrench}" Content="{res:Tr LanguageFrench}"
+                                    Command="{Binding UseLanguageCommand}" CommandParameter="{x:Static res:Loc.French}" />
+                        </StackPanel>
+                        <TextBlock Classes="hint" Text="{res:Tr LanguageHint}" />
+                        <TextBlock Classes="label" Text="{res:Tr UpdatesLabel}" />
                         <StackPanel Orientation="Horizontal" Spacing="10">
-                            <Button Content="{x:Static res:Strings.CheckNow}" Command="{Binding CheckForUpdatesCommand}" />
+                            <Button Content="{res:Tr CheckNow}" Command="{Binding CheckForUpdatesCommand}" />
                             <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="460" Text="{Binding UpdateResult}" />
                         </StackPanel>
-                        <ToggleSwitch IsChecked="{Binding CheckAtStartup}" Content="{x:Static res:Strings.CheckAtStartupLabel}" />
+                        <ToggleSwitch IsChecked="{Binding CheckAtStartup}" Content="{res:Tr CheckAtStartupLabel}" />
                     </StackPanel>
                 </Border>
 

@@ -12,7 +12,7 @@
         Width="1280" Height="800"
         WindowStartupLocation="CenterScreen"
         RequestedThemeVariant="Dark"
-        Title="{x:Static res:Strings.AppTitle}">
+        Title="{res:Tr AppTitle}">
     <Window.Resources>
         <!-- The session screen layout decided in #9: dark page, a slightly lighter top bar. -->
         <SolidColorBrush x:Key="PageBrush" Color="#0E1013" />
@@ -118,11 +118,11 @@
                     <!-- Name, then the Session and Explorer tabs; the Explorer waits while a session runs. -->
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <TextBlock FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,14,0"
-                                   Text="{x:Static res:Strings.AppTitle}" />
+                                   Text="{res:Tr AppTitle}" />
                         <Button Classes="tab" Classes.current="{Binding IsSessionPage}" Content="{Binding SessionTabText}"
                                 Command="{Binding ShowSessionCommand}" />
-                        <Button Classes="tab" Classes.current="{Binding !IsSessionPage}" Content="{x:Static res:Strings.TabExplorer}"
-                                Command="{Binding ShowExplorerCommand}" ToolTip.Tip="{x:Static res:Strings.ExplorerDuringSession}"
+                        <Button Classes="tab" Classes.current="{Binding !IsSessionPage}" Content="{res:Tr TabExplorer}"
+                                Command="{Binding ShowExplorerCommand}" ToolTip.Tip="{res:Tr ExplorerDuringSession}"
                                 ToolTip.ShowOnDisabled="True" />
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right"
@@ -139,13 +139,13 @@
                         <!-- One-click update (spec §12): shown once the startup check finds a newer version. -->
                         <Button Classes="update" Content="{Binding UpdateText}" ToolTip.Tip="{Binding UpdateTip}"
                                 Command="{Binding InstallUpdateCommand}" IsVisible="{Binding HasUpdate}" />
-                        <Button Content="{x:Static res:Strings.Rescan}" ToolTip.Tip="{x:Static res:Strings.RescanTip}"
+                        <Button Content="{res:Tr Rescan}" ToolTip.Tip="{res:Tr RescanTip}"
                                 Command="{Binding RescanCommand}" />
-                        <Button Content="{x:Static res:Strings.TagManagerTitle}" Command="{Binding OpenTagManagerCommand}" />
-                        <Button Content="{x:Static res:Strings.Folders}" Command="{Binding OpenFoldersCommand}" />
-                        <Button Content="{x:Static res:Strings.SettingsTitle}" ToolTip.Tip="{x:Static res:Strings.SettingsButtonTip}"
+                        <Button Content="{res:Tr TagManagerTitle}" Command="{Binding OpenTagManagerCommand}" />
+                        <Button Content="{res:Tr Folders}" Command="{Binding OpenFoldersCommand}" />
+                        <Button Content="{res:Tr SettingsTitle}" ToolTip.Tip="{res:Tr SettingsButtonTip}"
                                 Command="{Binding OpenSettingsCommand}" />
-                        <Button Content="{x:Static res:Strings.StopSession}" ToolTip.Tip="{x:Static res:Strings.StopSessionTip}"
+                        <Button Content="{res:Tr StopSession}" ToolTip.Tip="{res:Tr StopSessionTip}"
                                 Command="{Binding Session.StopCommand}" IsVisible="{Binding Session.IsActive}" />
                     </StackPanel>
                 </Grid>
@@ -155,7 +155,7 @@
                                        KeptBrush="{StaticResource KeptBadgeBrush}" YeetedBrush="{StaticResource YeetedBadgeBrush}"
                                        SkippedBrush="{StaticResource SkippedBarBrush}" CurrentBrush="{StaticResource CurrentCardBrush}"
                                        TrackBrush="{StaticResource LineBrush}"
-                                       AutomationProperties.Name="{x:Static res:Strings.TimelineName}" />
+                                       AutomationProperties.Name="{res:Tr TimelineName}" />
             </StackPanel>
         </Border>
 
@@ -175,7 +175,7 @@
                 <!-- Until the count of new clips arrives (#78): a placeholder as tall as the text. -->
                 <Border Classes="skeleton" Width="300" Height="22" Margin="0,4" HorizontalAlignment="Center"
                         IsVisible="{Binding !Session.IsHomeLoaded}" />
-                <Button Classes="start" HorizontalAlignment="Center" Content="{x:Static res:Strings.StartSession}"
+                <Button Classes="start" HorizontalAlignment="Center" Content="{res:Tr StartSession}"
                         Command="{Binding Session.StartCommand}" />
                 <!-- Starting scans first, then loads the clips (#78). -->
                 <ProgressBar Classes="busy" Classes.on="{Binding Session.StartCommand.IsRunning}" Width="200"
@@ -207,8 +207,8 @@
 
         <!-- Clip strip: two clips before and after the current one (spec §5). -->
         <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" Margin="16,0,16,16" IsVisible="{Binding ShowStrip}">
-            <Button Content="‹" VerticalAlignment="Stretch" ToolTip.Tip="{x:Static res:Strings.StripEarlier}"
-                    AutomationProperties.Name="{x:Static res:Strings.StripEarlier}"
+            <Button Content="‹" VerticalAlignment="Stretch" ToolTip.Tip="{res:Tr StripEarlier}"
+                    AutomationProperties.Name="{res:Tr StripEarlier}"
                     Command="{Binding Session.StripEarlierCommand}" />
             <ItemsControl Grid.Column="1" ItemsSource="{Binding Session.Strip}">
                 <ItemsControl.ItemsPanel>
@@ -237,8 +237,8 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <Button Grid.Column="2" Content="›" VerticalAlignment="Stretch" ToolTip.Tip="{x:Static res:Strings.StripLater}"
-                    AutomationProperties.Name="{x:Static res:Strings.StripLater}"
+            <Button Grid.Column="2" Content="›" VerticalAlignment="Stretch" ToolTip.Tip="{res:Tr StripLater}"
+                    AutomationProperties.Name="{res:Tr StripLater}"
                     Command="{Binding Session.StripLaterCommand}" />
         </Grid>
     </Grid>

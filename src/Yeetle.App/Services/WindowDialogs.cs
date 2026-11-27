@@ -44,7 +44,11 @@ public sealed class WindowDialogs(
         var created = createTagManager();
         created.PendingName = newTagName ?? string.Empty;
         var window = new TagManagerWindow { DataContext = created };
-        window.Closed += (_, _) => _tagManager = null;
+        window.Closed += (_, _) =>
+        {
+            _tagManager = null;
+            created.Dispose();
+        };
         _tagManager = window;
         _ = created.LoadAsync();
         if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } main })
@@ -62,7 +66,11 @@ public sealed class WindowDialogs(
         }
         var created = createSettings();
         var window = new SettingsWindow { DataContext = created };
-        window.Closed += (_, _) => _settings = null;
+        window.Closed += (_, _) =>
+        {
+            _settings = null;
+            created.Dispose();
+        };
         _settings = window;
         if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } main })
             window.Show(main);

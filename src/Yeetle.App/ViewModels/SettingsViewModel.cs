@@ -32,7 +32,7 @@ public sealed record BackupChoice(BackupInfo Backup, string Label);
 // The Settings window (spec §11, decided in #20): sections on the left, each change applied and
 // saved at once, with no OK or Cancel. Privacy comes with usage statistics (#21) and Appearance
 // with the visual pass (#69).
-public sealed partial class SettingsViewModel : ViewModelBase
+public sealed partial class SettingsViewModel : ViewModelBase, IDisposable
 {
     private const string ExtensionSeparators = ", ;";
     private const char ExtensionDot = '.';
@@ -157,18 +157,9 @@ public sealed partial class SettingsViewModel : ViewModelBase
         _shell = shell;
         _restart = restart;
         _dataFolder = database.DataFolder;
-        Sections =
-        [
-            new(SettingsSection.Library, Strings.SettingsLibrary),
-            new(SettingsSection.Tags, Strings.SettingsTags),
-            new(SettingsSection.Hotkeys, Strings.SettingsHotkeys),
-            new(SettingsSection.Player, Strings.SettingsPlayer),
-            new(SettingsSection.Review, Strings.SettingsReview),
-            new(SettingsSection.LibraryView, Strings.SettingsLibraryView),
-            new(SettingsSection.Data, Strings.SettingsData),
-            new(SettingsSection.General, Strings.SettingsGeneral),
-        ];
-        _selectedSection = Sections[0];
+        _sections = MakeSections();
+        _selectedSection = _sections[0];
+        Loc.Instance.Changed += OnLanguageChanged;
         Speeds = PlaybackSpeeds.All.Select(s => new SpeedOptionViewModel(s)).ToList();
         Fill();
         PropertyChanged += (_, e) =>
@@ -186,7 +177,15 @@ public sealed partial class SettingsViewModel : ViewModelBase
         };
     }
 
-    public IReadOnlyList<SettingsSectionItem> Sections { get; }
+    [ObservableProperty]
+    private IReadOnlyList<SettingsSectionItem> _sections;
+
+    public bool IsEnglish => Loc.Instance.Current == Loc.English;
+
+    public bool IsFrench => Loc.Instance.Current == Loc.French;
+
+    // Stops following the language once the window is closed.
+    public void Dispose() => Loc.Instance.Changed -= OnLanguageChanged;
 
     public HotkeysViewModel Hotkeys { get; }
 
@@ -204,7 +203,7 @@ public sealed partial class SettingsViewModel : ViewModelBase
     // A backup cannot replace the database under a running session.
     public bool CanRestoreNow => !_main.Session.IsActive;
 
-    public string Version { get; } = string.Format(Strings.VersionFormat,
+    public string Version => string.Format(Strings.VersionFormat,
         typeof(SettingsViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
             .Split('+')[0] ?? string.Empty);
 
@@ -225,6 +224,42 @@ public sealed partial class SettingsViewModel : ViewModelBase
         if (value.Section == SettingsSection.Hotkeys)
             _ = Hotkeys.LoadTagKeysAsync();
     }
+
+    // The language applies at once, everywhere, and is saved (#20).
+    [RelayCommand]
+    private void UseLanguage(string code)
+    {
+        _ = _settings.ChangeAsync(s => s.General.Language = code);
+        Loc.Instance.Use(code);
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        var shown = SelectedSection.Section;
+        Sections = MakeSections();
+        SelectedSection = Sections.First(s => s.Section == shown);
+        OnPropertyChanged(nameof(IsEnglish));
+        OnPropertyChanged(nameof(IsFrench));
+        OnPropertyChanged(nameof(Version));
+        OnPropertyChanged(nameof(SettingsFile));
+        UpdateResult = string.Empty;
+        Hotkeys.Relocalize();
+        Speeds.ToList().ForEach(s => s.Relocalize());
+        if (shown == SettingsSection.Data)
+            _ = LoadBackupsAsync();
+    }
+
+    private static IReadOnlyList<SettingsSectionItem> MakeSections() =>
+    [
+        new(SettingsSection.Library, Strings.SettingsLibrary),
+        new(SettingsSection.Tags, Strings.SettingsTags),
+        new(SettingsSection.Hotkeys, Strings.SettingsHotkeys),
+        new(SettingsSection.Player, Strings.SettingsPlayer),
+        new(SettingsSection.Review, Strings.SettingsReview),
+        new(SettingsSection.LibraryView, Strings.SettingsLibraryView),
+        new(SettingsSection.Data, Strings.SettingsData),
+        new(SettingsSection.General, Strings.SettingsGeneral),
+    ];
 
     [RelayCommand]
     private Task OpenSourceFoldersAsync() => _dialogs.ShowSourceFoldersAsync();

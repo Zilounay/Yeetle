@@ -1195,4 +1195,22 @@ On ne pourra plus le choisir. Les {1} clip(s) qui l'ont déjà le gardent sous c
   <data name="NoKey" xml:space="preserve">
     <value>Aucune touche</value>
   </data>
+  <data name="LanguageLabel" xml:space="preserve">
+    <value>Langue</value>
+  </data>
+  <data name="LanguageHint" xml:space="preserve">
+    <value>S'applique tout de suite, sans redémarrer.</value>
+  </data>
+  <data name="LanguageEnglish" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="LanguageFrench" xml:space="preserve">
+    <value>Français</value>
+  </data>
+  <data name="SwitchOn" xml:space="preserve">
+    <value>Activé</value>
+  </data>
+  <data name="SwitchOff" xml:space="preserve">
+    <value>Désactivé</value>
+  </data>
 </root>

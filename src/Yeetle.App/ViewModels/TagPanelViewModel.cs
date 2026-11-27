@@ -188,6 +188,13 @@ public sealed partial class TagPanelViewModel : ViewModelBase
         }
     }
 
+    // After a language switch (#20): the box titles are made again.
+    public void Relocalize()
+    {
+        _groupsCatalog = null;
+        Refresh();
+    }
+
     public void ClearRequiredWarning() => _showRequiredWarning = false;
 
     // A tag hotkey toggles that tag on the current clip.

@@ -31,7 +31,8 @@ The player's interface is `IClipPlayer` in `Yeetle.Application/Playback`; `Yeetl
 - Nullable reference types on, warnings as errors in Domain and Application.
 - MVVM with CommunityToolkit.Mvvm source generators (`[ObservableProperty]`, `[RelayCommand]`). No logic in code-behind beyond view wiring.
 - SQL is written by hand with Dapper. Migrations live in `Yeetle.Infrastructure/Migrations/NNNN_description.sql`, numbered and never edited once merged. Enable `PRAGMA foreign_keys = ON` and WAL mode on every connection.
-- All user-facing text goes in resource files (`.resx`), English and French. No hard-coded UI strings.
+- All user-facing text goes in resource files (`.resx`), English and French. No hard-coded UI strings. In views write `{res:Tr Key}`, never `{x:Static res:Strings.Key}`: the language switches live (#20), and a view model that builds text from `Strings` makes it again in its `Relocalize()`.
+- Settings change through `SettingsService.ChangeAsync`, which applies them at once and saves `settings.json` (#20); there is no OK or Cancel.
 - Code, comments, commit messages and issues are in English.
 - No magic numbers or strings. A literal whose meaning is not obvious goes in a well-named constant (or a resource in XAML), or gets a comment saying why it has that value. Strings that may change (option names, file names, separators) are constants.
 - Write `string.Empty`, not `""`. The only exception is attribute arguments, which must be compile-time constants.

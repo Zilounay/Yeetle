@@ -9,7 +9,7 @@
         mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
         x:Class="Yeetle.App.Views.VideoOverlayWindow"
         x:DataType="vm:MainWindowViewModel"
-        Title="{x:Static res:Strings.AppTitle}"
+        Title="{res:Tr AppTitle}"
         WindowDecorations="None"
         Background="Transparent"
         TransparencyLevelHint="Transparent"
@@ -178,21 +178,21 @@
                  where the current decision is outlined and there is no Skip (spec §8). A clip whose
                  file is not on disk only keeps Back to library (#79). -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12" IsVisible="{Binding IsEditorPage}">
-                <Button Classes="decision skip" Content="{x:Static res:Strings.BackToLibrary}" Command="{Binding Editor.CloseCommand}"
-                        ToolTip.Tip="{x:Static res:Strings.BackToLibraryTip}" />
-                <Button Classes="decision yeet" Classes.current="{Binding Editor.IsYeeted}" Content="{x:Static res:Strings.Yeet}"
+                <Button Classes="decision skip" Content="{res:Tr BackToLibrary}" Command="{Binding Editor.CloseCommand}"
+                        ToolTip.Tip="{res:Tr BackToLibraryTip}" />
+                <Button Classes="decision yeet" Classes.current="{Binding Editor.IsYeeted}" Content="{res:Tr Yeet}"
                         Command="{Binding Editor.YeetCommand}" IsVisible="{Binding ShowControls}" />
-                <Button Classes="decision keep" Classes.current="{Binding Editor.IsKept}" Content="{x:Static res:Strings.Keep}"
-                        Command="{Binding Editor.KeepCommand}" ToolTip.Tip="{x:Static res:Strings.EditorSavedHint}"
+                <Button Classes="decision keep" Classes.current="{Binding Editor.IsKept}" Content="{res:Tr Keep}"
+                        Command="{Binding Editor.KeepCommand}" ToolTip.Tip="{res:Tr EditorSavedHint}"
                         IsVisible="{Binding ShowControls}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12" IsVisible="{Binding IsSessionPage}">
-                <Button Classes="decision yeet" Content="{x:Static res:Strings.Yeet}" Command="{Binding Session.YeetCommand}"
-                        ToolTip.Tip="{x:Static res:Strings.YeetTip}" />
-                <Button Classes="decision skip" Content="{x:Static res:Strings.Skip}" Command="{Binding Session.SkipCommand}"
-                        ToolTip.Tip="{x:Static res:Strings.SkipTip}" />
-                <Button Classes="decision keep" Content="{x:Static res:Strings.Keep}" Command="{Binding Session.KeepCommand}"
-                        ToolTip.Tip="{x:Static res:Strings.KeepTip}" />
+                <Button Classes="decision yeet" Content="{res:Tr Yeet}" Command="{Binding Session.YeetCommand}"
+                        ToolTip.Tip="{res:Tr YeetTip}" />
+                <Button Classes="decision skip" Content="{res:Tr Skip}" Command="{Binding Session.SkipCommand}"
+                        ToolTip.Tip="{res:Tr SkipTip}" />
+                <Button Classes="decision keep" Content="{res:Tr Keep}" Command="{Binding Session.KeepCommand}"
+                        ToolTip.Tip="{res:Tr KeepTip}" />
             </StackPanel>
 
             <!-- Equal side columns keep the playback block in the exact middle, under Skip. -->
@@ -208,15 +208,15 @@
                             </Panel>
                         </Button>
                         <Slider Width="72" Minimum="0" Maximum="100" VerticalAlignment="Center"
-                                Value="{Binding Player.Volume}" ToolTip.Tip="{x:Static res:Strings.Volume}"
-                                AutomationProperties.Name="{x:Static res:Strings.Volume}" />
+                                Value="{Binding Player.Volume}" ToolTip.Tip="{res:Tr Volume}"
+                                AutomationProperties.Name="{res:Tr Volume}" />
                         <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="6" RowSpacing="4"
                               VerticalAlignment="Center">
                             <TextBlock Classes="icon label" FontSize="14" Text="{StaticResource IconAudioTrack}"
-                                       ToolTip.Tip="{x:Static res:Strings.AudioTrack}" />
+                                       ToolTip.Tip="{res:Tr AudioTrack}" />
                             <ComboBox Grid.Column="1" Classes="audio" ItemsSource="{Binding Player.AudioTracks}"
-                                      SelectedItem="{Binding Player.SelectedAudioTrack}" ToolTip.Tip="{x:Static res:Strings.AudioTrack}"
-                                      AutomationProperties.Name="{x:Static res:Strings.AudioTrack}">
+                                      SelectedItem="{Binding Player.SelectedAudioTrack}" ToolTip.Tip="{res:Tr AudioTrack}"
+                                      AutomationProperties.Name="{res:Tr AudioTrack}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate x:DataType="playback:AudioTrack">
                                         <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
@@ -224,10 +224,10 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                             <TextBlock Grid.Row="1" Classes="icon label" FontSize="14" Text="{StaticResource IconAudioOutput}"
-                                       ToolTip.Tip="{x:Static res:Strings.AudioOutput}" />
+                                       ToolTip.Tip="{res:Tr AudioOutput}" />
                             <ComboBox Grid.Row="1" Grid.Column="1" Classes="audio" ItemsSource="{Binding Player.AudioDevices}"
-                                      SelectedItem="{Binding Player.SelectedAudioDevice}" ToolTip.Tip="{x:Static res:Strings.AudioOutput}"
-                                      AutomationProperties.Name="{x:Static res:Strings.AudioOutput}">
+                                      SelectedItem="{Binding Player.SelectedAudioDevice}" ToolTip.Tip="{res:Tr AudioOutput}"
+                                      AutomationProperties.Name="{res:Tr AudioOutput}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate x:DataType="playback:AudioDevice">
                                         <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
@@ -242,15 +242,15 @@
                 <Border Grid.Column="1" Classes="block" VerticalAlignment="Bottom" Padding="8,4">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                         <Button Classes="icon" Command="{Binding Session.UndoCommand}" IsVisible="{Binding IsSessionPage}"
-                                ToolTip.Tip="{x:Static res:Strings.UndoTip}" AutomationProperties.Name="{x:Static res:Strings.Undo}">
+                                ToolTip.Tip="{res:Tr UndoTip}" AutomationProperties.Name="{res:Tr Undo}">
                             <TextBlock Classes="icon" Text="{StaticResource IconUndo}" />
                         </Button>
                         <Button Classes="icon" Command="{Binding Editor.UndoCommand}" IsVisible="{Binding IsEditorPage}"
-                                ToolTip.Tip="{x:Static res:Strings.UndoTip}" AutomationProperties.Name="{x:Static res:Strings.Undo}">
+                                ToolTip.Tip="{res:Tr UndoTip}" AutomationProperties.Name="{res:Tr Undo}">
                             <TextBlock Classes="icon" Text="{StaticResource IconUndo}" />
                         </Button>
                         <Button Classes="icon" Command="{Binding Session.BackCommand}" IsVisible="{Binding IsSessionPage}"
-                                ToolTip.Tip="{x:Static res:Strings.BackTip}" AutomationProperties.Name="{x:Static res:Strings.Back}">
+                                ToolTip.Tip="{res:Tr BackTip}" AutomationProperties.Name="{res:Tr Back}">
                             <TextBlock Classes="icon" Text="{StaticResource IconPrevious}" />
                         </Button>
                         <Button Classes="icon main" Command="{Binding Player.TogglePauseCommand}"
@@ -261,11 +261,11 @@
                             </Panel>
                         </Button>
                         <Button Classes="icon" Command="{Binding Session.SkipCommand}" IsVisible="{Binding IsSessionPage}"
-                                ToolTip.Tip="{x:Static res:Strings.SkipTip}" AutomationProperties.Name="{x:Static res:Strings.Skip}">
+                                ToolTip.Tip="{res:Tr SkipTip}" AutomationProperties.Name="{res:Tr Skip}">
                             <TextBlock Classes="icon" Text="{StaticResource IconNext}" />
                         </Button>
                         <Button Classes="icon" Command="{Binding SideMarkers.AddCommand}"
-                                ToolTip.Tip="{x:Static res:Strings.AddMarkerTip}" AutomationProperties.Name="{x:Static res:Strings.AddMarker}">
+                                ToolTip.Tip="{res:Tr AddMarkerTip}" AutomationProperties.Name="{res:Tr AddMarker}">
                             <TextBlock Classes="icon" Text="{StaticResource IconMarker}" />
                         </Button>
                     </StackPanel>
@@ -289,7 +289,7 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                         <Button Classes="icon" Command="{Binding ToggleTheatreCommand}" Classes.current="{Binding IsTheatre}"
-                                ToolTip.Tip="{x:Static res:Strings.TheatreTip}" AutomationProperties.Name="{x:Static res:Strings.Theatre}">
+                                ToolTip.Tip="{res:Tr TheatreTip}" AutomationProperties.Name="{res:Tr Theatre}">
                             <TextBlock Classes="icon" Text="{StaticResource IconTheatre}" />
                         </Button>
                     </StackPanel>

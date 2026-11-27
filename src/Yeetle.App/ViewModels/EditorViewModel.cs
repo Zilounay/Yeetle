@@ -106,6 +106,18 @@ public sealed partial class EditorViewModel : ViewModelBase
         return true;
     }
 
+    // After a language switch (#20).
+    public void Relocalize()
+    {
+        if (_editor is not { } editor)
+            return;
+        ClipDate = string.Format(Strings.ClipDateFormat, editor.Clip.RecordedAt);
+        if (!IsFilePresent)
+            Notice = Strings.EditorFileNotPresent;
+        Tags.Relocalize();
+        Markers.Refresh();
+    }
+
     [RelayCommand(CanExecute = nameof(IsFilePresent))]
     private void Keep() => _editor?.SetDecision(Decision.Kept);
 
