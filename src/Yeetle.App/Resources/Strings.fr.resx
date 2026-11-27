@@ -1084,4 +1084,115 @@ On ne pourra plus le choisir. Les {1} clip(s) qui l'ont déjà le gardent sous c
   <data name="VersionFormat" xml:space="preserve">
     <value>Yeetle {0}</value>
   </data>
+  <data name="ActionKeep" xml:space="preserve">
+    <value>Garder</value>
+  </data>
+  <data name="ActionYeet" xml:space="preserve">
+    <value>Yeeter</value>
+  </data>
+  <data name="ActionRescan" xml:space="preserve">
+    <value>Rescanner les dossiers</value>
+  </data>
+  <data name="ActionUndo" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="ActionStopSession" xml:space="preserve">
+    <value>Arrêter la session / retour à la bibliothèque</value>
+  </data>
+  <data name="ActionTypeTag" xml:space="preserve">
+    <value>Taper un tag</value>
+  </data>
+  <data name="ActionAddMarker" xml:space="preserve">
+    <value>Ajouter un marqueur</value>
+  </data>
+  <data name="ActionTogglePause" xml:space="preserve">
+    <value>Lecture / pause</value>
+  </data>
+  <data name="ActionNextClip" xml:space="preserve">
+    <value>Clip suivant (passer)</value>
+  </data>
+  <data name="ActionPreviousClip" xml:space="preserve">
+    <value>Clip précédent</value>
+  </data>
+  <data name="ActionSeekForward" xml:space="preserve">
+    <value>Avancer</value>
+  </data>
+  <data name="ActionSeekBack" xml:space="preserve">
+    <value>Reculer</value>
+  </data>
+  <data name="ActionLongSeekForward" xml:space="preserve">
+    <value>Grand saut en avant</value>
+  </data>
+  <data name="ActionLongSeekBack" xml:space="preserve">
+    <value>Grand saut en arrière</value>
+  </data>
+  <data name="ActionVolumeUp" xml:space="preserve">
+    <value>Monter le volume</value>
+  </data>
+  <data name="ActionVolumeDown" xml:space="preserve">
+    <value>Baisser le volume</value>
+  </data>
+  <data name="ActionMute" xml:space="preserve">
+    <value>Couper le son</value>
+  </data>
+  <data name="ActionNextAudioTrack" xml:space="preserve">
+    <value>Piste audio suivante</value>
+  </data>
+  <data name="ActionSlower" xml:space="preserve">
+    <value>Plus lent</value>
+  </data>
+  <data name="ActionFaster" xml:space="preserve">
+    <value>Plus rapide</value>
+  </data>
+  <data name="ActionNormalSpeed" xml:space="preserve">
+    <value>Vitesse normale</value>
+  </data>
+  <data name="ActionNextFrame" xml:space="preserve">
+    <value>Image suivante</value>
+  </data>
+  <data name="ActionTheatreMode" xml:space="preserve">
+    <value>Mode théâtre</value>
+  </data>
+  <data name="ActionMarkerWindow" xml:space="preserve">
+    <value>Marqueurs des clips sélectionnés</value>
+  </data>
+  <data name="ActionSettings" xml:space="preserve">
+    <value>Paramètres</value>
+  </data>
+  <data name="ActionSpeedFormat" xml:space="preserve">
+    <value>Vitesse {0}</value>
+  </data>
+  <data name="HotkeysHint" xml:space="preserve">
+    <value>Une touche, une action. Cliquez sur + Touche, puis appuyez sur la touche ; Échap annule. Les changements marchent tout de suite.</value>
+  </data>
+  <data name="AddKey" xml:space="preserve">
+    <value>+ Touche</value>
+  </data>
+  <data name="RemoveKeyTip" xml:space="preserve">
+    <value>Retirer cette touche</value>
+  </data>
+  <data name="PressKeyFor" xml:space="preserve">
+    <value>Appuyez sur la touche pour « {0} »… (Échap annule)</value>
+  </data>
+  <data name="KeyTakenByAction" xml:space="preserve">
+    <value>{0} est déjà utilisée par « {1} ».</value>
+  </data>
+  <data name="KeyTakenByTag" xml:space="preserve">
+    <value>{0} est déjà le raccourci du tag « {1} ».</value>
+  </data>
+  <data name="RestoreDefaultKeys" xml:space="preserve">
+    <value>Rétablir les touches par défaut</value>
+  </data>
+  <data name="RestoreDefaultKeysMessage" xml:space="preserve">
+    <value>Chaque action retrouve ses touches par défaut. Les raccourcis des tags restent tels quels.</value>
+  </data>
+  <data name="TagHotkeysLabel" xml:space="preserve">
+    <value>Raccourcis des tags</value>
+  </data>
+  <data name="TagHotkeysHint" xml:space="preserve">
+    <value>Définis dans le gestionnaire de tags, sur chaque tag.</value>
+  </data>
+  <data name="NoKey" xml:space="preserve">
+    <value>Aucune touche</value>
+  </data>
 </root>

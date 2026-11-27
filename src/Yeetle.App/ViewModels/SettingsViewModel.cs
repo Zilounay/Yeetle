@@ -144,8 +144,10 @@ public sealed partial class SettingsViewModel : ViewModelBase
     private string _updateResult = string.Empty;
 
     public SettingsViewModel(SettingsService settings, IDialogs dialogs, ScanScheduler scans, ExplorerViewModel explorer,
-        MainWindowViewModel main, IBackups backups, IShell shell, IAppRestart restart, IDatabaseStartup database)
+        MainWindowViewModel main, IBackups backups, IShell shell, IAppRestart restart, IDatabaseStartup database,
+        HotkeysViewModel hotkeys)
     {
+        Hotkeys = hotkeys;
         _settings = settings;
         _dialogs = dialogs;
         _scans = scans;
@@ -186,6 +188,8 @@ public sealed partial class SettingsViewModel : ViewModelBase
 
     public IReadOnlyList<SettingsSectionItem> Sections { get; }
 
+    public HotkeysViewModel Hotkeys { get; }
+
     public IReadOnlyList<SpeedOptionViewModel> Speeds { get; }
 
     public bool IsLibrary => SelectedSection.Section == SettingsSection.Library;
@@ -218,6 +222,8 @@ public sealed partial class SettingsViewModel : ViewModelBase
     {
         if (value.Section == SettingsSection.Data)
             _ = LoadBackupsAsync();
+        if (value.Section == SettingsSection.Hotkeys)
+            _ = Hotkeys.LoadTagKeysAsync();
     }
 
     [RelayCommand]

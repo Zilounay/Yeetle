@@ -17,6 +17,8 @@
         <SolidColorBrush x:Key="WarningTextBrush" Color="#FF9A92" />
         <x:Double x:Key="SecondaryTextOpacity">0.7</x:Double>
         <x:Double x:Key="NumberWidth">140</x:Double>
+        <SolidColorBrush x:Key="KeyBrush" Color="#24FFFFFF" />
+        <SolidColorBrush x:Key="CapturingBrush" Color="#332F6FD6" />
     </Window.Resources>
 
     <Window.Styles>
@@ -43,6 +45,20 @@
         <Style Selector="TextBlock.problem">
             <Setter Property="TextWrapping" Value="Wrap" />
             <Setter Property="Foreground" Value="{StaticResource WarningTextBrush}" />
+        </Style>
+        <Style Selector="Border.key">
+            <Setter Property="Background" Value="{StaticResource KeyBrush}" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="8,2" />
+        </Style>
+        <Style Selector="Button.plain">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Padding" Value="2,0" />
+            <Setter Property="MinHeight" Value="0" />
+        </Style>
+        <!-- The action waiting for its key stands out. -->
+        <Style Selector="Grid.capturing">
+            <Setter Property="Background" Value="{StaticResource CapturingBrush}" />
         </Style>
         <Style Selector="NumericUpDown">
             <Setter Property="Width" Value="{StaticResource NumberWidth}" />
@@ -93,6 +109,73 @@
                         <Button Content="{x:Static res:Strings.TagManagerTitle}" Command="{Binding OpenTagManagerCommand}" />
                     </StackPanel>
                 </Border>
+
+                <!-- Hotkeys (spec §14): one key, one action; tag keys are set in the Tag Manager. -->
+                <StackPanel Spacing="16" IsVisible="{Binding IsHotkeys}">
+                    <Border Classes="card">
+                        <StackPanel Spacing="8">
+                            <TextBlock Classes="hint" Text="{x:Static res:Strings.HotkeysHint}" />
+                            <TextBlock FontWeight="SemiBold" TextWrapping="Wrap" Text="{Binding Hotkeys.Message}"
+                                       IsVisible="{Binding Hotkeys.Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                            <ItemsControl ItemsSource="{Binding Hotkeys.Actions}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:HotkeyActionViewModel">
+                                        <Grid ColumnDefinitions="260,*" Margin="0,3" Classes.capturing="{Binding IsCapturing}">
+                                            <TextBlock VerticalAlignment="Center" Text="{Binding Label}" TextWrapping="Wrap" />
+                                            <WrapPanel Grid.Column="1" ItemSpacing="6" LineSpacing="4">
+                                                <TextBlock VerticalAlignment="Center" Classes="hint" Text="{x:Static res:Strings.NoKey}"
+                                                           IsVisible="{Binding HasNoKey}" />
+                                                <ItemsControl ItemsSource="{Binding Keys}">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <WrapPanel ItemSpacing="6" />
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="vm:HotkeyKeyViewModel">
+                                                            <Border Classes="key">
+                                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                                    <TextBlock VerticalAlignment="Center" Text="{Binding Label}" />
+                                                                    <Button Classes="plain" Content="×" Command="{Binding Remove}"
+                                                                            ToolTip.Tip="{x:Static res:Strings.RemoveKeyTip}"
+                                                                            AutomationProperties.Name="{x:Static res:Strings.RemoveKeyTip}" />
+                                                                </StackPanel>
+                                                            </Border>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                                <Button Content="{x:Static res:Strings.AddKey}"
+                                                        Command="{Binding $parent[Window].((vm:SettingsViewModel)DataContext).Hotkeys.StartCaptureCommand}"
+                                                        CommandParameter="{Binding}" />
+                                            </WrapPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Button Margin="0,8,0,0" Content="{x:Static res:Strings.RestoreDefaultKeys}"
+                                    Command="{Binding Hotkeys.RestoreDefaultsCommand}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Classes="card">
+                        <StackPanel Spacing="6">
+                            <TextBlock Classes="label" Text="{x:Static res:Strings.TagHotkeysLabel}" />
+                            <TextBlock Classes="hint" Text="{x:Static res:Strings.TagHotkeysHint}" />
+                            <ItemsControl ItemsSource="{Binding Hotkeys.TagHotkeys}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:TagHotkeyViewModel">
+                                        <Grid ColumnDefinitions="260,*" Margin="0,2">
+                                            <TextBlock Text="{Binding Tag}" />
+                                            <Border Grid.Column="1" Classes="key" HorizontalAlignment="Left">
+                                                <TextBlock Text="{Binding Key}" />
+                                            </Border>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Button Content="{x:Static res:Strings.TagManagerTitle}" Command="{Binding Hotkeys.OpenTagManagerCommand}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
 
                 <!-- Player -->
                 <Border Classes="card" IsVisible="{Binding IsPlayer}">

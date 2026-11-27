@@ -1084,4 +1084,115 @@ It can no longer be picked. The {1} clip(s) that already carry it keep it under 
   <data name="VersionFormat" xml:space="preserve">
     <value>Yeetle {0}</value>
   </data>
+  <data name="ActionKeep" xml:space="preserve">
+    <value>Keep</value>
+  </data>
+  <data name="ActionYeet" xml:space="preserve">
+    <value>Yeet</value>
+  </data>
+  <data name="ActionRescan" xml:space="preserve">
+    <value>Rescan the folders</value>
+  </data>
+  <data name="ActionUndo" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="ActionStopSession" xml:space="preserve">
+    <value>Stop the session / back to the library</value>
+  </data>
+  <data name="ActionTypeTag" xml:space="preserve">
+    <value>Type a tag</value>
+  </data>
+  <data name="ActionAddMarker" xml:space="preserve">
+    <value>Add a marker</value>
+  </data>
+  <data name="ActionTogglePause" xml:space="preserve">
+    <value>Play / pause</value>
+  </data>
+  <data name="ActionNextClip" xml:space="preserve">
+    <value>Next clip (skip)</value>
+  </data>
+  <data name="ActionPreviousClip" xml:space="preserve">
+    <value>Previous clip</value>
+  </data>
+  <data name="ActionSeekForward" xml:space="preserve">
+    <value>Seek forward</value>
+  </data>
+  <data name="ActionSeekBack" xml:space="preserve">
+    <value>Seek back</value>
+  </data>
+  <data name="ActionLongSeekForward" xml:space="preserve">
+    <value>Long seek forward</value>
+  </data>
+  <data name="ActionLongSeekBack" xml:space="preserve">
+    <value>Long seek back</value>
+  </data>
+  <data name="ActionVolumeUp" xml:space="preserve">
+    <value>Volume up</value>
+  </data>
+  <data name="ActionVolumeDown" xml:space="preserve">
+    <value>Volume down</value>
+  </data>
+  <data name="ActionMute" xml:space="preserve">
+    <value>Mute</value>
+  </data>
+  <data name="ActionNextAudioTrack" xml:space="preserve">
+    <value>Next audio track</value>
+  </data>
+  <data name="ActionSlower" xml:space="preserve">
+    <value>Slower</value>
+  </data>
+  <data name="ActionFaster" xml:space="preserve">
+    <value>Faster</value>
+  </data>
+  <data name="ActionNormalSpeed" xml:space="preserve">
+    <value>Normal speed</value>
+  </data>
+  <data name="ActionNextFrame" xml:space="preserve">
+    <value>Next frame</value>
+  </data>
+  <data name="ActionTheatreMode" xml:space="preserve">
+    <value>Theatre mode</value>
+  </data>
+  <data name="ActionMarkerWindow" xml:space="preserve">
+    <value>Markers of the selected clips</value>
+  </data>
+  <data name="ActionSettings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="ActionSpeedFormat" xml:space="preserve">
+    <value>Speed {0}</value>
+  </data>
+  <data name="HotkeysHint" xml:space="preserve">
+    <value>One key, one action. Click + Key, then press the key; Esc cancels. Changes work at once.</value>
+  </data>
+  <data name="AddKey" xml:space="preserve">
+    <value>+ Key</value>
+  </data>
+  <data name="RemoveKeyTip" xml:space="preserve">
+    <value>Remove this key</value>
+  </data>
+  <data name="PressKeyFor" xml:space="preserve">
+    <value>Press the key for “{0}”… (Esc cancels)</value>
+  </data>
+  <data name="KeyTakenByAction" xml:space="preserve">
+    <value>{0} is already used by “{1}”.</value>
+  </data>
+  <data name="KeyTakenByTag" xml:space="preserve">
+    <value>{0} is already the hotkey of the tag “{1}”.</value>
+  </data>
+  <data name="RestoreDefaultKeys" xml:space="preserve">
+    <value>Restore the default keys</value>
+  </data>
+  <data name="RestoreDefaultKeysMessage" xml:space="preserve">
+    <value>Every action gets its default keys back. Tag hotkeys stay as they are.</value>
+  </data>
+  <data name="TagHotkeysLabel" xml:space="preserve">
+    <value>Tag hotkeys</value>
+  </data>
+  <data name="TagHotkeysHint" xml:space="preserve">
+    <value>Set in the Tag Manager, on each tag.</value>
+  </data>
+  <data name="NoKey" xml:space="preserve">
+    <value>No key</value>
+  </data>
 </root>

@@ -81,6 +81,7 @@ internal static class Composition
                 s.GetRequiredService<TagManagerViewModel>, s.GetRequiredService<SettingsViewModel>, s.GetRequiredService<IShell>()))
             .AddTransient<TagManagerViewModel>()
             .AddTransient<SettingsViewModel>()
+            .AddTransient<HotkeysViewModel>()
             .AddSingleton<IAppRestart, DesktopRestart>()
             .AddTransient<SourceFoldersViewModel>()
             .AddSingleton<PlayerViewModel>()

@@ -58,6 +58,240 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add a marker.
+        /// </summary>
+        public static string ActionAddMarker {
+            get {
+                return ResourceManager.GetString("ActionAddMarker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Faster.
+        /// </summary>
+        public static string ActionFaster {
+            get {
+                return ResourceManager.GetString("ActionFaster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Keep.
+        /// </summary>
+        public static string ActionKeep {
+            get {
+                return ResourceManager.GetString("ActionKeep", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Long seek back.
+        /// </summary>
+        public static string ActionLongSeekBack {
+            get {
+                return ResourceManager.GetString("ActionLongSeekBack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Long seek forward.
+        /// </summary>
+        public static string ActionLongSeekForward {
+            get {
+                return ResourceManager.GetString("ActionLongSeekForward", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Markers of the selected clips.
+        /// </summary>
+        public static string ActionMarkerWindow {
+            get {
+                return ResourceManager.GetString("ActionMarkerWindow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mute.
+        /// </summary>
+        public static string ActionMute {
+            get {
+                return ResourceManager.GetString("ActionMute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Next audio track.
+        /// </summary>
+        public static string ActionNextAudioTrack {
+            get {
+                return ResourceManager.GetString("ActionNextAudioTrack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Next clip (skip).
+        /// </summary>
+        public static string ActionNextClip {
+            get {
+                return ResourceManager.GetString("ActionNextClip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Next frame.
+        /// </summary>
+        public static string ActionNextFrame {
+            get {
+                return ResourceManager.GetString("ActionNextFrame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Normal speed.
+        /// </summary>
+        public static string ActionNormalSpeed {
+            get {
+                return ResourceManager.GetString("ActionNormalSpeed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Previous clip.
+        /// </summary>
+        public static string ActionPreviousClip {
+            get {
+                return ResourceManager.GetString("ActionPreviousClip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rescan the folders.
+        /// </summary>
+        public static string ActionRescan {
+            get {
+                return ResourceManager.GetString("ActionRescan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Seek back.
+        /// </summary>
+        public static string ActionSeekBack {
+            get {
+                return ResourceManager.GetString("ActionSeekBack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Seek forward.
+        /// </summary>
+        public static string ActionSeekForward {
+            get {
+                return ResourceManager.GetString("ActionSeekForward", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        public static string ActionSettings {
+            get {
+                return ResourceManager.GetString("ActionSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Slower.
+        /// </summary>
+        public static string ActionSlower {
+            get {
+                return ResourceManager.GetString("ActionSlower", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Speed {0}.
+        /// </summary>
+        public static string ActionSpeedFormat {
+            get {
+                return ResourceManager.GetString("ActionSpeedFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stop the session / back to the library.
+        /// </summary>
+        public static string ActionStopSession {
+            get {
+                return ResourceManager.GetString("ActionStopSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Theatre mode.
+        /// </summary>
+        public static string ActionTheatreMode {
+            get {
+                return ResourceManager.GetString("ActionTheatreMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Play / pause.
+        /// </summary>
+        public static string ActionTogglePause {
+            get {
+                return ResourceManager.GetString("ActionTogglePause", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type a tag.
+        /// </summary>
+        public static string ActionTypeTag {
+            get {
+                return ResourceManager.GetString("ActionTypeTag", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Undo.
+        /// </summary>
+        public static string ActionUndo {
+            get {
+                return ResourceManager.GetString("ActionUndo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Volume down.
+        /// </summary>
+        public static string ActionVolumeDown {
+            get {
+                return ResourceManager.GetString("ActionVolumeDown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Volume up.
+        /// </summary>
+        public static string ActionVolumeUp {
+            get {
+                return ResourceManager.GetString("ActionVolumeUp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yeet.
+        /// </summary>
+        public static string ActionYeet {
+            get {
+                return ResourceManager.GetString("ActionYeet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to + Box under it.
         /// </summary>
         public static string AddBoxUnder {
@@ -81,6 +315,15 @@ namespace Yeetle.App.Resources {
         public static string AddFolder {
             get {
                 return ResourceManager.GetString("AddFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to + Key.
+        /// </summary>
+        public static string AddKey {
+            get {
+                return ResourceManager.GetString("AddKey", resourceCulture);
             }
         }
         
@@ -1196,6 +1439,15 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to One key, one action. Click + Key, then press the key; Esc cancels. Changes work at once..
+        /// </summary>
+        public static string HotkeysHint {
+            get {
+                return ResourceManager.GetString("HotkeysHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Include subfolders.
         /// </summary>
         public static string IncludeSubfolders {
@@ -1273,6 +1525,24 @@ namespace Yeetle.App.Resources {
         public static string KeptListTitle {
             get {
                 return ResourceManager.GetString("KeptListTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is already used by “{1}”..
+        /// </summary>
+        public static string KeyTakenByAction {
+            get {
+                return ResourceManager.GetString("KeyTakenByAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is already the hotkey of the tag “{1}”..
+        /// </summary>
+        public static string KeyTakenByTag {
+            get {
+                return ResourceManager.GetString("KeyTakenByTag", resourceCulture);
             }
         }
         
@@ -1489,6 +1759,15 @@ namespace Yeetle.App.Resources {
         public static string NoHotkey {
             get {
                 return ResourceManager.GetString("NoHotkey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No key.
+        /// </summary>
+        public static string NoKey {
+            get {
+                return ResourceManager.GetString("NoKey", resourceCulture);
             }
         }
         
@@ -1736,6 +2015,15 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Press the key for “{0}”… (Esc cancels).
+        /// </summary>
+        public static string PressKeyFor {
+            get {
+                return ResourceManager.GetString("PressKeyFor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} kept · {1} yeeted · {2} skipped.
         /// </summary>
         public static string ProgressTip {
@@ -1876,6 +2164,15 @@ namespace Yeetle.App.Resources {
         public static string RemoveHotkey {
             get {
                 return ResourceManager.GetString("RemoveHotkey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove this key.
+        /// </summary>
+        public static string RemoveKeyTip {
+            get {
+                return ResourceManager.GetString("RemoveKeyTip", resourceCulture);
             }
         }
         
@@ -2092,6 +2389,24 @@ namespace Yeetle.App.Resources {
         public static string RestoreButton {
             get {
                 return ResourceManager.GetString("RestoreButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restore the default keys.
+        /// </summary>
+        public static string RestoreDefaultKeys {
+            get {
+                return ResourceManager.GetString("RestoreDefaultKeys", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Every action gets its default keys back. Tag hotkeys stay as they are..
+        /// </summary>
+        public static string RestoreDefaultKeysMessage {
+            get {
+                return ResourceManager.GetString("RestoreDefaultKeysMessage", resourceCulture);
             }
         }
         
@@ -2794,6 +3109,24 @@ namespace Yeetle.App.Resources {
         public static string TagHotkeyClash {
             get {
                 return ResourceManager.GetString("TagHotkeyClash", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set in the Tag Manager, on each tag..
+        /// </summary>
+        public static string TagHotkeysHint {
+            get {
+                return ResourceManager.GetString("TagHotkeysHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tag hotkeys.
+        /// </summary>
+        public static string TagHotkeysLabel {
+            get {
+                return ResourceManager.GetString("TagHotkeysLabel", resourceCulture);
             }
         }
         

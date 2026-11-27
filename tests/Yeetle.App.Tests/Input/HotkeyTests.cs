@@ -144,4 +144,14 @@ public class HotkeyTests
         Assert.Equal(3, map.Problems.Count);
         Assert.Equal("Mute", map.Find(new KeyPress(KeyModifiers.None, PhysicalKey.Semicolon, Key.None, "m")));
     }
+
+    [Fact]
+    public void Ctrl_comma_matches_the_comma_key_which_types_nothing_with_ctrl()
+    {
+        var settings = Hotkey.Parse("Ctrl+,")!;
+
+        Assert.True(settings.Matches(new KeyPress(KeyModifiers.Control, PhysicalKey.Comma, Key.OemComma, null))); // QWERTY
+        Assert.True(settings.Matches(new KeyPress(KeyModifiers.Control, PhysicalKey.M, Key.OemComma, null))); // AZERTY
+        Assert.False(settings.Matches(new KeyPress(KeyModifiers.None, PhysicalKey.Comma, Key.OemComma, ",")));
+    }
 }
