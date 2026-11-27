@@ -499,7 +499,12 @@ Rules are tested automatically from the first slice; file safety is tested again
 - Drag-out to Explorer, Premiere, Resolve and a browser upload.
 - Hotkeys while typing a marker label or in the type-to-tag box.
 
-**Performance targets.** Next clip playing in under 150 ms; scan of 2,000 clips under 1 second on a local SSD; app ready in under 2 seconds. No click freezes the window: page switches and tag clicks redraw in the next frame (#78).
+**Performance targets (confirmed in #27).**
+
+- App ready: **under 2 seconds, a hard limit; aim for 1 second.** Measured from launch to a usable home screen, with a large library.
+- Next clip playing in under 150 ms.
+- No click freezes the window: page switches and tag clicks redraw in the next frame (#78).
+- Scanning: no hard target, since a scan of thousands of new clips at once is rare (mostly the first scan). Scans run in the background (section 4), so they never delay the app being ready, and a big first scan shows its progress.
 
 ## 17. Still open
 
@@ -513,4 +518,4 @@ No product question blocks the start; these are decided at the step noted (each 
 - [ ] SignPath Foundation eligibility for free signing — before v1.0.
 - [ ] Check that "Yeetle" is free as a trademark and Microsoft Store name — before any logo work.
 - [x] Hotkey changes versus the earlier chat — confirmed by ZiL on 2026-11-27 (#26): marker on K (M stays Mute, as in VLC) and audio track on B (as in VLC), as in section 14.
-- [ ] Confirm the proposed performance targets beyond the 150 ms clip switch (section 16) — after the POC.
+- [x] Performance targets beyond the 150 ms clip switch — confirmed by ZiL on 2026-11-27 (#27): app ready under 2 s (aim 1 s), no hard target for scanning (section 16).
