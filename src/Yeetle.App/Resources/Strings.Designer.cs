@@ -665,7 +665,7 @@ namespace Yeetle.App.Resources {
         
         /// <summary>
         ///   Looks up a localized string similar to Delete &quot;{0}&quot; and everything below it?
-        ///{1} clip(s) will be affected: these tags are removed from them. A backup of the library is taken first..
+        ///It can no longer be picked. The {1} clip(s) that already carry it keep it under this name. A backup of the library is taken first..
         /// </summary>
         public static string DeleteTagMessage {
             get {
@@ -1516,6 +1516,15 @@ namespace Yeetle.App.Resources {
         public static string PressAKey {
             get {
                 return ResourceManager.GetString("PressAKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} kept · {1} yeeted · {2} skipped.
+        /// </summary>
+        public static string ProgressTip {
+            get {
+                return ResourceManager.GetString("ProgressTip", resourceCulture);
             }
         }
         
@@ -2384,7 +2393,7 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Type a tag.
+        ///   Looks up a localized string similar to Search.
         /// </summary>
         public static string TypeTag {
             get {

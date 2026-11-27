@@ -27,6 +27,10 @@
             <Setter Property="BorderBrush" Value="{StaticResource ChipLineBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Margin" Value="0,0,6,6" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button.chip TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
         <Style Selector="Button.chip.selected /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{StaticResource SelectedChipBrush}" />
@@ -59,7 +63,8 @@
                 <Button Grid.Column="1" Command="{Binding OpenTypeTagCommand}" ToolTip.Tip="{x:Static res:Strings.TypeTagTip}"
                         AutomationProperties.Name="{x:Static res:Strings.TypeTag}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <TextBlock Text="{x:Static res:Strings.TypeTag}" />
+                        <TextBlock Classes="icon" FontSize="14" Text="{StaticResource IconSearch}" />
+                        <TextBlock Text="{x:Static res:Strings.TypeTag}" VerticalAlignment="Center" />
                         <Border Classes="key"><TextBlock FontSize="11" Text="T" /></Border>
                     </StackPanel>
                 </Button>
@@ -68,7 +73,7 @@
             <!-- T: type-to-tag with path suggestions (spec §6). Hotkeys pause while typing. -->
             <StackPanel DockPanel.Dock="Top" Spacing="6" Margin="0,0,0,12" IsVisible="{Binding IsTyping}">
                 <TextBox x:Name="TypedBox" Text="{Binding TypedText}" PlaceholderText="{x:Static res:Strings.TypeTagWatermark}" />
-                <ListBox ItemsSource="{Binding Suggestions}" SelectedItem="{Binding SelectedSuggestion}" MaxHeight="220"
+                <ListBox x:Name="SuggestionList" ItemsSource="{Binding Suggestions}" SelectedItem="{Binding SelectedSuggestion}" MaxHeight="220"
                          Focusable="False">
                     <ListBox.ItemTemplate>
                         <DataTemplate x:DataType="vm:TagSuggestion">

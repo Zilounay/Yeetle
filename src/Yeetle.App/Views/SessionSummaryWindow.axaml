@@ -8,7 +8,8 @@
         Width="760" Height="640" MinWidth="560" MinHeight="420"
         ShowInTaskbar="False" WindowStartupLocation="CenterOwner"
         RequestedThemeVariant="Dark" Background="#0E1013">
-    <!-- Layout decided in #9 (spec §5): count cards, collapsible lists, then Discard or Commit. -->
+    <!-- Layout decided in #9, lists simplified in #62 (spec §5): count cards, a list per category,
+         then Discard or Commit. -->
     <Window.Resources>
         <SolidColorBrush x:Key="CardBrush" Color="#15181D" />
         <SolidColorBrush x:Key="KeepBrush" Color="#2E7D32" />
@@ -32,21 +33,21 @@
         <Style Selector="TextBlock.secondary">
             <Setter Property="Opacity" Value="{StaticResource SecondaryTextOpacity}" />
         </Style>
+        <Style Selector="TextBlock.category">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
         <Style Selector="Button.commit /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{StaticResource KeepBrush}" />
             <Setter Property="Foreground" Value="White" />
         </Style>
     </Window.Styles>
 
+    <!-- One file per line in smaller text; its tags and markers show on hover (#62). -->
     <Window.DataTemplates>
         <DataTemplate DataType="vm:SummaryClipViewModel" x:DataType="vm:SummaryClipViewModel">
-            <Grid ColumnDefinitions="*,Auto" Margin="0,4">
-                <StackPanel>
-                    <TextBlock FontWeight="SemiBold" Text="{Binding FileName}" TextTrimming="CharacterEllipsis" />
-                    <TextBlock Classes="secondary" FontSize="12" Text="{Binding Tags}" TextWrapping="Wrap" />
-                </StackPanel>
-                <TextBlock Grid.Column="1" Classes="secondary" FontSize="12" VerticalAlignment="Center" Text="{Binding Markers}" />
-            </Grid>
+            <TextBlock FontSize="13" Text="{Binding FileName}" TextTrimming="CharacterEllipsis" Margin="0,1"
+                       ToolTip.Tip="{Binding Details}" />
         </DataTemplate>
     </Window.DataTemplates>
 
@@ -90,16 +91,19 @@
         </Grid>
 
         <ScrollViewer>
-            <StackPanel Spacing="8">
-                <Expander Header="{Binding KeptTitle}" HorizontalAlignment="Stretch" IsExpanded="True">
+            <StackPanel Spacing="16">
+                <StackPanel Spacing="4" IsVisible="{Binding HasKept}">
+                    <TextBlock Classes="category" Text="{Binding KeptTitle}" />
                     <ItemsControl ItemsSource="{Binding Kept}" />
-                </Expander>
-                <Expander Header="{Binding YeetedTitle}" HorizontalAlignment="Stretch">
+                </StackPanel>
+                <StackPanel Spacing="4" IsVisible="{Binding HasYeeted}">
+                    <TextBlock Classes="category" Text="{Binding YeetedTitle}" />
                     <ItemsControl ItemsSource="{Binding Yeeted}" />
-                </Expander>
-                <Expander Header="{Binding SkippedTitle}" HorizontalAlignment="Stretch">
+                </StackPanel>
+                <StackPanel Spacing="4" IsVisible="{Binding HasSkipped}">
+                    <TextBlock Classes="category" Text="{Binding SkippedTitle}" />
                     <ItemsControl ItemsSource="{Binding Skipped}" />
-                </Expander>
+                </StackPanel>
             </StackPanel>
         </ScrollViewer>
     </DockPanel>

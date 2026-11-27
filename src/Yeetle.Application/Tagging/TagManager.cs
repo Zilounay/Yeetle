@@ -36,7 +36,7 @@ public sealed class TagManager(ITagStore store, ITagEditor editor, IBackups back
 
     public Task<int> CountClipsInBoxAsync(BoxId box) => Task.Run(() => editor.CountClipsInBox(box));
 
-    // A backup comes first (spec §10), since the tag leaves every clip.
+    // A backup comes first (spec §10), since the tag leaves the vocabulary for good.
     public Task DeleteTagAsync(TagId tag) => DeleteAsync(() => editor.DeleteTag(tag), $"Tag {tag.Value} deleted.");
 
     public Task DeleteBoxAsync(BoxId box) => DeleteAsync(() => editor.DeleteBox(box), $"Box {box.Value} deleted.");

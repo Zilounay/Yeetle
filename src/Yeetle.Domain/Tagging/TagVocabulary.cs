@@ -9,8 +9,13 @@ public sealed class TagVocabulary
     private readonly ILookup<TagId?, Box> _boxesUnder;
     private readonly ILookup<BoxId, Tag> _tagsIn;
 
-    public TagVocabulary(IEnumerable<Box> boxes, IEnumerable<Tag> tags)
+    // Retired tags (deleted in the Tag Manager) are not part of the vocabulary: they cannot be
+    // picked and have no box. Only their names are kept, for the clips that still carry them.
+    private readonly Dictionary<TagId, string> _retired;
+
+    public TagVocabulary(IEnumerable<Box> boxes, IEnumerable<Tag> tags, IEnumerable<RetiredTag>? retired = null)
     {
+        _retired = (retired ?? []).ToDictionary(r => r.Id, r => r.Name);
         var boxList = boxes.ToList();
         var tagList = tags.ToList();
         _boxes = boxList.ToDictionary(b => b.Id);
@@ -53,6 +58,13 @@ public sealed class TagVocabulary
     }
 
     public IEnumerable<TagId> DescendantsOf(TagId tag) => Below(tag);
+
+    // The names of a clip's tags as the screens list them: tags in Tag Manager order, then any
+    // retired ones the clip still carries. Ids that are neither are left out.
+    public IReadOnlyList<string> NamesOf(IReadOnlySet<TagId> tags) => InManagerOrder.Where(tags.Contains)
+        .Select(t => Tag(t).Name)
+        .Concat(tags.Where(_retired.ContainsKey).OrderBy(t => t.Value).Select(t => _retired[t]))
+        .ToList();
 
     // How a tag is shown in suggestions: its parent tags and the named boxes between them, without
     // the top-level box, e.g. ["Dota 2", "Hero", "Crystal Maiden"] (spec §6).

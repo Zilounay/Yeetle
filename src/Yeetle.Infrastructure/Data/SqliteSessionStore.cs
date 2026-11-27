@@ -22,6 +22,10 @@ public sealed class SqliteSessionStore(SqliteConnectionFactory connections, Time
 
     private const string ClipColumns = "SELECT c.Id, f.Path AS FolderPath, c.RelativePath, c.RecordedAt ";
 
+    // A clip's tags that can still be picked; retired ones are left on the clip (spec §6).
+    private const string DeleteActiveTags =
+        "DELETE FROM ClipTags WHERE ClipId = @id AND TagId IN (SELECT Id FROM Nodes WHERE Retired = 0);";
+
     public int CountNew()
     {
         using var connection = connections.Open();
@@ -97,10 +101,10 @@ public sealed class SqliteSessionStore(SqliteConnectionFactory connections, Time
                 WHERE Id = @id;
                 """,
                 new { id = clip.Clip.Value, decision = clip.Decision.ToString(), now = DbTime.Write(now) }, transaction);
-            connection.Execute("DELETE FROM ClipTags WHERE ClipId = @id;", new { id = clip.Clip.Value }, transaction);
-            // A tag deleted in the Tag Manager after the snapshot was taken is skipped.
+            // Retired tags already on the clip stay; one retired after the snapshot was taken is skipped.
+            connection.Execute(DeleteActiveTags, new { id = clip.Clip.Value }, transaction);
             connection.Execute(
-                "INSERT INTO ClipTags (ClipId, TagId) SELECT @clipId, Id FROM Nodes WHERE Id = @tagId AND Kind = 'Tag';",
+                "INSERT INTO ClipTags (ClipId, TagId) SELECT @clipId, Id FROM Nodes WHERE Id = @tagId AND Kind = 'Tag' AND Retired = 0;",
                 clip.Tags.Select(t => new { clipId = clip.Clip.Value, tagId = t.Value }), transaction);
             connection.Execute("DELETE FROM Markers WHERE ClipId = @id;", new { id = clip.Clip.Value }, transaction);
             connection.Execute("INSERT INTO Markers (ClipId, PositionMs, Label) VALUES (@clipId, @positionMs, @label);",
@@ -129,8 +133,12 @@ public sealed class SqliteSessionStore(SqliteConnectionFactory connections, Time
 
     private static List<SessionClip> WithTags(SqliteConnection connection, List<ClipRow> rows)
     {
+        // Retired tags cannot be picked, so a session leaves them out (and its commit leaves them be).
         var tags = connection.Query<(long ClipId, long TagId)>(
-                "SELECT ClipId, TagId FROM ClipTags WHERE ClipId IN @ids;", new { ids = rows.Select(r => r.Id).ToList() })
+                """
+                SELECT ct.ClipId, ct.TagId FROM ClipTags ct JOIN Nodes n ON n.Id = ct.TagId
+                WHERE ct.ClipId IN @ids AND n.Retired = 0;
+                """, new { ids = rows.Select(r => r.Id).ToList() })
             .ToLookup(t => t.ClipId, t => new TagId(t.TagId));
         // Markers get numbers 1, 2, 3... in position order, as stored rows have none.
         var markers = connection.Query<(long ClipId, long PositionMs, string Label)>(

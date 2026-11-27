@@ -64,6 +64,14 @@ public sealed record RenameItem(
 public sealed record RenamePreview(IReadOnlyList<RenameItem> Items)
 {
     public IReadOnlyList<RenameItem> ToRename => Items.Where(i => i.WillRename).ToList();
+
+    // Where the first renamed file now is, for Show in folder; null when nothing was renamed.
+    public string? FirstRenamedPath(IEnumerable<FileOutcome> outcomes) => outcomes
+        .Where(o => o.Succeeded && o.NewName is not null)
+        .Select(o => (Outcome: o, Item: Items.FirstOrDefault(i => i.Clip == o.Clip)))
+        .Where(p => p.Item is not null)
+        .Select(p => Path.Combine(Path.GetDirectoryName(p.Item!.FullPath) ?? string.Empty, p.Outcome.NewName!))
+        .FirstOrDefault();
 }
 
 // What happened to one file. Problem is null when it worked.

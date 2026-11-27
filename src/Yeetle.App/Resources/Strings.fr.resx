@@ -313,7 +313,7 @@ Fermez tout programme qui pourrait l'utiliser, puis relancez Yeetle.</value>
     <value>Tags</value>
   </data>
   <data name="TypeTag" xml:space="preserve">
-    <value>Taper un tag</value>
+    <value>Rechercher</value>
   </data>
   <data name="TypeTagTip" xml:space="preserve">
     <value>Trouver un tag par son nom (T)</value>
@@ -461,7 +461,7 @@ Fermez tout programme qui pourrait l'utiliser, puis relancez Yeetle.</value>
   </data>
   <data name="DeleteTagMessage" xml:space="preserve">
     <value>Supprimer « {0} » et tout ce qu'il contient ?
-{1} clip(s) seront concernés : ces tags leur seront retirés. Une sauvegarde de la bibliothèque est faite avant.</value>
+On ne pourra plus le choisir. Les {1} clip(s) qui l'ont déjà le gardent sous ce nom. Une sauvegarde de la bibliothèque est faite avant.</value>
   </data>
   <data name="NewBoxName" xml:space="preserve">
     <value>Nouvelle boîte</value>
@@ -852,5 +852,8 @@ Fermez tout programme qui pourrait l'utiliser, puis relancez Yeetle.</value>
   </data>
   <data name="RenameFilesTitle" xml:space="preserve">
     <value>Renommer {0} fichier(s) selon leurs tags ?</value>
+  </data>
+  <data name="ProgressTip" xml:space="preserve">
+    <value>{0} gardés · {1} yeetés · {2} passés</value>
   </data>
 </root>

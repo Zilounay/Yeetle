@@ -18,3 +18,7 @@ public sealed record Box(BoxId Id, string Name, BoxRule Rule, bool Required, Tag
 }
 
 public sealed record Tag(TagId Id, string Name, BoxId Box);
+
+// A tag deleted in the Tag Manager: gone from the vocabulary, but still shown on the clips that
+// carry it (spec §6).
+public sealed record RetiredTag(TagId Id, string Name);

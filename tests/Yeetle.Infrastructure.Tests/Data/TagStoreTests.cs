@@ -79,11 +79,12 @@ public class TagStoreTests : IDisposable
     }
 
     [Fact]
-    public async Task Deleting_a_tag_removes_what_is_below_it_from_every_clip_after_a_backup()
+    public async Task Deleting_a_tag_retires_it_and_what_is_below_it_after_a_backup()
     {
         var store = new SqliteTagStore(_data.Connections);
         var game = store.AddBox(null, "Game", BoxRule.PickOne);
         var cs = store.AddTag(game, "CS2");
+        store.SetHotkey(cs, "Digit1");
         var dota = store.AddTag(game, "Dota 2");
         var map = store.AddBox(cs, "Map", BoxRule.PickOne);
         var dust = store.AddTag(map, "Dust2");
@@ -107,10 +108,37 @@ public class TagStoreTests : IDisposable
         await manager.DeleteTagAsync(cs);
 
         var catalog = store.LoadCatalog();
+        // Gone from the Tag Manager and its hotkey free, but still on the clips under its old name.
         Assert.Equal([dota], catalog.Vocabulary.InManagerOrder);
-        Assert.Equal(1, catalog.Usage.Values.Sum());
+        Assert.Empty(catalog.Hotkeys);
+        Assert.Equal(3, catalog.Usage.Values.Sum());
+        Assert.Equal(["CS2", "Dust2"], catalog.Vocabulary.NamesOf(new HashSet<TagId> { cs, dust }));
+        Assert.Equal(HotkeyChange.Set, store.SetHotkey(dota, "Digit1"));
+        // A new tag never gets a retired tag's id.
+        Assert.True(store.AddTag(game, "CS2").Value > dust.Value);
         Assert.Contains(_data.Backups.List(), b => b.Pool == BackupPool.Safety);
         Assert.Equal(1, changes);
+    }
+
+    [Fact]
+    public void Tags_know_when_they_were_last_used()
+    {
+        var store = new SqliteTagStore(_data.Connections);
+        var box = store.AddBox(null, "Moments", BoxRule.PickMany);
+        var funny = store.AddTag(box, "Funny");
+        using (var connection = _data.Connections.Open())
+        {
+            connection.Execute(
+                """
+                INSERT INTO SourceFolders (Id, Path, AddedAt) VALUES (1, 'D:Clips', '2026-10-30');
+                INSERT INTO Clips (Id, FolderId, RelativePath, OriginalFileName, SizeBytes, ModifiedAt, RecordedAt, AddedAt)
+                VALUES (1, 1, 'a.mp4', 'a.mp4', 1, '2026-10-30', '2026-10-20 21:00:00.000', '2026-10-30'),
+                       (2, 1, 'b.mp4', 'b.mp4', 1, '2026-10-30', '2026-10-28 22:15:36.000', '2026-10-30');
+                """);
+            connection.Execute("INSERT INTO ClipTags (ClipId, TagId) VALUES (1, @funny), (2, @funny);", new { funny = funny.Value });
+        }
+
+        Assert.Equal(new DateTime(2026, 10, 28, 22, 15, 36), store.LoadCatalog().LastUsed[funny]);
     }
 
     [Fact]

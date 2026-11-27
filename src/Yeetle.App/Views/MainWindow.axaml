@@ -5,6 +5,7 @@
         xmlns:vm="using:Yeetle.App.ViewModels"
         xmlns:views="using:Yeetle.App.Views"
         xmlns:res="using:Yeetle.App.Resources"
+        xmlns:controls="using:Yeetle.App.Controls"
         mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
         x:Class="Yeetle.App.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -22,8 +23,12 @@
         <SolidColorBrush x:Key="KeptBadgeBrush" Color="#2E7D32" />
         <SolidColorBrush x:Key="YeetedBadgeBrush" Color="#C62828" />
         <SolidColorBrush x:Key="SkippedBadgeBrush" Color="#37474F" />
+        <!-- On the thin progress bar the skip slate would vanish into the track: a lighter grey. -->
+        <SolidColorBrush x:Key="SkippedBarBrush" Color="#8A949E" />
+        <SolidColorBrush x:Key="HomeCardBrush" Color="#15181D" />
         <x:Double x:Key="SecondaryTextOpacity">0.7</x:Double>
         <x:Double x:Key="OtherCardOpacity">0.8</x:Double>
+        <x:Double x:Key="DisabledOpacity">0.4</x:Double>
         <CornerRadius x:Key="CardCornerRadius">10</CornerRadius>
     </Window.Resources>
 
@@ -42,6 +47,30 @@
         <Style Selector="Button.tab.current /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="BorderBrush" Value="{StaticResource CurrentCardBrush}" />
             <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="Grid.player">
+            <Setter Property="Margin" Value="16,16,16,14" />
+        </Style>
+        <!-- Home page: the video area takes no room, which hides its native windows without
+             removing them (see MainWindowViewModel.CollapsePlayer). -->
+        <Style Selector="Grid.player.collapsed">
+            <Setter Property="Height" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+        </Style>
+        <!-- Start session: large and green, like Keep over the video. -->
+        <Style Selector="Button.start">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Padding" Value="28,10" />
+            <Setter Property="CornerRadius" Value="{StaticResource CardCornerRadius}" />
+        </Style>
+        <Style Selector="Button.start /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource KeptBadgeBrush}" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.start:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Opacity" Value="{StaticResource DisabledOpacity}" />
         </Style>
         <Style Selector="Border.card">
             <Setter Property="Background" Value="{StaticResource CardBrush}" />
@@ -93,7 +122,12 @@
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right"
                             VerticalAlignment="Center" IsVisible="{Binding Session.IsActive}">
                     <TextBlock FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding Session.Counter}" />
-                    <ProgressBar Width="140" Minimum="0" Maximum="1" Value="{Binding Session.Progress}" VerticalAlignment="Center" />
+                    <controls:DecisionBar Width="160" Height="8" VerticalAlignment="Center"
+                                          Kept="{Binding Session.KeptCount}" Yeeted="{Binding Session.YeetedCount}"
+                                          Skipped="{Binding Session.SkippedCount}" Total="{Binding Session.ClipCount}"
+                                          KeptBrush="{StaticResource KeptBadgeBrush}" YeetedBrush="{StaticResource YeetedBadgeBrush}"
+                                          SkippedBrush="{StaticResource SkippedBarBrush}" TrackBrush="{StaticResource LineBrush}"
+                                          ToolTip.Tip="{Binding Session.ProgressTip}" />
                 </StackPanel>
                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
                     <Button Content="{x:Static res:Strings.Rescan}" ToolTip.Tip="{x:Static res:Strings.RescanTip}"
@@ -112,7 +146,29 @@
             <views:ExplorerView DataContext="{Binding Explorer}" />
         </Panel>
 
-        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="16,16,16,14" IsVisible="{Binding ShowPlayer}">
+        <!-- Home: no session running (spec §5). A plain page for now; the dashboard is #63. -->
+        <Border Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="560"
+                Margin="16" Padding="40,32" CornerRadius="16" Background="{StaticResource HomeCardBrush}"
+                BorderBrush="{StaticResource LineBrush}" BorderThickness="1" IsVisible="{Binding ShowHome}">
+            <StackPanel Spacing="18">
+                <TextBlock FontSize="22" FontWeight="SemiBold" HorizontalAlignment="Center" TextAlignment="Center"
+                           TextWrapping="Wrap" Text="{Binding Session.HomeText}" />
+                <Button Classes="start" HorizontalAlignment="Center" Content="{x:Static res:Strings.StartSession}"
+                        Command="{Binding Session.StartCommand}" />
+                <TextBlock HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                           Opacity="{StaticResource SecondaryTextOpacity}" Text="{Binding Session.Notice}"
+                           IsVisible="{Binding ShowSessionNotice}" />
+                <TextBlock HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                           Opacity="{StaticResource SecondaryTextOpacity}" Text="{Binding ScanSummary}"
+                           IsVisible="{Binding ShowScanSummary}" />
+                <TextBlock HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                           Opacity="{StaticResource SecondaryTextOpacity}" Text="{Binding Player.Message}"
+                           IsVisible="{Binding Player.Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="1" Classes="player" Classes.collapsed="{Binding CollapsePlayer}" ColumnDefinitions="*,Auto"
+              IsVisible="{Binding ShowPlayer}">
             <!-- The video; its controls are in VideoOverlayWindow, laid over it. -->
             <views:PlayerView x:Name="Player" DataContext="{Binding Player}" />
             <!-- Tags, then markers, beside the video, never over it (spec §5, layout from #9): those of

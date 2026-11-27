@@ -102,7 +102,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     public bool HasInfo => Session.IsActive || IsEditorPage || Player.Message.Length > 0 || Session.Notice.Length > 0
                            || ScanSummary.Length > 0;
 
-    partial void OnScanSummaryChanged(string value) => OnPropertyChanged(nameof(HasInfo));
+    partial void OnScanSummaryChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasInfo));
+        OnPropertyChanged(nameof(ShowScanSummary));
+    }
 
     // Theatre mode (spec §7): the video takes the window; tags, markers and the strip step aside.
     [ObservableProperty]
@@ -122,16 +126,24 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
 
     public bool IsEditorPage => CurrentPage == Page.Editor;
 
-    // The video and its overlay: on every page but the list.
+    // The video area: on every page but the list. It must be in the layout from the start, or its
+    // native windows are never created and VLC opens a window of its own.
     public bool ShowPlayer => !IsExplorerPage;
+
+    // On the home page the video area is collapsed to nothing, which hides its native windows, and a
+    // page of its own shows instead of a black video area with a message over it (#62).
+    public bool CollapsePlayer => ShowHome;
 
     public bool ShowSidePanels => !IsTheatre && (IsEditorPage || (IsSessionPage && Session.IsActive));
 
-    public bool ShowStrip => !IsTheatre && IsSessionPage && Session.IsActive;
+    // The clip strip is hidden for now: it added little (#62). Its code stays for a later return.
+    public bool ShowStrip => false;
 
     public bool ShowHome => IsSessionPage && Session.IsHome;
 
     public bool ShowSessionNotice => IsSessionPage && Session.Notice.Length > 0;
+
+    public bool ShowScanSummary => ScanSummary.Length > 0;
 
     // The playback controls: while a session runs or a clip is open.
     public bool ShowControls => IsEditorPage || (IsSessionPage && Session.IsActive);
@@ -231,7 +243,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     {
         foreach (var name in new[]
                  {
-                     nameof(IsSessionPage), nameof(IsExplorerPage), nameof(IsEditorPage), nameof(ShowPlayer),
+                     nameof(IsSessionPage), nameof(IsExplorerPage), nameof(IsEditorPage), nameof(ShowPlayer), nameof(CollapsePlayer),
                      nameof(ShowSidePanels), nameof(ShowStrip), nameof(ShowHome), nameof(ShowControls),
                      nameof(ShowSessionNotice), nameof(SideTags), nameof(SideMarkers), nameof(HasInfo),
                  })

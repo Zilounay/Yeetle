@@ -30,11 +30,28 @@ public partial class TagManagerWindow : Window
             viewModel.NameFocusRequested += OnNameFocusRequested;
     }
 
-    private void OnNameFocusRequested(object? sender, EventArgs e) => Dispatcher.UIThread.Post(() =>
+    // After the list is rebuilt and laid out: the button that was clicked is gone by then, and the
+    // name field may only just have become visible with the new selection (#62).
+    private void OnNameFocusRequested(object? sender, EventArgs e) =>
+        Dispatcher.UIThread.Post(() => FocusName(retryAfterLayout: true), DispatcherPriority.Background);
+
+    private void FocusName(bool retryAfterLayout)
     {
+        if (!NameBox.IsEffectivelyVisible && retryAfterLayout)
+        {
+            EventHandler? retry = null;
+            retry = (_, _) =>
+            {
+                NameBox.LayoutUpdated -= retry;
+                FocusName(retryAfterLayout: false);
+            };
+            NameBox.LayoutUpdated += retry;
+            return;
+        }
+        Activate();
         NameBox.Focus();
         NameBox.SelectAll();
-    }, DispatcherPriority.Input);
+    }
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
