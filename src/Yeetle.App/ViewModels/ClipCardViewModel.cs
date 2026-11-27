@@ -40,7 +40,9 @@ public sealed class ClipCardViewModel(int number, string name, DateTime recorded
 
     public bool IsSkipped => Badge == CardBadge.Skipped;
 
-    public string BadgeText => Badge switch
+    public string BadgeText => TextFor(Badge);
+
+    public static string TextFor(CardBadge badge) => badge switch
     {
         CardBadge.Playing => Strings.BadgePlaying,
         CardBadge.Kept => Strings.BadgeKept,
@@ -49,3 +51,7 @@ public sealed class ClipCardViewModel(int number, string name, DateTime recorded
         _ => Strings.BadgeNew,
     };
 }
+
+// One cell of the session timeline (#68): the clip's state, the text shown on hover, and whether
+// it can be jumped to (only clips already reached).
+public sealed record TimelineCell(CardBadge State, string Tip, bool CanJump);

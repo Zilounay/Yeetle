@@ -874,4 +874,10 @@ It can no longer be picked. The {1} clip(s) that already carry it keep it under 
   <data name="TagFileProblem" xml:space="preserve">
     <value>The tags file could not be read: {0}</value>
   </data>
+  <data name="TimelineTip" xml:space="preserve">
+    <value>{0} · {1} · {2}</value>
+  </data>
+  <data name="TimelineName" xml:space="preserve">
+    <value>Session clips</value>
+  </data>
 </root>
