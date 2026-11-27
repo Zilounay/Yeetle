@@ -9,6 +9,7 @@ using Yeetle.App.Resources;
 using Yeetle.App.Services;
 using Yeetle.Application.Sessions;
 using Yeetle.Application.Settings;
+using Yeetle.Application.Shell;
 using Yeetle.Application.Tagging;
 using Yeetle.Domain.Files;
 using Yeetle.Domain.Tagging;
@@ -94,8 +95,10 @@ public sealed partial class TagManagerViewModel : ViewModelBase
 
     private readonly TagManager _tags;
     private readonly IDialogs _dialogs;
+    private readonly IShell _shell;
     private readonly HotkeyMap _actionKeys;
-    private readonly HashSet<TagId> _collapsed = [];
+    // Tags start folded, so a large vocabulary (hundreds of champions) stays easy to scan.
+    private readonly HashSet<TagId> _expanded = [];
     private TagCatalog _catalog = TagCatalog.Empty;
 
     [ObservableProperty]
@@ -139,10 +142,14 @@ public sealed partial class TagManagerViewModel : ViewModelBase
     [ObservableProperty]
     private bool _canRename;
 
-    public TagManagerViewModel(TagManager tags, IDialogs dialogs, LoadedSettings settings)
+    [ObservableProperty]
+    private string _tagFileMessage = string.Empty;
+
+    public TagManagerViewModel(TagManager tags, IDialogs dialogs, IShell shell, LoadedSettings settings)
     {
         _tags = tags;
         _dialogs = dialogs;
+        _shell = shell;
         var actions = settings.Values.Hotkeys;
         _actionKeys = new HotkeyMap(actions, actions.Keys.ToHashSet());
         Colours = TagColours.Palette.Select(c => new ColourChoice(c, TagColours.Brush(c), c))
@@ -254,7 +261,7 @@ public sealed partial class TagManagerViewModel : ViewModelBase
     {
         if (SelectedTag is not { } tag)
             return;
-        _collapsed.Remove(tag);
+        _expanded.Add(tag);
         var box = await _tags.AddBoxAsync(tag, Strings.NewBoxName, BoxRule.PickMany);
         await SelectAndRenameAsync(box: box);
     }
@@ -265,7 +272,7 @@ public sealed partial class TagManagerViewModel : ViewModelBase
     {
         if (SelectedTag is not { } tag)
             return;
-        _collapsed.Remove(tag);
+        _expanded.Add(tag);
         var box = _catalog.Vocabulary.BoxesUnder(tag).FirstOrDefault(b => !b.IsNamed)?.Id
                   ?? await _tags.AddBoxAsync(tag, string.Empty, BoxRule.PickMany);
         await AddTagAsync(box);
@@ -273,6 +280,21 @@ public sealed partial class TagManagerViewModel : ViewModelBase
 
     [RelayCommand]
     private void CancelPendingName() => PendingName = string.Empty;
+
+    // Windows opens it with the app it uses for .json files.
+    [RelayCommand]
+    private void OpenTagFile() => _shell.OpenWithDefaultApp(_tags.TagFilePath);
+
+    // Adds what is new in the user's tags file; nothing is removed or renamed (spec §6).
+    [RelayCommand]
+    private async Task ImportTagFileAsync()
+    {
+        var result = await _tags.ImportTagFileAsync();
+        TagFileMessage = result.Problem is { } problem ? string.Format(Strings.TagFileProblem, problem)
+            : result.AddedTags > 0 ? string.Format(Strings.TagFileAdded, result.AddedTags)
+            : Strings.TagFileNothingNew;
+        await LoadAsync();
+    }
 
     [RelayCommand(CanExecute = nameof(HasSelection))]
     private Task MoveUpAsync() => MoveAsync(-1);
@@ -400,7 +422,7 @@ public sealed partial class TagManagerViewModel : ViewModelBase
         var vocabulary = _catalog.Vocabulary;
         var tags = vocabulary.TagsIn(box.Id).Select(tag => new TagNodeViewModel(tag,
             _catalog.Colours.GetValueOrDefault(tag.Id), _catalog.Hotkeys.GetValueOrDefault(tag.Id),
-            vocabulary.BoxesUnder(tag.Id).Select(Card).ToList(), !_collapsed.Contains(tag.Id),
+            vocabulary.BoxesUnder(tag.Id).Select(Card).ToList(), _expanded.Contains(tag.Id),
             new AsyncRelayCommand(() => SelectAsync(tag.Id, null)))).ToList();
         foreach (var node in tags)
             node.PropertyChanged += (_, e) =>
@@ -408,9 +430,9 @@ public sealed partial class TagManagerViewModel : ViewModelBase
                 if (e.PropertyName != nameof(TagNodeViewModel.IsExpanded))
                     return;
                 if (node.IsExpanded)
-                    _collapsed.Remove(node.Id);
+                    _expanded.Add(node.Id);
                 else
-                    _collapsed.Add(node.Id);
+                    _expanded.Remove(node.Id);
             };
         return new BoxCardViewModel(box, BoxTitle(box), tags, new AsyncRelayCommand(() => SelectAsync(null, box.Id)),
             new AsyncRelayCommand(() => AddTagAsync(box.Id)), card => _ = SaveRulesAsync(card));

@@ -75,6 +75,22 @@ public class ExplorerStoreTests : IDisposable
     }
 
     [Fact]
+    public void An_edit_keeps_the_retired_tags_of_the_clip()
+    {
+        var tags = new SqliteTagStore(_data.Connections);
+        var people = tags.AddBox(null, "People", BoxRule.PickMany);
+        var zil = tags.AddTag(people, "ZiL");
+        _store.SaveEdit(new ClipId(1), Decision.Kept, new HashSet<TagId> { _funny, zil }, []);
+        tags.DeleteTag(zil);
+
+        // The editor no longer knows the retired tag and saves without it.
+        _store.SaveEdit(new ClipId(1), Decision.Kept, new HashSet<TagId> { _funny }, []);
+
+        Assert.Equal(new HashSet<TagId> { _funny, zil }, _store.LoadClip(new ClipId(1))!.Tags);
+        Assert.Equal(["Funny", "ZiL"], tags.LoadCatalog().Vocabulary.NamesOf(_store.LoadClip(new ClipId(1))!.Tags));
+    }
+
+    [Fact]
     public async Task Wiping_takes_a_backup_first()
     {
         var library = new ClipLibrary(_store, new SqliteTagStore(_data.Connections), _data.Backups, _data.Log);

@@ -15,4 +15,8 @@ Add new entries at the end of their section, one line each, with the date and wh
 
 ## Review
 
-- **Show some tags of a fresh vocabulary.** With no hotkeys and no usage yet, the Tags panel shows no chips at all; the first session needs T or hotkeys. Relates to #25. (2026-10-31, first full test pass)
+
+## Tags
+
+- **Export the vocabulary to a tags file.** `tags.json` is written once and never follows Tag Manager changes; an export button would write the current vocabulary in the same format, to share or back up. (2026-11-26, while building #65)
+- **Colours and hotkeys in the tags file.** The format only has names, pick one/many and required for now. (2026-11-26, while building #65)

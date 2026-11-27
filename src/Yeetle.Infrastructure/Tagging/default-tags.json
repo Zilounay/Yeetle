@@ -1,0 +1,372 @@
+// Yeetle's tags: the boxes and tags offered when tagging clips (spec section 6).
+//
+// How Yeetle reads this file:
+// - At every start, and with "Add tags from file" in the Tag Manager, Yeetle adds the boxes and tags
+//   below that it does not have yet. It never removes, renames or changes anything: do that in the
+//   Tag Manager. A tag renamed or deleted there is never brought back by this file.
+// - A box:  { "box": "Map", "pick": "one", "required": true, "tags": [ ... ] }
+//   "pick" is "one" or "many" (default "many"), "required" is true or false (default false).
+// - A tag is a name in quotes, or { "tag": "Rifle", "tags": [ ... ], "boxes": [ ... ] } when it
+//   holds tags directly ("tags", picked freely) or boxes of its own ("boxes").
+// - Lines starting with // are notes and are ignored. A comma after the last item is allowed.
+
+{
+  "boxes": [
+    {
+      "box": "Game",
+      "pick": "one",
+      "required": true,
+      "tags": [
+        {
+          "tag": "League of Legends",
+          "boxes": [
+            {
+              "box": "Champion",
+              "tags": [
+                "Aatrox", "Ahri", "Akali", "Akshan", "Alistar", "Ambessa", "Amumu", "Anivia", "Annie", "Aphelios",
+                "Ashe", "Aurelion Sol", "Aurora", "Azir", "Bard", "Bel'Veth", "Blitzcrank", "Brand", "Braum", "Briar",
+                "Caitlyn", "Camille", "Cassiopeia", "Cho'Gath", "Corki", "Darius", "Diana", "Dr. Mundo", "Draven", "Ekko",
+                "Elise", "Evelynn", "Ezreal", "Fiddlesticks", "Fiora", "Fizz", "Galio", "Gangplank", "Garen", "Gnar",
+                "Gragas", "Graves", "Gwen", "Hecarim", "Heimerdinger", "Hwei", "Illaoi", "Irelia", "Ivern", "Janna",
+                "Jarvan IV", "Jax", "Jayce", "Jhin", "Jinx", "K'Sante", "Kai'Sa", "Kalista", "Karma", "Karthus",
+                "Kassadin", "Katarina", "Kayle", "Kayn", "Kennen", "Kha'Zix", "Kindred", "Kled", "Kog'Maw", "LeBlanc",
+                "Lee Sin", "Leona", "Lillia", "Lissandra", "Lucian", "Lulu", "Lux", "Malphite", "Malzahar", "Maokai",
+                "Master Yi", "Mel", "Milio", "Miss Fortune", "Mordekaiser", "Morgana", "Naafiri", "Nami", "Nasus", "Nautilus",
+                "Neeko", "Nidalee", "Nilah", "Nocturne", "Nunu & Willump", "Olaf", "Orianna", "Ornn", "Pantheon", "Poppy",
+                "Pyke", "Qiyana", "Quinn", "Rakan", "Rammus", "Rek'Sai", "Rell", "Renata Glasc", "Renekton", "Rengar",
+                "Riven", "Rumble", "Ryze", "Samira", "Sejuani", "Senna", "Seraphine", "Sett", "Shaco", "Shen",
+                "Shyvana", "Singed", "Sion", "Sivir", "Skarner", "Smolder", "Sona", "Soraka", "Swain", "Sylas",
+                "Syndra", "Tahm Kench", "Taliyah", "Talon", "Taric", "Teemo", "Thresh", "Tristana", "Trundle", "Tryndamere",
+                "Twisted Fate", "Twitch", "Udyr", "Urgot", "Varus", "Vayne", "Veigar", "Vel'Koz", "Vex", "Vi",
+                "Viego", "Viktor", "Vladimir", "Volibear", "Warwick", "Wukong", "Xayah", "Xerath", "Xin Zhao", "Yasuo",
+                "Yone", "Yorick", "Yunara", "Yuumi", "Zaahen", "Zac", "Zed", "Zeri", "Ziggs", "Zilean",
+                "Zoe", "Zyra"
+              ]
+            },
+            { "box": "Role", "pick": "one", "tags": ["Top", "Jungle", "Mid", "ADC", "Support"] },
+            { "box": "Mode", "pick": "one", "tags": ["Ranked", "Normal", "ARAM", "Arena", "Clash"] },
+            {
+              "box": "Moment",
+              "tags": [
+                "Pentakill", "Quadrakill", "Solo kill", "Shutdown", "Baron steal", "Dragon steal", "Elder Dragon", "Atakhan",
+                "Smite fight", "Gank", "Tower dive", "Invade", "Backdoor", "Base race", "Flash fail", "Skillshot", "Outplay 1vX"
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "Dota 2",
+          "boxes": [
+            {
+              "box": "Hero",
+              "tags": [
+                "Abaddon", "Alchemist", "Ancient Apparition", "Anti-Mage", "Arc Warden", "Axe", "Bane", "Batrider", "Beastmaster", "Bloodseeker",
+                "Bounty Hunter", "Brewmaster", "Bristleback", "Broodmother", "Centaur Warrunner", "Chaos Knight", "Chen", "Clinkz", "Clockwerk", "Crystal Maiden",
+                "Dark Seer", "Dark Willow", "Dawnbreaker", "Dazzle", "Death Prophet", "Disruptor", "Doom", "Dragon Knight", "Drow Ranger", "Earth Spirit",
+                "Earthshaker", "Elder Titan", "Ember Spirit", "Enchantress", "Enigma", "Faceless Void", "Grimstroke", "Gyrocopter", "Hoodwink", "Huskar",
+                "Invoker", "Io", "Jakiro", "Juggernaut", "Keeper of the Light", "Kez", "Kunkka", "Largo", "Legion Commander", "Leshrac",
+                "Lich", "Lifestealer", "Lina", "Lion", "Lone Druid", "Luna", "Lycan", "Magnus", "Marci", "Mars",
+                "Medusa", "Meepo", "Mirana", "Monkey King", "Morphling", "Muerta", "Naga Siren", "Nature's Prophet", "Necrophos", "Night Stalker",
+                "Nyx Assassin", "Ogre Magi", "Omniknight", "Oracle", "Outworld Destroyer", "Pangolier", "Phantom Assassin", "Phantom Lancer", "Phoenix", "Primal Beast",
+                "Puck", "Pudge", "Pugna", "Queen of Pain", "Razor", "Riki", "Ringmaster", "Rubick", "Sand King", "Shadow Demon",
+                "Shadow Fiend", "Shadow Shaman", "Silencer", "Skywrath Mage", "Slardar", "Slark", "Snapfire", "Sniper", "Spectre", "Spirit Breaker",
+                "Storm Spirit", "Sven", "Techies", "Templar Assassin", "Terrorblade", "Tidehunter", "Timbersaw", "Tinker", "Tiny", "Treant Protector",
+                "Troll Warlord", "Tusk", "Underlord", "Undying", "Ursa", "Vengeful Spirit", "Venomancer", "Viper", "Visage", "Void Spirit",
+                "Warlock", "Weaver", "Windranger", "Winter Wyvern", "Witch Doctor", "Wraith King", "Zeus"
+              ]
+            },
+            { "box": "Position", "pick": "one", "tags": ["Carry", "Mid", "Offlane", "Soft support", "Hard support"] },
+            { "box": "Mode", "pick": "one", "tags": ["Ranked", "Unranked", "Turbo", "Ability Draft"] },
+            {
+              "box": "Moment",
+              "tags": [
+                "Rampage", "Ultra kill", "Roshan", "Aegis snatch", "Divine Rapier", "Buyback", "Tormentor", "Smoke gank",
+                "Courier snipe", "Deny", "Rune", "Mega creeps", "Throne", "Blink initiation", "Hook"
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "Counter-Strike 2",
+          "boxes": [
+            {
+              "box": "Map",
+              "pick": "one",
+              "required": true,
+              "tags": ["Ancient", "Anubis", "Dust2", "Inferno", "Mirage", "Nuke", "Overpass", "Train", "Vertigo", "Office", "Italy"]
+            },
+            {
+              "box": "Weapon",
+              "tags": [
+                { "tag": "Pistol", "tags": ["Glock-18", "USP-S", "P2000", "P250", "Dual Berettas", "Five-SeveN", "Tec-9", "CZ75-Auto", "Desert Eagle", "R8 Revolver"] },
+                { "tag": "SMG", "tags": ["MAC-10", "MP9", "MP7", "MP5-SD", "UMP-45", "P90", "PP-Bizon"] },
+                { "tag": "Rifle", "tags": ["Galil AR", "FAMAS", "AK-47", "M4A4", "M4A1-S", "SG 553", "AUG"] },
+                { "tag": "Sniper", "tags": ["AWP", "SSG 08", "SCAR-20", "G3SG1"] },
+                { "tag": "Shotgun", "tags": ["Nova", "XM1014", "Sawed-Off", "MAG-7"] },
+                { "tag": "Machine gun", "tags": ["M249", "Negev"] },
+                { "tag": "Utility", "tags": ["HE grenade", "Flashbang", "Smoke", "Molotov", "Decoy"] },
+                "Zeus x27",
+                "Knife"
+              ]
+            },
+            { "box": "Side", "pick": "one", "tags": ["T", "CT"] },
+            { "box": "Mode", "pick": "one", "tags": ["Premier", "Competitive", "Wingman", "Deathmatch", "Casual", "FACEIT"] },
+            {
+              "box": "Moment",
+              "tags": [
+                "Ace", "4K", "Ninja defuse", "Wallbang", "Collateral", "No-scope", "Jumpshot", "One-tap", "Flick",
+                "Eco win", "Pistol round", "Flash assist", "Team kill", "Boost"
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "Valorant",
+          "boxes": [
+            {
+              "box": "Map",
+              "pick": "one",
+              "required": true,
+              "tags": ["Abyss", "Ascent", "Bind", "Breeze", "Corrode", "Fracture", "Haven", "Icebox", "Lotus", "Pearl", "Split", "Sunset"]
+            },
+            {
+              "box": "Agent",
+              "pick": "one",
+              "tags": [
+                "Astra", "Breach", "Brimstone", "Chamber", "Clove", "Cypher", "Deadlock", "Fade", "Gekko", "Harbor",
+                "Iso", "Jett", "KAY/O", "Killjoy", "Neon", "Omen", "Phoenix", "Raze", "Reyna", "Sage",
+                "Skye", "Sova", "Tejo", "Veto", "Viper", "Vyse", "Waylay", "Yoru"
+              ]
+            },
+            {
+              "box": "Weapon",
+              "tags": [
+                { "tag": "Sidearm", "tags": ["Classic", "Shorty", "Frenzy", "Ghost", "Bandit", "Sheriff"] },
+                { "tag": "SMG", "tags": ["Stinger", "Spectre"] },
+                { "tag": "Shotgun", "tags": ["Bucky", "Judge"] },
+                { "tag": "Rifle", "tags": ["Bulldog", "Guardian", "Phantom", "Vandal"] },
+                { "tag": "Sniper", "tags": ["Marshal", "Outlaw", "Operator"] },
+                { "tag": "Machine gun", "tags": ["Ares", "Odin"] },
+                "Ability kill",
+                "Knife"
+              ]
+            },
+            { "box": "Side", "pick": "one", "tags": ["Attack", "Defense"] },
+            { "box": "Mode", "pick": "one", "tags": ["Competitive", "Unrated", "Swiftplay", "Spike Rush", "Deathmatch", "Team Deathmatch"] },
+            {
+              "box": "Moment",
+              "tags": ["Ace", "Ninja defuse", "Thrifty", "Flawless", "Wallbang", "One-tap", "Ult play", "Lineup"]
+            }
+          ]
+        },
+        {
+          "tag": "Escape from Tarkov",
+          "boxes": [
+            {
+              "box": "Map",
+              "pick": "one",
+              "required": true,
+              "tags": [
+                "Customs", "Factory", "Woods", "Shoreline", "Interchange", "Reserve", "Lighthouse", "Streets of Tarkov",
+                "Ground Zero", "The Lab", "Labyrinth", "Terminal"
+              ]
+            },
+            {
+              "box": "Weapon",
+              "tags": [
+                { "tag": "Assault rifle", "tags": ["AK", "AR-15", "HK 416", "SCAR", "MCX", "MDR", "AUG", "G36", "AS VAL", "VSS", "ASh-12", "RFB"] },
+                { "tag": "SMG", "tags": ["MP5", "MP7", "MP9", "MPX", "Vector", "P90", "UMP", "PP-19", "Kedr", "PPSh", "Uzi"] },
+                { "tag": "DMR", "tags": ["SVD", "SR-25", "Mk-18 Mjolnir", "FAL", "M1A", "SKS", "Mutant"] },
+                { "tag": "Bolt-action", "tags": ["Mosin", "SV-98", "M700", "T-5000", "DVL-10", "AXMC"] },
+                { "tag": "Shotgun", "tags": ["MP-153", "Saiga-12", "KS-23", "M870", "Benelli M3", "AA-12", "MTs-255"] },
+                { "tag": "Pistol", "tags": ["Glock", "M1911", "Five-seveN", "Desert Eagle", "Makarov", "TT", "APS", "Grach", "SR-1MP"] },
+                { "tag": "Machine gun", "tags": ["PKM", "RPK", "RPD", "M60"] },
+                { "tag": "Grenade launcher", "tags": ["M32A1", "FN40GL"] },
+                "Grenade",
+                "Melee"
+              ]
+            },
+            { "box": "Side", "pick": "one", "tags": ["PMC", "Scav"] },
+            {
+              "box": "Loot",
+              "tags": ["Bitcoin", "LEDX", "GPU", "Tetriz", "Red Rebel", "Red keycard", "Labs keycard", "Intelligence folder", "Thermal scope", "Moonshine"]
+            },
+            {
+              "box": "Boss",
+              "tags": [
+                "Reshala", "Killa", "Shturman", "Glukhar", "Sanitar", "Tagilla", "Kaban", "Kollontay", "Partisan",
+                "The Goons", "Zryachiy", "Cultists", "Rogues", "Raiders"
+              ]
+            },
+            {
+              "box": "Moment",
+              "tags": [
+                "Extract", "Extract camper", "Survived", "Killed in action", "Headeyes", "Desync", "Grenade", "Leg meta",
+                "Rat", "Chad", "Boss kill", "Kappa", "Scav karma"
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "Arc Raiders",
+          "boxes": [
+            {
+              "box": "Map",
+              "pick": "one",
+              "tags": ["Dam Battlegrounds", "Buried City", "Spaceport", "The Blue Gate", "Stella Montis", "Riven Tides", "Pendola Pass"]
+            },
+            {
+              "box": "Weapon",
+              "tags": [
+                { "tag": "Assault rifle", "tags": ["Kettle", "Rattler", "Arpeggio", "Tempest", "Bettina"] },
+                { "tag": "Battle rifle", "tags": ["Ferro", "Stiletto", "Renegade", "Aphelion"] },
+                { "tag": "SMG", "tags": ["Stitcher", "Canto", "Bobcat"] },
+                { "tag": "Shotgun", "tags": ["Il Toro", "Vulcano", "Dolabra"] },
+                { "tag": "Pistol", "tags": ["Hairpin", "Burletta", "Venator"] },
+                { "tag": "Hand cannon", "tags": ["Bantam", "Anvil"] },
+                { "tag": "LMG", "tags": ["Torrente"] },
+                { "tag": "Sniper", "tags": ["Osprey", "Jupiter"] },
+                { "tag": "Special", "tags": ["Rascal", "Hullcracker", "Equalizer"] }
+              ]
+            },
+            {
+              "box": "Map condition",
+              "tags": [
+                "Night Raid", "Electromagnetic Storm", "Cold Snap", "Hurricane", "Hidden Bunker", "Locked Gate", "ARC Frigate",
+                "Harvester", "Matriarch", "Close Scrutiny"
+              ]
+            },
+            {
+              "box": "ARC",
+              "tags": [
+                "Queen", "Matriarch", "Bastion", "Bombardier", "Leaper", "Bully", "Rocketeer", "Hornet", "Wasp", "Snitch",
+                "Sentinel", "Pop", "Tick", "Shredder", "Surveyor"
+              ]
+            },
+            {
+              "box": "Moment",
+              "tags": [
+                "Extract", "Free loadout", "Friendly raider", "Betrayal", "Third party", "Giant ARC kill", "Blueprint drop",
+                "Raider down", "Snitch alarm"
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "Wardogs",
+          "boxes": [
+            { "box": "Map", "pick": "one", "tags": ["Bakurani", "Ozeti", "Zestafona", "Sabatulo", "Jutari"] },
+            {
+              "box": "Weapon",
+              "tags": [
+                { "tag": "Assault rifle", "tags": ["A-91", "AK74", "Bushmaster M17S", "FAL", "Galil", "KH-2002", "M4", "T-21", "TCX-SPR"] },
+                { "tag": "SMG", "tags": ["AMP-9", "MP5", "PP-19 Bizon", "PP-19 Vityaz", "Super-45"] },
+                { "tag": "LMG", "tags": ["Evo-3 Ultra", "M249 SAW", "PKM"] },
+                { "tag": "Marksman rifle", "tags": ["BMR-308", "M14", "SKS", "SVD"] },
+                { "tag": "Sniper", "tags": ["AMR 50", "MK22", "Mosin Nagant", "Scout Rifle TD", "SV98"] },
+                { "tag": "Shotgun", "tags": ["M500", "MP43"] },
+                { "tag": "Pistol", "tags": ["Deagle", "GGX 17", "GGX 18", "Judge", "M1911"] },
+                { "tag": "Launcher", "tags": ["9K333 Verba", "MAAWS", "MGL-40", "RPG-7"] },
+                "Compound Bow",
+                "Fists"
+              ]
+            },
+            {
+              "box": "Vehicle",
+              "tags": [
+                { "tag": "Helicopter", "tags": ["AH-6", "Havoc", "MH-6", "Z20 Lakota"] },
+                { "tag": "Tank", "tags": ["T-72B3", "L2A6"] },
+                { "tag": "Artillery", "tags": ["SPH-2", "Mortar"] },
+                { "tag": "Anti-air", "tags": ["Flakpanzer Gepard"] },
+                { "tag": "Light vehicle", "tags": ["Humvee", "Kodiak", "Wolf-110", "Ural", "Dune Buggy", "Bobcat", "M113"] }
+              ]
+            },
+            { "box": "Faction", "pick": "one", "tags": ["Lonestar", "Valkyra", "Manticore"] },
+            {
+              "box": "Moment",
+              "tags": [
+                "Hot zone", "Drill tower", "Zone win", "Artillery strike", "Forward spawn", "Roadkill", "Heli kill", "Tank kill",
+                "Revive", "Sniper Showdown"
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "Rob Run",
+          "boxes": [
+            {
+              "box": "Location",
+              "pick": "one",
+              "tags": [
+                "Looty Bay", "The Desert", "Highlands", "Lenny's Motel", "The Bar", "Looty Bay Bank", "Police Station",
+                "Black Market", "Sales Center", "Settlement", "Player base"
+              ]
+            },
+            // No weapon list was published yet when this file was written: types only.
+            { "box": "Weapon", "tags": ["Pistol", "SMG", "Rifle", "Shotgun", "Melee"] },
+            { "box": "Role", "pick": "one", "tags": ["Criminal", "Cop"] },
+            {
+              "box": "Moment",
+              "tags": [
+                "Bank heist", "Jewelry heist", "Store robbery", "Base raid", "Police chase", "Car chase", "Shootout", "Gang war",
+                "Arrest", "Surrender", "Money laundering", "Big payout", "Lost the bag"
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "Battlefield 6",
+          "boxes": [
+            {
+              "box": "Map",
+              "pick": "one",
+              "tags": [
+                "Siege of Cairo", "Empire State", "Iberian Offensive", "Liberation Peak", "Operation Firestorm", "Saints Quarter",
+                "Manhattan Bridge", "New Sobek City", "Mirak Valley", "Blackwell Fields", "Eastwood", "Contaminated", "Fort Lyndon"
+              ]
+            },
+            {
+              "box": "Weapon",
+              "tags": [
+                { "tag": "Assault rifle", "tags": ["M433", "B36A4", "SOR-556 Mk2", "AK4D", "TR-7", "KORD 6P67", "NVO-228E", "L85A3"] },
+                { "tag": "Carbine", "tags": ["M4A1", "M277", "AK-205", "M417 A2", "GRT-BC", "QBZ-192", "SG 553R"] },
+                { "tag": "SMG", "tags": ["SGX", "PW5A3", "PW7A2", "UMG-40", "USG-90", "KV9", "SCW-10", "SL9"] },
+                { "tag": "LMG", "tags": ["L110", "DRS-IAR", "M/60", "RPKM", "M123K", "M250", "KTS100 MK8", "M240L"] },
+                { "tag": "DMR", "tags": ["M39 EMR", "LMR 27", "SVK-8.6", "SVDM"] },
+                { "tag": "Sniper", "tags": ["M2010 ESR", "SV-98", "PSR"] },
+                { "tag": "Shotgun", "tags": ["M87A1", "M1014", "18.5KS-K"] },
+                { "tag": "Pistol", "tags": ["P18", "ES 5.7", "M45A1", "M44"] },
+                "Launcher",
+                "Gadget",
+                "Melee"
+              ]
+            },
+            { "box": "Class", "pick": "one", "tags": ["Assault", "Engineer", "Support", "Recon"] },
+            { "box": "Vehicle", "tags": ["Tank", "IFV", "Jet", "Helicopter", "Transport", "Boat"] },
+            { "box": "Mode", "pick": "one", "tags": ["Conquest", "Breakthrough", "Rush", "TDM", "Domination", "REDSEC", "Portal"] },
+            { "box": "Moment", "tags": ["Squad wipe", "Destruction", "Revive", "Streak", "Long shot", "Objective"] }
+          ]
+        }
+      ]
+    },
+    {
+      // Moments that fit any game.
+      "box": "Moment",
+      "tags": [
+        "Win", "Lose", "Greed", "Bait", "Juke", "Smart", "Funny", "Teamplay",
+        { "tag": "Clutch", "tags": ["1v1", "1v2", "1v3", "1v4", "1v5"] },
+        "Comeback", "Throw", "Outplay", "Fail", "Lucky", "Unlucky", "Close", "Multikill", "Headshot", "Long Range",
+        "Rage", "Tilt", "Cute", "Toxic", "Bug", "Educational", "Montage material", "Short material"
+      ]
+    },
+    {
+      "box": "Context",
+      "tags": ["Solo", "Duo", "Squad", "With viewers", "Tournament", "Ranked", "First time", "Record"]
+    },
+    {
+      // Add your friends and guests here, or in the Tag Manager.
+      "box": "People",
+      "tags": []
+    }
+  ]
+}

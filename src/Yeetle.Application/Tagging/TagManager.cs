@@ -7,12 +7,18 @@ namespace Yeetle.Application.Tagging;
 
 // Edits the vocabulary from the Tag Manager (spec §6). Changes apply at once and for good, also
 // during a session (spec §5); Changed tells the session screen to load the tags again.
-public sealed class TagManager(ITagStore store, ITagEditor editor, IBackups backups, ILog log)
+public sealed class TagManager(ITagStore store, ITagEditor editor, TagFileImport tagFiles, IBackups backups, ILog log)
 {
     // Raised on the caller's thread after every change.
     public event EventHandler? Changed;
 
     public Task<TagCatalog> LoadAsync() => Task.Run(store.LoadCatalog);
+
+    // The user's own tags file (spec §6), for opening it in a text editor.
+    public string TagFilePath => tagFiles.UserFilePath;
+
+    // Adds what the user's tags file has and the vocabulary does not.
+    public Task<TagImportResult> ImportTagFileAsync() => EditAsync(tagFiles.ImportUserFile);
 
     public Task<BoxId> AddBoxAsync(TagId? parent, string name, BoxRule rule) => EditAsync(() => editor.AddBox(parent, name, rule));
 
@@ -36,7 +42,7 @@ public sealed class TagManager(ITagStore store, ITagEditor editor, IBackups back
 
     public Task<int> CountClipsInBoxAsync(BoxId box) => Task.Run(() => editor.CountClipsInBox(box));
 
-    // A backup comes first (spec §10), since the tag leaves every clip.
+    // A backup comes first (spec §10), since the tag leaves the vocabulary for good.
     public Task DeleteTagAsync(TagId tag) => DeleteAsync(() => editor.DeleteTag(tag), $"Tag {tag.Value} deleted.");
 
     public Task DeleteBoxAsync(BoxId box) => DeleteAsync(() => editor.DeleteBox(box), $"Box {box.Value} deleted.");

@@ -34,7 +34,7 @@ public sealed partial class SessionViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsHome))]
     [NotifyCanExecuteChangedFor(nameof(KeepCommand), nameof(YeetCommand), nameof(SkipCommand), nameof(BackCommand),
-        nameof(UndoCommand), nameof(StopCommand), nameof(StartCommand))]
+        nameof(UndoCommand), nameof(StopCommand), nameof(StartCommand), nameof(GoToClipCommand))]
     private bool _isActive;
 
     [ObservableProperty]
@@ -47,8 +47,25 @@ public sealed partial class SessionViewModel : ViewModelBase
     [ObservableProperty]
     private string _counter = string.Empty;
 
+    // The counter's bar: one segment per decision, each as long as its share of the session (#62).
     [ObservableProperty]
-    private double _progress;
+    private int _keptCount;
+
+    [ObservableProperty]
+    private int _yeetedCount;
+
+    [ObservableProperty]
+    private int _skippedCount;
+
+    [ObservableProperty]
+    private int _clipCount;
+
+    [ObservableProperty]
+    private string _progressTip = string.Empty;
+
+    // One cell per clip of the session, for the timeline under the top bar (#68).
+    [ObservableProperty]
+    private IReadOnlyList<TimelineCell> _timeline = [];
 
     [ObservableProperty]
     private string _clipName = string.Empty;
@@ -198,6 +215,10 @@ public sealed partial class SessionViewModel : ViewModelBase
             await AskEndAsync(session);
     }
 
+    // A click in the timeline: back (or forward again) to a clip already reached (#68).
+    [RelayCommand(CanExecute = nameof(IsActive))]
+    private void GoToClip(int index) => _session?.GoTo(index);
+
     // Moves the strip without changing the clip, back to the session's first clip at most.
     [RelayCommand]
     private void StripEarlier() => MoveStrip(-1);
@@ -266,6 +287,7 @@ public sealed partial class SessionViewModel : ViewModelBase
         Markers.Attach(null);
         IsActive = false;
         Strip.Clear();
+        Timeline = [];
         Counter = ClipName = ClipDate = string.Empty;
         // The player lets go of the session's files, which may be deleted or renamed next.
         await _player.ReleaseFilesAsync();
@@ -297,7 +319,8 @@ public sealed partial class SessionViewModel : ViewModelBase
                 var renamed = outcomes.Where(o => o.Succeeded).Select(o => o.Clip).ToList();
                 Notice = string.Format(Strings.FilesRenamed, renamed.Count);
                 // The original names are stored, so the rename can be undone right here (spec §9).
-                if (await _dialogs.ShowFileResultsAsync(Strings.RenameResultsTitle, outcomes, canRestoreNames: renamed.Count > 0))
+                if (await _dialogs.ShowFileResultsAsync(Strings.RenameResultsTitle, outcomes, canRestoreNames: renamed.Count > 0,
+                        preview.FirstRenamedPath(outcomes)))
                 {
                     var restored = await _files.RestoreNamesAsync(renamed);
                     await _dialogs.ShowFileResultsAsync(Strings.RestoreResultsTitle, restored, canRestoreNames: false);
@@ -344,12 +367,23 @@ public sealed partial class SessionViewModel : ViewModelBase
         var shown = Math.Min(session.Position, total - 1);
         _navigator.Show(shown);
         Counter = string.Format(Strings.ClipCounterFormat, shown + 1, total);
-        Progress = total == 0 ? 0 : (double)session.Reviews.Count(r => r.Visited) / total;
+        ClipCount = total;
+        KeptCount = session.Reviews.Count(r => r.Decision == Decision.Kept);
+        YeetedCount = session.Reviews.Count(r => r.Decision == Decision.Yeeted);
+        // Seen and left undecided; the clip on screen is not skipped yet.
+        SkippedCount = session.Reviews.Where((r, i) => i != shown && r.Visited && r.Decision == Decision.New).Count();
+        ProgressTip = string.Format(Strings.ProgressTip, KeptCount, YeetedCount, SkippedCount);
         var clip = session.Clip(session.Reviews[shown].Clip);
         ClipName = clip.FileName;
         ClipDate = string.Format(Strings.ClipDateFormat, clip.RecordedAt);
         _stripCentre = shown;
         FillStrip();
+        Timeline = session.Reviews.Select((review, i) =>
+        {
+            var state = ClipCardViewModel.BadgeFor(review, isCurrent: i == shown);
+            var tip = string.Format(Strings.TimelineTip, i + 1, session.Clip(review.Clip).FileName, ClipCardViewModel.TextFor(state));
+            return new TimelineCell(state, tip, session.CanGoTo(i));
+        }).ToList();
         Tags.ClearRequiredWarning();
         Tags.Refresh();
         Markers.Refresh();

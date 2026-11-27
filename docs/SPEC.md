@@ -96,16 +96,15 @@ Yeetle reads the user's folders and records what it finds; it never writes to th
 
 A session runs through every New clip, oldest recording first, one clip at a time; it can be stopped at any moment and resumed another day.
 
-**Starting.** The home screen shows how many New clips are waiting and a Start button. A skipped clip stays New and is the first one shown next time, until it is decided. The Explorer is unavailable while a session runs; Settings and the Tag Manager stay reachable.
+**Starting.** The home screen is a page of its own (never a black video area): how many New clips are waiting, a Start button, and the outcome of the last session or scan. A dashboard with small versions of the other views is being discussed in #63. A skipped clip stays New and is the first one shown next time, until it is decided. The Explorer is unavailable while a session runs; Settings and the Tag Manager stay reachable.
 
-**The screen.** The current clip plays automatically from 0:00 and loops. Below it, a clip strip shows 2 previous clips, the current one (highlighted) and 2 next ones; the user can scroll back to the first clip of the session. Each card shows a shortened filename, the recording date and a decision badge (kept, yeeted, skipped), with no thumbnail image (thumbnails are a later feature, section 2). A progress counter shows the position, e.g. 17 / 43. Tags and markers sit in a compact side area.
+**The screen.** The current clip plays automatically from 0:00 and loops. A progress counter shows the position, e.g. 17 / 43, next to a bar with one green (kept), one red (yeeted) and one grey (skipped) segment, each as long as its share of the session's clips, updated after every decision. Under the top bar, a session timeline (#68) has one cell per clip: green (kept), red (yeeted), grey (skipped), blue for the clip playing, dark for the clips not reached yet, so history and what is left show at a glance. Hovering a cell shows its number, file name and state; clicking a clip already reached goes back (or forward again) to it, like Back or Skip pressed several times. Clips not reached yet cannot be clicked, so sticky tags keep carrying over in order. Cells get thinner rather than scroll in long sessions. Tags and markers sit in a compact side area. A clip strip under the video (2 previous clips, the current one, 2 next ones, each with a decision badge) is built but hidden since #62: it added little.
 
 **Layout (decided in #9).** Dark theme throughout; Keep is green, Yeet red, Skip grey.
 
-- Top bar: the Yeetle name, the Session / Explorer tabs (Explorer greyed out during a session), the counter with a progress bar, then Rescan, Tag Manager, Folders, the Stop session button (Esc) and Settings. The Tag Manager opens as its own window beside the main one, so it stays reachable during a session.
-- Left, taking most of the width: the video at 16:9. Over it, in the transparent overlay window (section 13): the position and filename with the recording date at top left, the audio-track picker at top right, and at the bottom the Yeet / Skip / Keep buttons above a control block (seek bar with marker ticks, previous / play-pause / next, Add marker, speed buttons, mute, volume, theatre mode). Each button shows its key.
-- Under the video: the clip strip, five cards between two scroll arrows.
-- Right column: a Tags panel (the Type a tag button, then one group per visible box with its rules, e.g. "Counter-Strike 2 › Map · pick one · required", and its chips with their hotkeys) and a Markers panel (time and label, with inline editing). Carried-over tags have a dashed outline, a carried-over icon and a remove cross. An empty required box that blocked Keep is outlined red with "Press Keep again to keep anyway."
+- Top bar: the Yeetle name, the Session / Explorer tabs (Explorer greyed out during a session), the counter with its decision bar, then Rescan, Tag Manager, Folders, the Stop session button (Esc) and Settings; the session timeline runs under it, across the full width. The Tag Manager opens as its own window beside the main one, so it stays reachable during a session.
+- Left, taking most of the width: the video at 16:9. Over it, in the transparent overlay window (section 13): the position and filename with the recording date at top left, and at the bottom the Yeet / Skip / Keep buttons, then three small tinted blocks rather than one large one (#62): on the left the sound (mute icon, volume slider, audio-track and output pickers), in the middle, under Skip, the playback icons (undo, previous clip, play / pause, next clip, add marker), on the right the speed buttons and the theatre-mode icon. The seek bar with its marker ticks sits below them in its own block. Icons come from Windows' icon font; each has a tooltip with its key.
+- Right column: a Tags panel (the Search button, then one group per visible box with its rules, e.g. "Counter-Strike 2 › Map · pick one · required", and its chips with their hotkeys) and a Markers panel (time and label, with inline editing). Carried-over tags have a dashed outline, a carried-over icon and a remove cross. An empty required box that blocked Keep is outlined red with "Press Keep again to keep anyway."
 
 **Deciding.** Enter keeps, Del yeets, Shift+Right moves on without deciding (a skip), Shift+Left goes back. Keep and Yeet move to the next clip. Any decision can be changed until the session ends. Ctrl+Z undoes the last actions (decisions, tags, markers) step by step.
 
@@ -113,7 +112,7 @@ A session runs through every New clip, oldest recording first, one clip at a tim
 
 **Required boxes (soft).** If a visible required box is empty when the user presses Keep, the box flashes red and the clip is not kept; pressing Keep again keeps it anyway.
 
-**Tag changes mid-session.** Editing tags in the Tag Manager applies immediately and permanently: clips only hold tag IDs, so a renamed tag simply shows its new name. Creating a tag adds it to no clip; deleting a tag warns "X clips will be affected" and removes it everywhere.
+**Tag changes mid-session.** Editing tags in the Tag Manager applies immediately and permanently: clips only hold tag IDs, so a renamed tag simply shows its new name. Creating a tag adds it to no clip and makes it a chip at once. Deleting a tag (after a warning with the clip count) retires it (section 6): it leaves the session's clips, but committed clips keep it.
 
 **Crash safety.** Every action is written immediately to a session journal in the database. Nothing becomes final until Commit, but after a crash Yeetle offers: Resume / Commit / Discard.
 
@@ -123,7 +122,7 @@ A session runs through every New clip, oldest recording first, one clip at a tim
 
 ```
 Session ends (Stop, or last clip reached)
-  -> Read-only summary (counts + collapsible kept / yeeted / skipped lists)
+  -> Read-only summary (counts + kept / yeeted / skipped lists)
   -> Commit? --discard--> nothing saved; clips stay New -> home
        | commit
   -> Saved to the database (journal cleared, backup taken)
@@ -134,7 +133,7 @@ Session ends (Stop, or last clip reached)
 
 Discarding drops every decision, tag and marker made in the session; the clips stay New.
 
-**Summary and prompt layouts (decided in #9).** The summary and the prompts are dialog windows over the session screen, since the video is a native window and would cover a page drawn in the main window. The summary shows four count cards (Reviewed, Kept, Yeeted, Skipped), then collapsible Kept / Yeeted / Skipped lists (name, tags, marker count), then Discard session and Commit N decisions. The delete prompt states the file count and total size, the Recycle Bin warning and the file list, with "Keep the files" as the safe choice next to "Delete N files". The rename prompt shows a current name → new name table with notes for shortened or numbered names, warns that editing projects will show renamed files as offline, and offers "Keep current names" or "Rename N files".
+**Summary and prompt layouts (decided in #9).** The summary and the prompts are dialog windows over the session screen, since the video is a native window and would cover a page drawn in the main window. The summary shows four count cards (Reviewed, Kept, Yeeted, Skipped), then for each non-empty category a bold title and its files, one name per line in smaller text, with the tags and marker count on hover (simplified in #62), then Discard session and Commit N decisions. The delete prompt states the file count and total size, the Recycle Bin warning and the file list, with "Keep the files" as the safe choice next to "Delete N files". The rename prompt shows a current name → new name table with notes for shortened or numbered names, warns that editing projects will show renamed files as offline, and offers "Keep current names" or "Rename N files". The rename results then offer Show in folder (Windows Explorer on a renamed file) and Restore original names. While any of these dialogs is open, the controls over the video step aside so they can never cover it. After the last prompt, the home page shows.
 
 ## 6. Tagging model
 
@@ -167,18 +166,27 @@ Boxes (in brackets) are never put on a clip or in a filename; everything else is
 - In a pick-one box, choosing a tag swaps out the one already chosen (Dust2 then Mirage leaves Mirage), along with anything below it.
 - Required is soft: it only applies when the box is visible, and only warns (section 5).
 - Several top-level tags on one clip are allowed (two games, or games plus people); only box rules limit choices.
-- Clips store tag IDs only. Renaming a tag changes its name everywhere; deleting one removes it from every clip after a warning with the count; a new tag starts on no clip. Moving tags is not supported.
+- Clips store tag IDs only. Renaming a tag changes its name everywhere; a new tag starts on no clip and always gets a new ID. Moving tags is not supported.
+- Deleting a tag or box (after a warning with the count) retires it and everything below it (decided in #62): it leaves the Tag Manager, its hotkey is freed and it can no longer be picked or filtered on, but clips that already carry it keep it and show it under its old name, after their other tags. A running session drops it from its clips; editing an old clip in the Explorer leaves it on. Retired tags are left out of new filenames. The rows stay in the database, so an ID is never reused.
 
 **Searching.** Tags from the same box combine with OR, tags from different boxes with AND. "CS2 + Dust2 + Mirage + M4" finds CS2 clips on Dust2 or Mirage that have an M4.
 
 **Picking tags during review.**
 
-- Visible chips: tags that have a hotkey, carried-over tags from the previous clip, the most-used tags, and the boxes under any selected tag. The exact mix will be tuned during testing.
-- T opens a type-to-tag box. Typing shows matching existing tags with their path (Dota 2 › Hero › Crystal Maiden); Enter applies the highlighted one. Enter with no match opens the Tag Manager with the typed text ready as a new tag. Tags cannot be created from the box itself.
+- Visible chips (decided in #62): every tag of every visible box (top-level boxes, and the boxes under any selected tag), so any tag is one click away. Within a box, tags used on the most recently recorded clips come first, then the most used ones, then the newest. Carried-over tags from the previous clip are selected.
+- T or the Search button opens the search box. Typing shows matching existing tags with their path (Dota 2 › Hero › Crystal Maiden); Enter applies the highlighted one (the first match unless the arrows moved it) and a click applies the one clicked. Enter with no match opens the Tag Manager with the typed text ready as a new tag. Tags cannot be created from the box itself.
 
 **Tag Manager.** Reachable from Settings and from the main screens, even during a session. It shows the whole vocabulary visually as nested boxes and chips, with fast creation, rename, delete, colour, hotkey, pick one/many and Required. Its order is the order used in renamed filenames.
 
-**Tag Manager layout (decided in #9).** On the left, the vocabulary as nested cards: each box card has its name, a Pick one / Pick many switch and a Required checkbox, then its tag chips (colour dot and hotkey) and a "+ Tag" button. Boxes under a tag are indented below that tag, with "+ Box under <tag>"; collapsed tags show "N boxes below" and Expand. A "+ New top-level box" button ends the list. On the right, a panel for the selected tag or box: its path, name, colour, hotkey (press a key to change), how many clips it is on, its filename form, Move up / Move down (the order used in filenames), and Delete.
+**Tag Manager layout (decided in #9).** On the left, the vocabulary as nested cards: each box card has its name, a Pick one / Pick many switch and a Required checkbox, then its tag chips (colour dot and hotkey) and a "+ Tag" button. Boxes under a tag are indented below that tag, with "+ Box under <tag>"; collapsed tags show "N boxes below" and Expand. Tags start collapsed (#65), so a vocabulary with hundreds of champions stays easy to scan; adding something under a tag expands it. A "+ New top-level box" button ends the list. Above the cards, "Open tags file" and "Add tags from file" (see below). On the right, a panel for the selected tag or box: its path, name, colour, hotkey (press a key to change), how many clips it is on, its filename form, Move up / Move down (the order used in filenames), and Delete. A newly created box or tag is selected with the cursor in its name field, ready to type.
+
+**Starter tags and the tags file (decided in #65).** Yeetle ships a starter vocabulary: games (League of Legends, Dota 2, Counter-Strike 2, Valorant, Escape from Tarkov, Arc Raiders, Wardogs, Rob Run, Battlefield 6) with their champions, heroes, maps, weapon types and weapons, game-specific moments, and general Moment, Context and People boxes. Maps are required only for Counter-Strike 2, Valorant and Escape from Tarkov. It lives in `src/Yeetle.Infrastructure/Tagging/default-tags.json`, a JSON file with notes (`//`) whose format is described at its top, and is embedded in the app.
+
+- At first start Yeetle writes a copy, `tags.json`, beside the database. People may edit it with any text editor.
+- At every start, Yeetle adds to the vocabulary what the default file and then `tags.json` have and the vocabulary does not. "Add tags from file" in the Tag Manager does the same for `tags.json` at once and says how many tags were added, or what is wrong in the file (line number, or the entry's place, e.g. "Game › Counter-Strike 2: unknown key …"). A file that cannot be read changes nothing and never stops the app.
+- An import only adds. It never removes, renames, reorders or changes the rules of anything; those are done in the Tag Manager. A newer Yeetle with a longer default file therefore only brings new tags.
+- Every box and tag a file brings is remembered by its path (its names from the top). A path seen before is never created again, so a tag renamed or deleted in the Tag Manager stays renamed or deleted. A path seen for the first time reuses a box or tag of the same name (ignoring case) under the same parent, so tags made by hand are not doubled; a deleted one of that name counts as deleted.
+- `tags.json` is not rewritten by Yeetle once it exists, so it does not follow Tag Manager changes. Exporting the vocabulary to a file is a later idea (`docs/IDEAS.md`).
 
 **Names and filenames.** Tag names can use any characters and alphabets, Cyrillic included. Only when renaming files does Yeetle build a filename-safe version: it removes the characters Windows forbids (`\ / : * ? " < > |`), control characters and trailing dots or spaces, avoids reserved names such as CON or NUL, and keeps letters as they are. Box names never appear in filenames. Case-insensitive search is done in C#, since SQLite only folds A–Z.
 
@@ -270,11 +278,12 @@ The database holds the user's work, so it is backed up automatically, upgraded c
 | --- | --- | --- |
 | Library database | SQLite (`yeetle.db`) | Clips, folders, tags and boxes, markers, session journal, file-operation log |
 | App settings | JSON file (`settings.json`, beside the database) | Kept outside the database so a broken database does not also lose the source folders. For testing, the `YEETLE_DATA_FOLDER` environment variable moves everything in this table to another folder |
+| Tags file | JSON file (`tags.json`, beside the database) | Written from the starter vocabulary at first start; editable by hand; only ever adds tags (section 6) |
 | Telemetry | Separate SQLite file | So restoring a backup does not roll it back, and a telemetry problem never blocks the app |
 | Backups | SQLite copies | See below |
 | Logs | Text files | Keep full file paths locally; paths are removed only if logs are ever sent |
 
-**Main tables (first draft).** Clips, SourceFolders, Nodes (tags and boxes in one tree: kind, parent, name, order, colour, hotkey, pick one/many, required), ClipTags, Markers, SessionJournal, FileOperations. The schema version is stored in the database.
+**Main tables (first draft).** Clips, SourceFolders, Nodes (tags and boxes in one tree: kind, parent, name, order, colour, hotkey, pick one/many, required, retired), ClipTags, ImportedPaths (each box and tag path a tags file brought, and its node), Markers, SessionJournal, FileOperations. The schema version is stored in the database.
 
 **Migrations.** Numbered SQL scripts run in order at startup, before anything else touches the data. A backup is taken before every migration. A migration never drops user data. An older Yeetle that finds a newer schema refuses to open it with a clear message instead of damaging it.
 
@@ -490,7 +499,7 @@ Rules are tested automatically from the first slice; file safety is tested again
 No product question blocks the start; these are decided at the step noted (each is a GitHub issue labelled `type: decision`).
 
 - [x] Screen layouts for the session screen, Explorer and Tag Manager — decided in #9 (sections 5, 6, 8); tags own the number row and F-keys, speed moved to numpad + / − (section 14).
-- [ ] Which chips show by default during review (hotkeyed, carried over, most used) — tuned in beta.
+- [x] Which chips show by default during review — decided in #62: every tag of each visible box, last used first, then most used (section 6).
 - [x] Player choice (A, B or C) — POC gate. Option A, see section 13.
 - [ ] Service that receives usage statistics (Aptabase or a small own endpoint) — before MVP slice 12.
 - [ ] PayPal donation link to use in the app — before MVP slice 12.

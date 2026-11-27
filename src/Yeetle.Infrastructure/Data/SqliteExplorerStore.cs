@@ -68,10 +68,11 @@ public sealed class SqliteExplorerStore(SqliteConnectionFactory connections) : I
         var id = clip.Value;
         connection.Execute("UPDATE Clips SET Decision = @decision WHERE Id = @id;", new { id, decision = decision.ToString() },
             transaction);
-        connection.Execute("DELETE FROM ClipTags WHERE ClipId = @id;", new { id }, transaction);
-        // A tag deleted in the Tag Manager meanwhile is skipped.
+        // Retired tags stay on the clip: they cannot be picked or removed in the editor (spec §6).
         connection.Execute(
-            "INSERT INTO ClipTags (ClipId, TagId) SELECT @id, Id FROM Nodes WHERE Id = @tagId AND Kind = 'Tag';",
+            "DELETE FROM ClipTags WHERE ClipId = @id AND TagId IN (SELECT Id FROM Nodes WHERE Retired = 0);", new { id }, transaction);
+        connection.Execute(
+            "INSERT INTO ClipTags (ClipId, TagId) SELECT @id, Id FROM Nodes WHERE Id = @tagId AND Kind = 'Tag' AND Retired = 0;",
             tags.Select(t => new { id, tagId = t.Value }), transaction);
         ReplaceMarkers(connection, transaction, id, markers);
         transaction.Commit();

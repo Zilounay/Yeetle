@@ -222,4 +222,47 @@ public class ReviewSessionTests
         Assert.Empty(session.Clips[1].Tags);
         Assert.False(session.Clips[1].Visited);
     }
+
+    [Fact]
+    public void Go_to_jumps_back_to_any_clip_already_reached()
+    {
+        var session = Start(clips: 4);
+        TagAndKeep(session);
+        session.Yeet();
+        session.Skip();
+
+        session.GoTo(0);
+
+        Assert.Equal(0, session.Position);
+        Assert.Equal(Decision.Kept, session.Current!.Decision);
+        session.GoTo(3);
+        Assert.Equal(3, session.Position);
+    }
+
+    [Fact]
+    public void Go_to_ignores_clips_not_reached_yet()
+    {
+        var session = Start(clips: 4);
+        session.Skip();
+
+        Assert.False(session.CanGoTo(2));
+        session.GoTo(2);
+        session.GoTo(-1);
+        session.GoTo(4);
+
+        Assert.Equal(1, session.Position);
+    }
+
+    [Fact]
+    public void Going_to_a_clip_leaves_tags_and_decisions_as_they_are()
+    {
+        var session = Start();
+        TagAndKeep(session);
+        var before = session.Clips;
+
+        session.GoTo(0);
+        session.GoTo(1);
+
+        Assert.Equal(before, session.Clips);
+    }
 }

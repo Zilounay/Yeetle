@@ -665,7 +665,7 @@ namespace Yeetle.App.Resources {
         
         /// <summary>
         ///   Looks up a localized string similar to Delete &quot;{0}&quot; and everything below it?
-        ///{1} clip(s) will be affected: these tags are removed from them. A backup of the library is taken first..
+        ///It can no longer be picked. The {1} clip(s) that already carry it keep it under this name. A backup of the library is taken first..
         /// </summary>
         public static string DeleteTagMessage {
             get {
@@ -1516,6 +1516,15 @@ namespace Yeetle.App.Resources {
         public static string PressAKey {
             get {
                 return ResourceManager.GetString("PressAKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} kept · {1} yeeted · {2} skipped.
+        /// </summary>
+        public static string ProgressTip {
+            get {
+                return ResourceManager.GetString("ProgressTip", resourceCulture);
             }
         }
         
@@ -2384,7 +2393,7 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Type a tag.
+        ///   Looks up a localized string similar to Search.
         /// </summary>
         public static string TypeTag {
             get {
@@ -2569,6 +2578,78 @@ namespace Yeetle.App.Resources {
         public static string YeetTip {
             get {
                 return ResourceManager.GetString("YeetTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open tags file.
+        /// </summary>
+        public static string OpenTagFile {
+            get {
+                return ResourceManager.GetString("OpenTagFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add tags from file.
+        /// </summary>
+        public static string ImportTagFile {
+            get {
+                return ResourceManager.GetString("ImportTagFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your tags are also kept in a file you can edit with any text editor (tags.json). Yeetle adds what is new in it at every start, or now with Add tags from file. It never removes or renames anything: do that here.
+        /// </summary>
+        public static string TagFileHint {
+            get {
+                return ResourceManager.GetString("TagFileHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} tags added from the tags file.
+        /// </summary>
+        public static string TagFileAdded {
+            get {
+                return ResourceManager.GetString("TagFileAdded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The tags file has nothing new.
+        /// </summary>
+        public static string TagFileNothingNew {
+            get {
+                return ResourceManager.GetString("TagFileNothingNew", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The tags file could not be read: {0}.
+        /// </summary>
+        public static string TagFileProblem {
+            get {
+                return ResourceManager.GetString("TagFileProblem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} · {1} · {2}.
+        /// </summary>
+        public static string TimelineTip {
+            get {
+                return ResourceManager.GetString("TimelineTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Session clips.
+        /// </summary>
+        public static string TimelineName {
+            get {
+                return ResourceManager.GetString("TimelineName", resourceCulture);
             }
         }
     }

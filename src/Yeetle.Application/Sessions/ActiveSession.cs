@@ -58,6 +58,10 @@ public sealed class ActiveSession : IClipEditing
 
     public void Back() => Do(_review.Back);
 
+    public bool CanGoTo(int index) => _review.CanGoTo(index);
+
+    public void GoTo(int index) => Do(() => _review.GoTo(index));
+
     public void SelectTag(TagId tag) => Do(() => _review.SelectTag(tag));
 
     public void DeselectTag(TagId tag) => Do(() => _review.DeselectTag(tag));

@@ -27,7 +27,7 @@ public static class MarkerSheet
             if (text.Length > 0)
                 text.AppendLine();
             text.AppendLine($"{NameFrame} {clip.FileName} {NameFrame}");
-            var tags = vocabulary.InManagerOrder.Where(clip.Tags.Contains).Select(t => vocabulary.Tag(t).Name);
+            var tags = vocabulary.NamesOf(clip.Tags);
             text.AppendLine($"{tagsLabel} {string.Join(TagSeparator, tags)}".TrimEnd());
             text.AppendLine(markersLabel);
             foreach (var marker in clip.Markers)
