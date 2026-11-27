@@ -21,6 +21,7 @@ public sealed class SqliteDatabaseStartup(SqliteConnectionFactory connections, I
         try
         {
             Directory.CreateDirectory(DataFolder);
+            backups.ApplyScheduledRestore();
             var isNew = !File.Exists(connections.DatabasePath);
             int version;
             using (var connection = connections.Open())

@@ -15,6 +15,10 @@ public sealed class AppSettings
 
     public ReviewSettings Review { get; set; } = new();
 
+    public LibraryViewSettings LibraryView { get; set; } = new();
+
+    public GeneralSettings General { get; set; } = new();
+
     // Action name to the keys that trigger it; see HotkeyDefaults for how keys are written.
     public Dictionary<string, List<string>> Hotkeys { get; set; } = HotkeyDefaults.Create();
 }
@@ -34,6 +38,10 @@ public sealed class PlayerSettings
 
     // Starts with the video filling the window, side panels and clip strip hidden.
     public bool TheatreMode { get; set; }
+
+    // Loads the clips before and after the current one in the background, so moving on is instant.
+    // Off for low-memory PCs (spec §11).
+    public bool PrepareNeighbours { get; set; } = true;
 }
 
 public sealed class LibrarySettings
@@ -46,6 +54,38 @@ public sealed class ReviewSettings
 {
     // A marker lands this long before K is pressed, since the moment has just happened.
     public double MarkerOffsetSeconds { get; set; } = 1;
+
+    // A clip reached with no tags gets the tags of the clip just left (spec §5).
+    public bool StickyTags { get; set; } = true;
+}
+
+// The Explorer's filters when it opens (spec §11, decided in #20): the defaults chosen in
+// Settings until the user changes the filters in the Explorer, then the last ones used.
+public sealed class LibraryViewSettings
+{
+    public List<Decision> DefaultDecisions { get; set; } = [Decision.Kept];
+
+    public List<FileState> DefaultStates { get; set; } =
+        [FileState.Present, FileState.Missing, FileState.Offline, FileState.NeedsAttention];
+
+    // Null until the filters are changed in the Explorer; changing the defaults clears it.
+    public ExplorerFilters? LastUsed { get; set; }
+}
+
+public sealed class ExplorerFilters
+{
+    public List<Decision> Decisions { get; set; } = [];
+
+    public List<FileState> States { get; set; } = [];
+}
+
+public sealed class GeneralSettings
+{
+    // "en" or "fr"; null follows the Windows display language.
+    public string? Language { get; set; }
+
+    // The update check at startup (spec §12); Settings can also check at any time.
+    public bool CheckForUpdatesAtStartup { get; set; } = true;
 }
 
 // How many backups each pool keeps (spec §10).

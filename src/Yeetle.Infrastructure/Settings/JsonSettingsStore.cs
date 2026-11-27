@@ -1,5 +1,6 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Yeetle.Application.Settings;
 
 namespace Yeetle.Infrastructure.Settings;
@@ -9,7 +10,8 @@ namespace Yeetle.Infrastructure.Settings;
 public sealed class JsonSettingsStore(string path) : ISettingsStore
 {
     private const string Header = """
-        // Yeetle settings. Edit while Yeetle is closed; delete a line to get its default back.
+        // Yeetle settings. Yeetle writes this file when its Settings change; edit it by hand only while
+        // Yeetle is closed. Delete a line to get its default back.
         //
         // Hotkeys: each action lists its keys, written one of two ways:
         // - a character, like "M", "[" or "Ctrl+Z": the key that types it (or carries that letter)
@@ -20,6 +22,8 @@ public sealed class JsonSettingsStore(string path) : ISettingsStore
 
         """;
 
+    private const string TemporarySuffix = ".new";
+
     private static readonly JsonSerializerOptions Options = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -28,6 +32,8 @@ public sealed class JsonSettingsStore(string path) : ISettingsStore
         WriteIndented = true,
         // Keys stay readable: "Ctrl+Z", not "Ctrl+Z". The file is never put in a web page.
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        // Decisions and file states by name ("Kept"), so the file reads well.
+        Converters = { new JsonStringEnumConverter() },
     };
 
     // Default keys that changed before the first release. A file that still has one of them
@@ -71,6 +77,10 @@ public sealed class JsonSettingsStore(string path) : ISettingsStore
         settings.Library ??= defaults.Library;
         settings.Backups ??= defaults.Backups;
         settings.Review ??= defaults.Review;
+        settings.LibraryView ??= defaults.LibraryView;
+        settings.LibraryView.DefaultDecisions ??= defaults.LibraryView.DefaultDecisions;
+        settings.LibraryView.DefaultStates ??= defaults.LibraryView.DefaultStates;
+        settings.General ??= defaults.General;
         settings.Library.VideoExtensions ??= defaults.Library.VideoExtensions;
         settings.Hotkeys ??= [];
         foreach (var (action, keys) in defaults.Hotkeys)
@@ -82,12 +92,22 @@ public sealed class JsonSettingsStore(string path) : ISettingsStore
         return settings;
     }
 
+    public string Format(AppSettings settings) => Header + JsonSerializer.Serialize(settings, Options);
+
+    // Written beside the file first, then swapped in, so a crash never leaves half a file.
+    public void Write(string text)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        var temporary = path + TemporarySuffix;
+        File.WriteAllText(temporary, text);
+        File.Move(temporary, path, overwrite: true);
+    }
+
     private string? TryWriteDefaults()
     {
         try
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-            File.WriteAllText(path, Header + JsonSerializer.Serialize(new AppSettings(), Options));
+            Write(Format(new AppSettings()));
             return null;
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException)

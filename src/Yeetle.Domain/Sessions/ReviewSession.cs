@@ -39,6 +39,9 @@ public sealed class ReviewSession
     // The time of each decision or skip, kept with the clip for the sessions history (#72).
     public Func<DateTime> Clock { get; init; } = () => DateTime.Now;
 
+    // Sticky tags (spec §5): read at each move, so turning them off in Settings applies at once (#20).
+    public Func<bool> CarryTags { get; init; } = () => true;
+
     public ReviewSession(TagRules rules, IEnumerable<ClipId> clips)
         : this(rules, clips.Select(c => new ClipReview(c, Decision.New, [], [], Visited: false)), position: 0)
     {
@@ -175,7 +178,8 @@ public sealed class ReviewSession
         _requiredWarningShown = false;
     }
 
-    // The first time a clip is reached with no tags, it gets the tags of the clip just left.
+    // The first time a clip is reached with no tags, it gets the tags of the clip just left, unless
+    // sticky tags are off.
     private void MoveNext()
     {
         var left = _clips[Position];
@@ -184,7 +188,7 @@ public sealed class ReviewSession
         if (IsAtEnd || _clips[Position].Visited)
             return;
         var next = _clips[Position];
-        _clips = _clips.SetItem(Position, next.Tags.IsEmpty
+        _clips = _clips.SetItem(Position, next.Tags.IsEmpty && CarryTags()
             ? next with { Tags = left.Tags, CarriedOver = left.Tags, Visited = true }
             : next with { Visited = true });
     }

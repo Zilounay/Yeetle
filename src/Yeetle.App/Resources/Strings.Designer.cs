@@ -220,11 +220,29 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Backups kept, per kind.
+        /// </summary>
+        public static string BackupCountsLabel {
+            get {
+                return ResourceManager.GetString("BackupCountsLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0:g} · {1}.
         /// </summary>
         public static string BackupItemFormat {
             get {
                 return ResourceManager.GetString("BackupItemFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} · {1:g} · {2}.
+        /// </summary>
+        public static string BackupLabelFormat {
+            get {
+                return ResourceManager.GetString("BackupLabelFormat", resourceCulture);
             }
         }
         
@@ -342,6 +360,24 @@ namespace Yeetle.App.Resources {
         public static string ChangeHotkey {
             get {
                 return ResourceManager.GetString("ChangeHotkey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check for updates at startup.
+        /// </summary>
+        public static string CheckAtStartupLabel {
+            get {
+                return ResourceManager.GetString("CheckAtStartupLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check now.
+        /// </summary>
+        public static string CheckNow {
+            get {
+                return ResourceManager.GetString("CheckNow", resourceCulture);
             }
         }
         
@@ -601,6 +637,24 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Default speed.
+        /// </summary>
+        public static string DefaultSpeedLabel {
+            get {
+                return ResourceManager.GetString("DefaultSpeedLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default volume.
+        /// </summary>
+        public static string DefaultVolumeLabel {
+            get {
+                return ResourceManager.GetString("DefaultVolumeLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete.
         /// </summary>
         public static string Delete {
@@ -823,6 +877,33 @@ namespace Yeetle.App.Resources {
         public static string ExplorerModeTip {
             get {
                 return ResourceManager.GetString("ExplorerModeTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Keep at least one file type, or no clip would be found..
+        /// </summary>
+        public static string ExtensionsEmpty {
+            get {
+                return ResourceManager.GetString("ExtensionsEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Separated by commas, e.g. .mp4, .mkv. Used from the next scan..
+        /// </summary>
+        public static string ExtensionsHint {
+            get {
+                return ResourceManager.GetString("ExtensionsHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Video file types.
+        /// </summary>
+        public static string ExtensionsLabel {
+            get {
+                return ResourceManager.GetString("ExtensionsLabel", resourceCulture);
             }
         }
         
@@ -1196,6 +1277,24 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The filters the Explorer opens with. Once you change the filters in the Explorer, it remembers the last ones you used; changing these brings them back..
+        /// </summary>
+        public static string LibraryViewHint {
+            get {
+                return ResourceManager.GetString("LibraryViewHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Long seek step, with Ctrl (seconds).
+        /// </summary>
+        public static string LongSeekStepLabel {
+            get {
+                return ResourceManager.GetString("LongSeekStepLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} marker(s).
         /// </summary>
         public static string MarkerCount {
@@ -1210,6 +1309,24 @@ namespace Yeetle.App.Resources {
         public static string MarkerDefaultLabel {
             get {
                 return ResourceManager.GetString("MarkerDefaultLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A marker lands this long before the key press, since the moment has just happened..
+        /// </summary>
+        public static string MarkerOffsetHint {
+            get {
+                return ResourceManager.GetString("MarkerOffsetHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Marker offset (seconds).
+        /// </summary>
+        public static string MarkerOffsetLabel {
+            get {
+                return ResourceManager.GetString("MarkerOffsetLabel", resourceCulture);
             }
         }
         
@@ -1583,6 +1700,33 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Default speed and volume apply from the next start..
+        /// </summary>
+        public static string PlayerDefaultsHint {
+            get {
+                return ResourceManager.GetString("PlayerDefaultsHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Makes moving between clips instant. Turn off on PCs with little memory..
+        /// </summary>
+        public static string PrepareNeighboursHint {
+            get {
+                return ResourceManager.GetString("PrepareNeighboursHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prepare the next and previous clips in the background.
+        /// </summary>
+        public static string PrepareNeighboursLabel {
+            get {
+                return ResourceManager.GetString("PrepareNeighboursLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Press a key (Esc cancels). The number row and F1–F12 are free for tags..
         /// </summary>
         public static string PressAKey {
@@ -1889,11 +2033,74 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Restore and restart.
+        /// </summary>
+        public static string RestoreAndRestart {
+            get {
+                return ResourceManager.GetString("RestoreAndRestart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Restore this backup.
         /// </summary>
         public static string RestoreBackup {
             get {
                 return ResourceManager.GetString("RestoreBackup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yeetle backs up your library first, then restarts on the backup you pick. Your clips are never touched..
+        /// </summary>
+        public static string RestoreBackupHint {
+            get {
+                return ResourceManager.GetString("RestoreBackupHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restore a backup.
+        /// </summary>
+        public static string RestoreBackupLabel {
+            get {
+                return ResourceManager.GetString("RestoreBackupLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restore {0}? Your library goes back to that moment: decisions, tags and markers made since are left out (a backup of them is taken first). Yeetle restarts..
+        /// </summary>
+        public static string RestoreBackupMessage {
+            get {
+                return ResourceManager.GetString("RestoreBackupMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restore a backup.
+        /// </summary>
+        public static string RestoreBackupTitle {
+            get {
+                return ResourceManager.GetString("RestoreBackupTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restore….
+        /// </summary>
+        public static string RestoreButton {
+            get {
+                return ResourceManager.GetString("RestoreButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End the session before restoring a backup..
+        /// </summary>
+        public static string RestoreDuringSession {
+            get {
+                return ResourceManager.GetString("RestoreDuringSession", resourceCulture);
             }
         }
         
@@ -2087,6 +2294,15 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Seek step (seconds).
+        /// </summary>
+        public static string SeekStepLabel {
+            get {
+                return ResourceManager.GetString("SeekStepLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Go to this moment.
         /// </summary>
         public static string SeekToMarkerTip {
@@ -2177,6 +2393,78 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Settings (Ctrl+,).
+        /// </summary>
+        public static string SettingsButtonTip {
+            get {
+                return ResourceManager.GetString("SettingsButtonTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Data.
+        /// </summary>
+        public static string SettingsData {
+            get {
+                return ResourceManager.GetString("SettingsData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saved as soon as you change something, in {0}..
+        /// </summary>
+        public static string SettingsFileHint {
+            get {
+                return ResourceManager.GetString("SettingsFileHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to General.
+        /// </summary>
+        public static string SettingsGeneral {
+            get {
+                return ResourceManager.GetString("SettingsGeneral", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hotkeys.
+        /// </summary>
+        public static string SettingsHotkeys {
+            get {
+                return ResourceManager.GetString("SettingsHotkeys", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Library.
+        /// </summary>
+        public static string SettingsLibrary {
+            get {
+                return ResourceManager.GetString("SettingsLibrary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Explorer filters.
+        /// </summary>
+        public static string SettingsLibraryView {
+            get {
+                return ResourceManager.GetString("SettingsLibraryView", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player.
+        /// </summary>
+        public static string SettingsPlayer {
+            get {
+                return ResourceManager.GetString("SettingsPlayer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Settings ({0}): {1}. Defaults are used where needed..
         /// </summary>
         public static string SettingsProblem {
@@ -2191,6 +2479,33 @@ namespace Yeetle.App.Resources {
         public static string SetYeeted {
             get {
                 return ResourceManager.GetString("SetYeeted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Review.
+        /// </summary>
+        public static string SettingsReview {
+            get {
+                return ResourceManager.GetString("SettingsReview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tags.
+        /// </summary>
+        public static string SettingsTags {
+            get {
+                return ResourceManager.GetString("SettingsTags", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        public static string SettingsTitle {
+            get {
+                return ResourceManager.GetString("SettingsTitle", resourceCulture);
             }
         }
         
@@ -2267,6 +2582,15 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Source folders….
+        /// </summary>
+        public static string SourceFoldersButton {
+            get {
+                return ResourceManager.GetString("SourceFoldersButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Source folders.
         /// </summary>
         public static string SourceFoldersTitle {
@@ -2335,6 +2659,24 @@ namespace Yeetle.App.Resources {
         public static string StatePresent {
             get {
                 return ResourceManager.GetString("StatePresent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A clip with no tags yet gets the tags of the clip before it..
+        /// </summary>
+        public static string StickyTagsHint {
+            get {
+                return ResourceManager.GetString("StickyTagsHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sticky tags.
+        /// </summary>
+        public static string StickyTagsLabel {
+            get {
+                return ResourceManager.GetString("StickyTagsLabel", resourceCulture);
             }
         }
         
@@ -2492,11 +2834,29 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Boxes, tags, their colours and hotkeys are edited in the Tag Manager..
+        /// </summary>
+        public static string TagsSectionHint {
+            get {
+                return ResourceManager.GetString("TagsSectionHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Theatre.
         /// </summary>
         public static string Theatre {
             get {
                 return ResourceManager.GetString("Theatre", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start in theatre mode.
+        /// </summary>
+        public static string TheatreAtStartLabel {
+            get {
+                return ResourceManager.GetString("TheatreAtStartLabel", resourceCulture);
             }
         }
         
@@ -2636,6 +2996,24 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The check failed (offline, or GitHub unreachable)..
+        /// </summary>
+        public static string UpdateCheckFailed {
+            get {
+                return ResourceManager.GetString("UpdateCheckFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Checking….
+        /// </summary>
+        public static string UpdateChecking {
+            get {
+                return ResourceManager.GetString("UpdateChecking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Downloading the update… {0}%.
         /// </summary>
         public static string UpdateDownloading {
@@ -2672,11 +3050,47 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Version {0} is available: use the button at the top of the window..
+        /// </summary>
+        public static string UpdateFound {
+            get {
+                return ResourceManager.GetString("UpdateFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This copy runs from a build folder, not from the installer: there is nothing to update..
+        /// </summary>
+        public static string UpdateNotInstalled {
+            get {
+                return ResourceManager.GetString("UpdateNotInstalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Yeetle {0} is available: download it and restart.
         /// </summary>
         public static string UpdateTip {
             get {
                 return ResourceManager.GetString("UpdateTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yeetle is up to date..
+        /// </summary>
+        public static string UpdateUpToDate {
+            get {
+                return ResourceManager.GetString("UpdateUpToDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updates.
+        /// </summary>
+        public static string UpdatesLabel {
+            get {
+                return ResourceManager.GetString("UpdatesLabel", resourceCulture);
             }
         }
         
@@ -2690,11 +3104,29 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Yeetle {0}.
+        /// </summary>
+        public static string VersionFormat {
+            get {
+                return ResourceManager.GetString("VersionFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Volume.
         /// </summary>
         public static string Volume {
             get {
                 return ResourceManager.GetString("Volume", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Volume step.
+        /// </summary>
+        public static string VolumeStepLabel {
+            get {
+                return ResourceManager.GetString("VolumeStepLabel", resourceCulture);
             }
         }
         

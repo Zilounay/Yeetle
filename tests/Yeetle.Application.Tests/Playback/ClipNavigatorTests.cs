@@ -7,7 +7,7 @@ public class ClipNavigatorTests
     private readonly FakeClipPlayer _player = new();
     private readonly ClipNavigator _navigator;
 
-    public ClipNavigatorTests() => _navigator = new ClipNavigator(_player);
+    public ClipNavigatorTests() => _navigator = new ClipNavigator(_player, new Application.Settings.PlayerSettings());
 
     [Fact]
     public void Load_opens_the_first_clip_and_prepares_the_second()

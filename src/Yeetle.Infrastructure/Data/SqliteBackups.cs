@@ -13,6 +13,8 @@ public sealed class SqliteBackups(AppPaths paths, BackupSettings settings, ILog 
     private const string Extension = ".db";
     private const string TimeFormat = "yyyyMMdd-HHmmss-fff";
     private const string DamagedSuffix = ".damaged-";
+    // The database a chosen restore replaced, kept beside the new one.
+    private const string ReplacedSuffix = ".replaced-";
     private const string WalSuffix = "-wal";
     private const string SharedMemorySuffix = "-shm";
     private const int MinimumKept = 1;
@@ -38,14 +40,41 @@ public sealed class SqliteBackups(AppPaths paths, BackupSettings settings, ILog 
     public IReadOnlyList<BackupInfo> List() =>
         Enum.GetValues<BackupPool>().SelectMany(InPool).OrderByDescending(b => b.CreatedAt).ToList();
 
-    public void Restore(BackupInfo backup)
+    public void Restore(BackupInfo backup) => PutInPlace(backup.Path, DamagedSuffix);
+
+    // A restore chosen in Settings (#20) waits for the next start, when nothing has the database
+    // open yet. A safety backup of the current database is taken first, so it can be restored too.
+    public void ScheduleRestore(BackupInfo backup)
+    {
+        Create(BackupPool.Safety);
+        File.WriteAllText(paths.RestorePending, backup.Path);
+        log.Info($"Restore scheduled for the next start: {backup.Path}");
+    }
+
+    public bool ApplyScheduledRestore()
+    {
+        if (!File.Exists(paths.RestorePending))
+            return false;
+        var backup = File.ReadAllText(paths.RestorePending).Trim();
+        // The request is used up whatever happens, so a bad one never comes back at every start.
+        File.Delete(paths.RestorePending);
+        if (!File.Exists(backup))
+        {
+            log.Error($"Scheduled restore skipped: {backup} is gone.");
+            return false;
+        }
+        PutInPlace(backup, ReplacedSuffix);
+        return true;
+    }
+
+    // The database and its WAL side files are moved aside together; nothing is deleted.
+    private void PutInPlace(string backup, string asideSuffix)
     {
         var stamp = Stamp();
-        // The database and its WAL side files are moved aside together; nothing is deleted.
         foreach (var file in DatabaseFiles().Where(File.Exists))
-            File.Move(file, file + DamagedSuffix + stamp);
-        File.Copy(backup.Path, paths.Database);
-        log.Info($"Backup restored: {backup.Path}");
+            File.Move(file, file + asideSuffix + stamp);
+        File.Copy(backup, paths.Database);
+        log.Info($"Backup restored: {backup}");
     }
 
     private DateTime Now => clock.GetLocalNow().DateTime;

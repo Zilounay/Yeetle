@@ -143,6 +143,8 @@
                                 Command="{Binding RescanCommand}" />
                         <Button Content="{x:Static res:Strings.TagManagerTitle}" Command="{Binding OpenTagManagerCommand}" />
                         <Button Content="{x:Static res:Strings.Folders}" Command="{Binding OpenFoldersCommand}" />
+                        <Button Content="{x:Static res:Strings.SettingsTitle}" ToolTip.Tip="{x:Static res:Strings.SettingsButtonTip}"
+                                Command="{Binding OpenSettingsCommand}" />
                         <Button Content="{x:Static res:Strings.StopSession}" ToolTip.Tip="{x:Static res:Strings.StopSessionTip}"
                                 Command="{Binding Session.StopCommand}" IsVisible="{Binding Session.IsActive}" />
                     </StackPanel>

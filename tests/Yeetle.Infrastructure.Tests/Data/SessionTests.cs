@@ -34,7 +34,9 @@ public class SessionTests : IDisposable
     public void Dispose() => _data.Dispose();
 
     private SessionService Service() => new(_store, new SqliteTagStore(_data.Connections), _data.Backups,
-        new ScanScheduler(_scanner, _data.Clock), _data.Clock, _data.Log);
+        new ScanScheduler(_scanner, _data.Clock), _data.Clock, _data.Log, _review);
+
+    private readonly ReviewSettings _review = new();
 
     // Clips named a, b, c... recorded one hour apart, in a scanned folder.
     private async Task AddClips(params string[] names)

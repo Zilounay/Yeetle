@@ -12,11 +12,13 @@ namespace Yeetle.App.Services;
 
 // Each dialog is modal over the active window, except the Tag Manager.
 public sealed class WindowDialogs(
-    Func<SourceFoldersViewModel> createSourceFolders, Func<TagManagerViewModel> createTagManager, IShell shell)
+    Func<SourceFoldersViewModel> createSourceFolders, Func<TagManagerViewModel> createTagManager,
+    Func<SettingsViewModel> createSettings, IShell shell)
     : IDialogs
 {
     // Not modal: the Tag Manager stays open beside a running session (spec §5).
     private TagManagerWindow? _tagManager;
+    private SettingsWindow? _settings;
 
     public static Window? ActiveWindow() =>
         Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
@@ -45,6 +47,23 @@ public sealed class WindowDialogs(
         window.Closed += (_, _) => _tagManager = null;
         _tagManager = window;
         _ = created.LoadAsync();
+        if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } main })
+            window.Show(main);
+        else
+            window.Show();
+    }
+
+    public void ShowSettings()
+    {
+        if (_settings is { } open)
+        {
+            open.Activate();
+            return;
+        }
+        var created = createSettings();
+        var window = new SettingsWindow { DataContext = created };
+        window.Closed += (_, _) => _settings = null;
+        _settings = window;
         if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } main })
             window.Show(main);
         else

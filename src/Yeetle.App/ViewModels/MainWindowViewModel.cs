@@ -27,6 +27,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     private readonly FileOperations _files;
     private readonly ClipDurations _durations;
     private readonly UpdateChecker _updates;
+    private readonly LoadedSettings _settings;
     // First-scan questions, asked one at a time (spec §4). A folder is in _queued from the moment
     // a scan reports it until its question closes, so a second scan does not ask again meanwhile.
     private readonly Queue<PendingFirstScan> _questions = new();
@@ -46,10 +47,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
 
     public MainWindowViewModel(PlayerViewModel player, SessionViewModel session, ExplorerViewModel explorer,
         EditorViewModel editor, ScanScheduler scans, IDialogs dialogs, LoadedSettings settings, FileOperations files,
-        ClipDurations durations, ClipLibrary library, UpdateChecker updates)
+        ClipDurations durations, ClipLibrary library, UpdateChecker updates, SettingsService settingsService)
     {
         _files = files;
         _durations = durations;
+        _settings = settings;
         _updates = updates;
         Player = player;
         Session = session;
@@ -61,11 +63,13 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
         {
             [HotkeyActions.Rescan] = RescanCommand,
             [HotkeyActions.TheatreMode] = ToggleTheatreCommand,
+            [HotkeyActions.Settings] = OpenSettingsCommand,
         };
         _editorActions = new Dictionary<string, ICommand>(player.Actions.Concat(editor.Actions))
         {
             [HotkeyActions.Rescan] = RescanCommand,
             [HotkeyActions.TheatreMode] = ToggleTheatreCommand,
+            [HotkeyActions.Settings] = OpenSettingsCommand,
         };
         // In the list, the Keep and Yeet keys (Enter, Del) open and delete, as in Windows Explorer.
         _explorerActions = new Dictionary<string, ICommand>
@@ -74,10 +78,13 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
             [HotkeyActions.Yeet] = explorer.DeleteCommand,
             [HotkeyActions.MarkerWindow] = explorer.ShowMarkersCommand,
             [HotkeyActions.Rescan] = RescanCommand,
+            [HotkeyActions.Settings] = OpenSettingsCommand,
         };
-        var known = _sessionActions.Keys.Concat(_editorActions.Keys).Concat(_explorerActions.Keys).ToHashSet();
-        Hotkeys = new HotkeyMap(settings.Values.Hotkeys, known);
-        var problems = Hotkeys.Problems.Prepend(settings.Problem).OfType<string>().ToList();
+        _knownActions = _sessionActions.Keys.Concat(_editorActions.Keys).Concat(_explorerActions.Keys).ToHashSet();
+        _hotkeys = new HotkeyMap(settings.Values.Hotkeys, _knownActions);
+        // Keys changed in Settings work at once (#20).
+        settingsService.Changed += (_, _) => Hotkeys = new HotkeyMap(settings.Values.Hotkeys, _knownActions);
+        var problems = _hotkeys.Problems.Prepend(settings.Problem).OfType<string>().ToList();
         if (problems.Count > 0)
             player.ShowSettingsProblem(settings.Location, problems);
         _scans.Scanned += (_, report) => Dispatcher.UIThread.Post(() => _ = OnScannedAsync(report));
@@ -181,7 +188,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
 
     public EditorViewModel Editor { get; }
 
-    public HotkeyMap Hotkeys { get; }
+    [ObservableProperty]
+    private HotkeyMap _hotkeys;
+
+    private readonly HashSet<string> _knownActions;
 
     // Actions from the settings file first, as the current page understands them, then the tag
     // hotkeys of a running session or an opened clip.
@@ -208,7 +218,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     // never delays any of it (spec §12).
     public async Task StartAsync()
     {
-        _ = CheckForUpdateAsync();
+        if (_settings.Values.General.CheckForUpdatesAtStartup)
+            _ = CheckForUpdateAsync();
         await _files.RecoverInterruptedAsync();
         await _scans.RequestAsync(ScanTrigger.Startup);
         await Session.OfferUnfinishedAsync();
@@ -256,6 +267,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
         : string.Format(UpdateFailed ? Resources.Strings.UpdateFailedTip : Resources.Strings.UpdateTip, update.Version);
 
     private async Task CheckForUpdateAsync() => Update = await _updates.CheckAsync();
+
+    // Settings' Check now (#20): a version found also shows the update button.
+    public async Task<UpdateCheck> CheckForUpdateNowAsync()
+    {
+        var check = await _updates.CheckNowAsync();
+        if (check.Update is { } update)
+            Update = update;
+        return check;
+    }
 
     // A running session is ended first, as when closing; then the update downloads and Yeetle
     // restarts into it.
@@ -338,6 +358,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
 
     [RelayCommand]
     private void OpenTagManager() => _dialogs.ShowTagManager();
+
+    [RelayCommand]
+    private void OpenSettings() => _dialogs.ShowSettings();
 
     private async Task OnScannedAsync(ScanReport report)
     {

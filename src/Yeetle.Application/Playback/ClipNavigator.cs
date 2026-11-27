@@ -1,8 +1,10 @@
+using Yeetle.Application.Settings;
+
 namespace Yeetle.Application.Playback;
 
 // Walks through a list of clips with the player: opens the current one and prepares the next
 // and previous ones, so moving either way is instant. Review sessions tell it which clip to show.
-public sealed class ClipNavigator(IClipPlayer player)
+public sealed class ClipNavigator(IClipPlayer player, PlayerSettings settings)
 {
     public const int NoClip = -1;
 
@@ -61,11 +63,12 @@ public sealed class ClipNavigator(IClipPlayer player)
     {
         Index = index;
         player.Open(_clips[index]);
-        // The next clip first: moving forward is the usual way.
+        // The next clip first: moving forward is the usual way. None when background preparation is
+        // off in Settings, for low-memory PCs (spec §11).
         var neighbours = new List<string>();
-        if (CanGoNext)
+        if (settings.PrepareNeighbours && CanGoNext)
             neighbours.Add(_clips[index + 1]);
-        if (CanGoPrevious)
+        if (settings.PrepareNeighbours && CanGoPrevious)
             neighbours.Add(_clips[index - 1]);
         player.Prepare(neighbours);
         CurrentChanged?.Invoke(this, EventArgs.Empty);

@@ -20,6 +20,9 @@ public interface IDialogs
     // when the typed text matched no tag (spec §6).
     void ShowTagManager(string? newTagName = null);
 
+    // Its own window, reachable at any time, even during a session (#20).
+    void ShowSettings();
+
     // The read-only summary (spec §5); null goes back to the session.
     Task<SummaryChoice?> ShowSessionSummaryAsync(SessionSummary summary);
 
