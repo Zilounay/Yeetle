@@ -512,5 +512,5 @@ No product question blocks the start; these are decided at the step noted (each 
 - [ ] PayPal donation link to use in the app — before MVP slice 12.
 - [ ] SignPath Foundation eligibility for free signing — before v1.0.
 - [ ] Check that "Yeetle" is free as a trademark and Microsoft Store name — before any logo work.
-- [ ] Confirm the hotkey changes versus the earlier chat: marker on K (M stays Mute, as in VLC) and audio track on B (as in VLC).
+- [x] Hotkey changes versus the earlier chat — confirmed by ZiL on 2026-11-27 (#26): marker on K (M stays Mute, as in VLC) and audio track on B (as in VLC), as in section 14.
 - [ ] Confirm the proposed performance targets beyond the 150 ms clip switch (section 16) — after the POC.
