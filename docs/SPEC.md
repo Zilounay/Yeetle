@@ -178,7 +178,15 @@ Boxes (in brackets) are never put on a clip or in a filename; everything else is
 
 **Tag Manager.** Reachable from Settings and from the main screens, even during a session. It shows the whole vocabulary visually as nested boxes and chips, with fast creation, rename, delete, colour, hotkey, pick one/many and Required. Its order is the order used in renamed filenames.
 
-**Tag Manager layout (decided in #9).** On the left, the vocabulary as nested cards: each box card has its name, a Pick one / Pick many switch and a Required checkbox, then its tag chips (colour dot and hotkey) and a "+ Tag" button. Boxes under a tag are indented below that tag, with "+ Box under <tag>"; collapsed tags show "N boxes below" and Expand. A "+ New top-level box" button ends the list. On the right, a panel for the selected tag or box: its path, name, colour, hotkey (press a key to change), how many clips it is on, its filename form, Move up / Move down (the order used in filenames), and Delete. A newly created box or tag is selected with the cursor in its name field, ready to type.
+**Tag Manager layout (decided in #9).** On the left, the vocabulary as nested cards: each box card has its name, a Pick one / Pick many switch and a Required checkbox, then its tag chips (colour dot and hotkey) and a "+ Tag" button. Boxes under a tag are indented below that tag, with "+ Box under <tag>"; collapsed tags show "N boxes below" and Expand. Tags start collapsed (#65), so a vocabulary with hundreds of champions stays easy to scan; adding something under a tag expands it. A "+ New top-level box" button ends the list. Above the cards, "Open tags file" and "Add tags from file" (see below). On the right, a panel for the selected tag or box: its path, name, colour, hotkey (press a key to change), how many clips it is on, its filename form, Move up / Move down (the order used in filenames), and Delete. A newly created box or tag is selected with the cursor in its name field, ready to type.
+
+**Starter tags and the tags file (decided in #65).** Yeetle ships a starter vocabulary: games (League of Legends, Dota 2, Counter-Strike 2, Valorant, Escape from Tarkov, Arc Raiders, Wardogs, Rob Run, Battlefield 6) with their champions, heroes, maps, weapon types and weapons, game-specific moments, and general Moment, Context and People boxes. Maps are required only for Counter-Strike 2, Valorant and Escape from Tarkov. It lives in `src/Yeetle.Infrastructure/Tagging/default-tags.json`, a JSON file with notes (`//`) whose format is described at its top, and is embedded in the app.
+
+- At first start Yeetle writes a copy, `tags.json`, beside the database. People may edit it with any text editor.
+- At every start, Yeetle adds to the vocabulary what the default file and then `tags.json` have and the vocabulary does not. "Add tags from file" in the Tag Manager does the same for `tags.json` at once and says how many tags were added, or what is wrong in the file (line number, or the entry's place, e.g. "Game › Counter-Strike 2: unknown key …"). A file that cannot be read changes nothing and never stops the app.
+- An import only adds. It never removes, renames, reorders or changes the rules of anything; those are done in the Tag Manager. A newer Yeetle with a longer default file therefore only brings new tags.
+- Every box and tag a file brings is remembered by its path (its names from the top). A path seen before is never created again, so a tag renamed or deleted in the Tag Manager stays renamed or deleted. A path seen for the first time reuses a box or tag of the same name (ignoring case) under the same parent, so tags made by hand are not doubled; a deleted one of that name counts as deleted.
+- `tags.json` is not rewritten by Yeetle once it exists, so it does not follow Tag Manager changes. Exporting the vocabulary to a file is a later idea (`docs/IDEAS.md`).
 
 **Names and filenames.** Tag names can use any characters and alphabets, Cyrillic included. Only when renaming files does Yeetle build a filename-safe version: it removes the characters Windows forbids (`\ / : * ? " < > |`), control characters and trailing dots or spaces, avoids reserved names such as CON or NUL, and keeps letters as they are. Box names never appear in filenames. Case-insensitive search is done in C#, since SQLite only folds A–Z.
 
@@ -270,11 +278,12 @@ The database holds the user's work, so it is backed up automatically, upgraded c
 | --- | --- | --- |
 | Library database | SQLite (`yeetle.db`) | Clips, folders, tags and boxes, markers, session journal, file-operation log |
 | App settings | JSON file (`settings.json`, beside the database) | Kept outside the database so a broken database does not also lose the source folders. For testing, the `YEETLE_DATA_FOLDER` environment variable moves everything in this table to another folder |
+| Tags file | JSON file (`tags.json`, beside the database) | Written from the starter vocabulary at first start; editable by hand; only ever adds tags (section 6) |
 | Telemetry | Separate SQLite file | So restoring a backup does not roll it back, and a telemetry problem never blocks the app |
 | Backups | SQLite copies | See below |
 | Logs | Text files | Keep full file paths locally; paths are removed only if logs are ever sent |
 
-**Main tables (first draft).** Clips, SourceFolders, Nodes (tags and boxes in one tree: kind, parent, name, order, colour, hotkey, pick one/many, required, retired), ClipTags, Markers, SessionJournal, FileOperations. The schema version is stored in the database.
+**Main tables (first draft).** Clips, SourceFolders, Nodes (tags and boxes in one tree: kind, parent, name, order, colour, hotkey, pick one/many, required, retired), ClipTags, ImportedPaths (each box and tag path a tags file brought, and its node), Markers, SessionJournal, FileOperations. The schema version is stored in the database.
 
 **Migrations.** Numbered SQL scripts run in order at startup, before anything else touches the data. A backup is taken before every migration. A migration never drops user data. An older Yeetle that finds a newer schema refuses to open it with a clear message instead of damaging it.
 

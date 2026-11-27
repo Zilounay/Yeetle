@@ -16,6 +16,7 @@ using Yeetle.Infrastructure.Data;
 using Yeetle.Infrastructure.Diagnostics;
 using Yeetle.Infrastructure.Files;
 using Yeetle.Infrastructure.Shell;
+using Yeetle.Infrastructure.Tagging;
 using Yeetle.Media.Vlc;
 
 namespace Yeetle.Desktop;
@@ -42,6 +43,7 @@ internal static class Composition
             .AddSingleton<SessionService>()
             .AddSingleton<FileOperations>()
             .AddSingleton<TagManager>()
+            .AddSingleton<TagFileImport>()
             // Infrastructure
             .AddSingleton<ILog, FileLog>()
             .AddSingleton<SqliteConnectionFactory>()
@@ -56,6 +58,8 @@ internal static class Composition
             .AddSingleton<IExplorerStore, SqliteExplorerStore>()
             .AddSingleton<ITagStore>(s => s.GetRequiredService<SqliteTagStore>())
             .AddSingleton<ITagEditor>(s => s.GetRequiredService<SqliteTagStore>())
+            .AddSingleton<IVocabularyImportStore, SqliteVocabularyImportStore>()
+            .AddSingleton<ITagFiles, JsonTagFiles>()
             .AddSingleton<IFileOperationStore, SqliteFileOperationStore>()
             .AddSingleton<IFileSystem, WindowsFileSystem>()
             // Media

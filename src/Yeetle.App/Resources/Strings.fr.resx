@@ -856,4 +856,22 @@ On ne pourra plus le choisir. Les {1} clip(s) qui l'ont déjà le gardent sous c
   <data name="ProgressTip" xml:space="preserve">
     <value>{0} gardés · {1} yeetés · {2} passés</value>
   </data>
+  <data name="OpenTagFile" xml:space="preserve">
+    <value>Ouvrir le fichier de tags</value>
+  </data>
+  <data name="ImportTagFile" xml:space="preserve">
+    <value>Ajouter les tags du fichier</value>
+  </data>
+  <data name="TagFileHint" xml:space="preserve">
+    <value>Vos tags sont aussi gardés dans un fichier modifiable avec n'importe quel éditeur de texte (tags.json). Yeetle y prend ce qui est nouveau à chaque démarrage, ou tout de suite avec Ajouter les tags du fichier. Il ne supprime ni ne renomme jamais rien : faites-le ici.</value>
+  </data>
+  <data name="TagFileAdded" xml:space="preserve">
+    <value>{0} tags ajoutés depuis le fichier de tags.</value>
+  </data>
+  <data name="TagFileNothingNew" xml:space="preserve">
+    <value>Le fichier de tags n'a rien de nouveau.</value>
+  </data>
+  <data name="TagFileProblem" xml:space="preserve">
+    <value>Le fichier de tags n'a pas pu être lu : {0}</value>
+  </data>
 </root>

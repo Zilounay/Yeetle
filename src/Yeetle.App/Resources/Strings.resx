@@ -856,4 +856,22 @@ It can no longer be picked. The {1} clip(s) that already carry it keep it under 
   <data name="ProgressTip" xml:space="preserve">
     <value>{0} kept · {1} yeeted · {2} skipped</value>
   </data>
+  <data name="OpenTagFile" xml:space="preserve">
+    <value>Open tags file</value>
+  </data>
+  <data name="ImportTagFile" xml:space="preserve">
+    <value>Add tags from file</value>
+  </data>
+  <data name="TagFileHint" xml:space="preserve">
+    <value>Your tags are also kept in a file you can edit with any text editor (tags.json). Yeetle adds what is new in it at every start, or now with Add tags from file. It never removes or renames anything: do that here.</value>
+  </data>
+  <data name="TagFileAdded" xml:space="preserve">
+    <value>{0} tags added from the tags file.</value>
+  </data>
+  <data name="TagFileNothingNew" xml:space="preserve">
+    <value>The tags file has nothing new.</value>
+  </data>
+  <data name="TagFileProblem" xml:space="preserve">
+    <value>The tags file could not be read: {0}</value>
+  </data>
 </root>

@@ -6,12 +6,14 @@ using Yeetle.App.ViewModels;
 using Yeetle.App.Views;
 using Yeetle.Application.Data;
 using Yeetle.Application.Diagnostics;
+using Yeetle.Application.Tagging;
 
 namespace Yeetle.App;
 
 // What the host (Yeetle.Desktop), which owns the services, hands to the app.
 public sealed record AppServices(
     IDatabaseStartup Database,
+    TagFileImport TagFiles,
     IAppActivation Activation,
     Func<MainWindowViewModel> CreateMainViewModel,
     Func<RecoveryViewModel> CreateRecoveryViewModel);
@@ -40,24 +42,27 @@ public partial class App : Avalonia.Application
         var check = await Task.Run(services.Database.Prepare);
         if (check.State == DatabaseState.Ready)
         {
-            ShowMain(desktop, services);
+            await ShowMainAsync(desktop, services);
             return;
         }
         var recovery = services.CreateRecoveryViewModel();
         recovery.Show(check);
         var window = new RecoveryWindow { DataContext = recovery };
-        recovery.Recovered += (_, _) =>
+        recovery.Recovered += async (_, _) =>
         {
             // The main window opens first, so closing this one does not end the app.
-            ShowMain(desktop, services);
+            await ShowMainAsync(desktop, services);
             window.Close();
         };
         desktop.MainWindow = window;
         window.Show();
     }
 
-    private static void ShowMain(IClassicDesktopStyleApplicationLifetime desktop, AppServices services)
+    private static async Task ShowMainAsync(IClassicDesktopStyleApplicationLifetime desktop, AppServices services)
     {
+        // New tags from the tags files arrive before any screen loads the vocabulary (spec §6). A
+        // file that cannot be read is logged and leaves the tags as they are.
+        await Task.Run(services.TagFiles.ImportAtStart);
         var viewModel = services.CreateMainViewModel();
         var window = new MainWindow { DataContext = viewModel };
         desktop.MainWindow = window;
