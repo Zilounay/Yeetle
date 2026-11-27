@@ -31,7 +31,7 @@ The work runs in four stages: a technical POC, an MVP for ZiL and beta testers, 
 | Stage | Purpose | Contents |
 | --- | --- | --- |
 | POC | Prove the risky tech before building UI | Video playback in Avalonia (clip switch under 150 ms, 4x speed, audio-track switching, overlay test), thumbnail extraction (tried, then postponed: see `docs/THUMBNAILS.md`), drag-out of real files into Premiere and Explorer |
-| MVP | Full core loop, tested by ZiL and beta testers | Source folders + scanning, review sessions (Keep/Yeet/Skip, tags, markers, sticky tags, undo, progress counter, carousel badges, crash recovery), boxes-and-tags model with a Tag Manager, type-to-tag, hotkeys, Explorer (filters, multi-select, edit, wipe data, drag-out, Windows context menu, marker window), session summary with delete + rename prompts, Recycle Bin delete, rename + restore, migrations + backups, settings, EN/FR, local telemetry with upload, donation prompts, in-app one-click updates |
+| MVP | Full core loop, tested by ZiL and beta testers | Source folders + scanning, review sessions (Keep/Yeet/Skip, tags, markers, sticky tags, undo, progress counter, carousel badges, crash recovery), boxes-and-tags model with a Tag Manager, type-to-tag, hotkeys, Explorer (filters, multi-select, edit, wipe data, drag-out, Windows context menu, marker window), session summary with delete + rename prompts, Recycle Bin delete, rename + restore, migrations + backups, settings, EN/FR, in-app one-click updates (usage statistics and donation prompts moved to v1.0, #21) |
 | v1.0 public | Ready for strangers | Code signing, polished visual design, final Tag Manager UX, privacy notice/policy, website or landing page, performance tuning from beta feedback |
 | Later | Nice to have | Clip thumbnails (needs FFmpeg shipped with the app, see `docs/THUMBNAILS.md`), move/rename detection (file fingerprint), relocate a source folder, Premiere/Resolve marker export, folder-to-tag rules, tag merge, file watcher, macOS |
 
@@ -324,6 +324,8 @@ Settings are reachable at any time, including during a session; anything configu
 
 Yeetle is free, open source under GPL-3.0, funded by PayPal donations, and updates itself in one click.
 
+**When (decided 2026-11-28, #21).** Usage statistics and donation prompts are built before the public v1.0, not for the betas: those go to close friends for testing. #21, #23 and #24 carry the `release blocker` label, so no public release goes out without them unless ZiL decides otherwise.
+
 **Usage statistics.**
 
 - On by default. A notice at first start explains what is collected; one switch in Settings turns it off.
@@ -468,14 +470,14 @@ Gate: choose the player, and with it whether buttons can sit over the video.
 9. Session end: summary, commit/discard, delete and rename prompts, restore names.
 10. Explorer: list, filters, search, editing, wipe data, Windows context menu, drag out, marker window.
 11. Settings and EN/FR translations.
-12. Usage statistics and donation prompts.
+12. Usage statistics and donation prompts: moved to v1.0 (#21).
 13. Installer and one-click updates; first beta build to testers.
 
 **v1.0**
 
 1. Fixes and tuning from beta feedback.
-2. Visual design pass (#69): SukiUI with the Suki blue colour theme and a theme picker in Settings (direction decided on #28). Until then the MVP stays plain and functional. Issues labelled `release blocker` (#67, #69) must be closed before the public release; only ZiL can waive one.
-3. Code signing, privacy notice, landing page.
+2. Visual design pass (#69): SukiUI with the Suki blue colour theme and a theme picker in Settings (direction decided on #28). Until then the MVP stays plain and functional. Issues labelled `release blocker` (#21, #23, #24, #67, #69) must be closed before the public release; only ZiL can waive one.
+3. Usage statistics and donation prompts (#21, with the decisions #23 and #24), code signing, privacy notice, landing page.
 4. Public release on GitHub Releases.
 
 ## 16. Testing
@@ -513,8 +515,8 @@ No product question blocks the start; these are decided at the step noted (each 
 - [x] Screen layouts for the session screen, Explorer and Tag Manager — decided in #9 (sections 5, 6, 8); tags own the number row and F-keys, speed moved to numpad + / − (section 14).
 - [x] Which chips show by default during review — decided in #62: every tag of each visible box, last used first, then most used (section 6).
 - [x] Player choice (A, B or C) — POC gate. Option A, see section 13.
-- [ ] Service that receives usage statistics (Aptabase or a small own endpoint) — before MVP slice 12.
-- [ ] PayPal donation link to use in the app — before MVP slice 12.
+- [ ] Service that receives usage statistics (Aptabase or a small own endpoint) — before v1.0 (#21).
+- [ ] PayPal donation link to use in the app — before v1.0 (#21).
 - [ ] SignPath Foundation eligibility for free signing — before v1.0.
 - [ ] Check that "Yeetle" is free as a trademark and Microsoft Store name — before any logo work.
 - [x] Hotkey changes versus the earlier chat — confirmed by ZiL on 2026-11-27 (#26): marker on K (M stays Mute, as in VLC) and audio track on B (as in VLC), as in section 14.
