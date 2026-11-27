@@ -1,5 +1,9 @@
 // Yeetle's tags: the boxes and tags offered when tagging clips (spec section 6).
 //
+// To read it more comfortably, as a tree you can fold, paste the whole file into a free online JSON
+// viewer such as JSON Crack: https://jsoncrack.com/editor (it reads these // notes too, but not a
+// comma after the last item).
+//
 // How Yeetle reads this file:
 // - At every start, and with "Add tags from file" in the Tag Manager, Yeetle adds the boxes and tags
 //   below that it does not have yet. It never removes, renames or changes anything: do that in the
