@@ -165,6 +165,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     public bool CollapsePlayer => ShowHome;
 
     // Tags and markers only for a clip that can play (#79).
+    // Theatre mode keeps the clip's tags in sight over the video, with the full panel a hover away (#95).
+    public bool ShowTheatreTags => IsTheatre && ShowControls;
+
     public bool ShowSidePanels => !IsTheatre && ShowControls;
 
     // The clip strip is hidden for now: it added little (#62). Its code stays for a later return.
@@ -359,7 +362,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
         foreach (var name in new[]
                  {
                      nameof(IsSessionPage), nameof(IsExplorerPage), nameof(IsEditorPage), nameof(ShowPlayer), nameof(CollapsePlayer),
-                     nameof(ShowSidePanels), nameof(ShowStrip), nameof(ShowHome), nameof(ShowOverlay), nameof(ShowControls),
+                     nameof(ShowSidePanels), nameof(ShowStrip), nameof(ShowHome), nameof(ShowOverlay), nameof(ShowControls), nameof(ShowTheatreTags),
                      nameof(ShowSessionNotice), nameof(SideTags), nameof(SideMarkers), nameof(HasInfo),
                  })
             OnPropertyChanged(name);

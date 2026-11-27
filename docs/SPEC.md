@@ -197,7 +197,7 @@ The same player is used in sessions and when a clip is opened from the Explorer;
 
 **Player.**
 
-- Play/pause, seek bar, volume slider, mute, theatre mode (no full screen).
+- Play/pause, seek bar, volume slider, mute, theatre mode (no full screen). In theatre mode the side panels step aside, but the clip's tags stay listed at the top right of the video as small chips (a click removes one), and moving the pointer to the right tenth of the video, above the bottom controls, slides the full Tags panel in over the picture; it slides away when the pointer leaves it (#95).
 - Speeds 1x, 1.25x, 1.5x, 2x, 3x, 4x, stepped with numpad + and − or picked with the speed buttons.
 - Every clip starts at 0:00 and loops at the end; there is no auto-advance.
 - Audio: the first track in the file plays by default. Switching is one key (B cycles tracks, as in VLC) or a small always-visible picker (dropdown or scroll wheel), never a right-click menu. Typical OBS setup: game mix, mic, Discord on separate tracks.

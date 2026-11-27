@@ -6,6 +6,7 @@
         xmlns:playback="using:Yeetle.Application.Playback"
         xmlns:res="using:Yeetle.App.Resources"
         xmlns:controls="using:Yeetle.App.Controls"
+        xmlns:views="using:Yeetle.App.Views"
         mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
         x:Class="Yeetle.App.Views.VideoOverlayWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -32,8 +33,12 @@
         <SolidColorBrush x:Key="MarkerBrush" Color="#F0B429" />
         <!-- The speed in use: the accent blue of the current clip card. -->
         <SolidColorBrush x:Key="CurrentSpeedBrush" Color="#2F6FD6" />
+        <!-- A tag on the clip, over the picture: the selected-chip blue, slightly see-through. -->
+        <SolidColorBrush x:Key="TagChipBrush" Color="#D92F6FD6" />
         <x:Double x:Key="SecondaryTextOpacity">0.75</x:Double>
         <x:Double x:Key="DisabledOpacity">0.4</x:Double>
+        <!-- Room left for the bottom controls, so reaching the speed block never opens the Tags panel. -->
+        <Thickness x:Key="TagEdgeMargin">0,0,0,180</Thickness>
     </Window.Resources>
 
     <Window.Styles>
@@ -175,6 +180,35 @@
             <Setter Property="Padding" Value="4,8" />
             <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <!-- Theatre mode (#95): the clip's tags over the picture, as small chips with nothing behind them. -->
+        <Style Selector="Button.tagChip">
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Padding" Value="12,0" />
+            <Setter Property="CornerRadius" Value="15" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button.tagChip /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource TagChipBrush}" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.tagChip:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource CurrentSpeedBrush}" />
+        </Style>
+        <!-- The full Tags panel, off to the right until the pointer reaches the edge of the video. -->
+        <Style Selector="Border.drawer">
+            <Setter Property="RenderTransform" Value="translateX(400px)" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.18" Easing="CubicEaseOut" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.drawer.open">
+            <Setter Property="RenderTransform" Value="none" />
+            <Setter Property="IsHitTestVisible" Value="True" />
         </Style>
     </Window.Styles>
 
@@ -365,5 +399,36 @@
                 </Grid>
             </Border>
         </StackPanel>
+
+        <!-- Theatre mode (#95). The right tenth of the video, above the bottom controls, opens the
+             full Tags panel; the clip's tags stay listed at the top right meanwhile. -->
+        <Grid ColumnDefinitions="9*,*" Margin="{StaticResource TagEdgeMargin}"
+              IsVisible="{Binding ShowTheatreTags}">
+            <Border x:Name="TagEdge" Grid.Column="1" Background="Transparent" />
+        </Grid>
+        <ItemsControl ItemsSource="{Binding SideTags.SelectedChips}" HorizontalAlignment="Right" VerticalAlignment="Top"
+                      IsVisible="{Binding ShowTheatreTags}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Spacing="6" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:ChipViewModel">
+                    <Button Classes="tagChip" Command="{Binding Toggle}" ToolTip.Tip="{res:Tr RemoveTagTip}"
+                            AutomationProperties.Name="{Binding Name}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <Ellipse Width="10" Height="10" VerticalAlignment="Center" Fill="{Binding ColourBrush}"
+                                     IsVisible="{Binding HasColour}" />
+                            <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="{Binding Name}" />
+                        </StackPanel>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Border x:Name="TagDrawer" Classes="drawer" Width="360" HorizontalAlignment="Right"
+                IsVisible="{Binding ShowTheatreTags}">
+            <views:TagsPanel DataContext="{Binding SideTags}" />
+        </Border>
     </Panel>
 </Window>
