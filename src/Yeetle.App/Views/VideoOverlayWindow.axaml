@@ -144,11 +144,43 @@
         <Style Selector="Button.decision:disabled /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Opacity" Value="{StaticResource DisabledOpacity}" />
         </Style>
+        <!-- The info and the controls fade out when the mouse rests over the video, and come back when it
+             moves (#93). The root panel gets "idle"; the code-behind decides when. -->
+        <Style Selector=":is(Control).chrome">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.25" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Panel.idle :is(Control).chrome">
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+        </Style>
+        <!-- The sound and speed blocks show one icon; the rest opens while the pointer is on the block,
+             or while one of its lists is open ("pinned"), and closes when it leaves (#93). -->
+        <Style Selector=":is(Control).more">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="Border.expandable:pointerover :is(Control).more, Border.expandable.pinned :is(Control).more">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="Border.expandable:pointerover :is(Control).less, Border.expandable.pinned :is(Control).less">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <!-- The collapsed speed block: the speed in use, as large as an icon button (#93, #94). -->
+        <Style Selector="TextBlock.speedNow">
+            <Setter Property="MinWidth" Value="36" />
+            <Setter Property="Height" Value="34" />
+            <Setter Property="Padding" Value="4,8" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
     </Window.Styles>
 
-    <Panel Margin="12">
+    <Panel x:Name="Root" Margin="12">
         <!-- Top left: what is playing, and any message. -->
-        <Border Classes="block" HorizontalAlignment="Left" VerticalAlignment="Top" MaxWidth="640"
+        <Border Classes="block chrome" HorizontalAlignment="Left" VerticalAlignment="Top" MaxWidth="640"
                 IsVisible="{Binding HasInfo}">
             <StackPanel Spacing="2">
                 <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding Session.IsActive}">
@@ -173,7 +205,7 @@
 
         <!-- Bottom: the decision, then three small control blocks (sound, playback, speed), then the
              seek bar. Each block is its own tinted card, so most of the picture stays clear (#62). -->
-        <StackPanel VerticalAlignment="Bottom" Spacing="10">
+        <StackPanel Classes="chrome" VerticalAlignment="Bottom" Spacing="10">
             <!-- The decision for this clip: in a session, then for a clip opened from the Explorer,
                  where the current decision is outlined and there is no Skip (spec §8). A clip whose
                  file is not on disk only keeps Back to library (#79). -->
@@ -198,7 +230,10 @@
             <!-- Equal side columns keep the playback block in the exact middle, under Skip. -->
             <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="10" IsVisible="{Binding ShowControls}">
                 <!-- Left: how the clip sounds. -->
-                <Border Grid.Column="0" Classes="block" HorizontalAlignment="Left" VerticalAlignment="Bottom" Padding="8,6">
+                <!-- The side blocks sit on a canvas, so opening one grows it up over the picture without
+                     moving the decision buttons (#93). -->
+                <Canvas Grid.Column="0">
+                <Border x:Name="SoundBlock" Classes="block expandable" Canvas.Left="0" Canvas.Bottom="0" Padding="8,6">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <Button Classes="icon" Command="{Binding Player.ToggleMuteCommand}" ToolTip.Tip="{Binding Player.MuteLabel}"
                                 AutomationProperties.Name="{Binding Player.MuteLabel}" VerticalAlignment="Center">
@@ -207,6 +242,7 @@
                                 <TextBlock Classes="icon" Text="{StaticResource IconMute}" IsVisible="{Binding Player.IsMuted}" />
                             </Panel>
                         </Button>
+                        <StackPanel Classes="more" Orientation="Horizontal" Spacing="8">
                         <Slider Width="72" Minimum="0" Maximum="100" VerticalAlignment="Center"
                                 Value="{Binding Player.Volume}" ToolTip.Tip="{res:Tr Volume}"
                                 AutomationProperties.Name="{res:Tr Volume}" />
@@ -214,7 +250,7 @@
                               VerticalAlignment="Center">
                             <TextBlock Classes="icon label" FontSize="14" Text="{StaticResource IconAudioTrack}"
                                        ToolTip.Tip="{res:Tr AudioTrack}" />
-                            <ComboBox Grid.Column="1" Classes="audio" ItemsSource="{Binding Player.AudioTracks}"
+                            <ComboBox x:Name="AudioTracks" Grid.Column="1" Classes="audio" ItemsSource="{Binding Player.AudioTracks}"
                                       SelectedItem="{Binding Player.SelectedAudioTrack}" ToolTip.Tip="{res:Tr AudioTrack}"
                                       AutomationProperties.Name="{res:Tr AudioTrack}">
                                 <ComboBox.ItemTemplate>
@@ -225,7 +261,7 @@
                             </ComboBox>
                             <TextBlock Grid.Row="1" Classes="icon label" FontSize="14" Text="{StaticResource IconAudioOutput}"
                                        ToolTip.Tip="{res:Tr AudioOutput}" />
-                            <ComboBox Grid.Row="1" Grid.Column="1" Classes="audio" ItemsSource="{Binding Player.AudioDevices}"
+                            <ComboBox x:Name="AudioDevices" Grid.Row="1" Grid.Column="1" Classes="audio" ItemsSource="{Binding Player.AudioDevices}"
                                       SelectedItem="{Binding Player.SelectedAudioDevice}" ToolTip.Tip="{res:Tr AudioOutput}"
                                       AutomationProperties.Name="{res:Tr AudioOutput}">
                                 <ComboBox.ItemTemplate>
@@ -235,8 +271,10 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                         </Grid>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
+                </Canvas>
 
                 <!-- Middle: undo, previous, play / pause, next, marker. -->
                 <Border Grid.Column="1" Classes="block" VerticalAlignment="Bottom" Padding="8,4">
@@ -272,8 +310,12 @@
                 </Border>
 
                 <!-- Right: speed and theatre mode. -->
-                <Border Grid.Column="2" Classes="block" HorizontalAlignment="Right" VerticalAlignment="Bottom" Padding="8,4">
+                <Canvas Grid.Column="2">
+                <Border Classes="block expandable" Canvas.Right="0" Canvas.Bottom="0" Padding="8,4"
+                        ToolTip.Tip="{res:Tr SpeedBlockTip}">
                     <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Classes="less speedNow" Text="{Binding Player.SpeedLabel}" />
+                        <StackPanel Classes="more" Orientation="Horizontal" Spacing="6">
                         <ItemsControl ItemsSource="{Binding Player.Speeds}" VerticalAlignment="Center">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -292,8 +334,10 @@
                                 ToolTip.Tip="{res:Tr TheatreTip}" AutomationProperties.Name="{res:Tr Theatre}">
                             <TextBlock Classes="icon" Text="{StaticResource IconTheatre}" />
                         </Button>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
+                </Canvas>
             </Grid>
 
             <!-- Position, with the marker ticks just above the seek bar; hovering a tick shows its
