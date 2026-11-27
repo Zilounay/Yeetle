@@ -1430,33 +1430,6 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Opens the clip in Yeetle&apos;s player to change its tags, markers and decision (Enter).
-        /// </summary>
-        public static string OpenInYeetleTip {
-            get {
-                return ResourceManager.GetString("OpenInYeetleTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Windows player.
-        /// </summary>
-        public static string OpenWithDefaultApp {
-            get {
-                return ResourceManager.GetString("OpenWithDefaultApp", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Opens the file in the app Windows uses for videos.
-        /// </summary>
-        public static string OpenWithDefaultAppTip {
-            get {
-                return ResourceManager.GetString("OpenWithDefaultAppTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Tags are written in filenames in this order..
         /// </summary>
         public static string OrderHint {

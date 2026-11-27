@@ -119,11 +119,7 @@
             <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,10" ItemSpacing="6" LineSpacing="6">
                 <TextBlock Text="{Binding SelectionText}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,6,0"
                            IsVisible="{Binding HasSelection}" />
-                <Button Content="{x:Static res:Strings.OpenInYeetle}" Command="{Binding OpenCommand}"
-                        ToolTip.Tip="{x:Static res:Strings.OpenInYeetleTip}" />
                 <Button Content="{x:Static res:Strings.ShowInFolder}" Command="{Binding ShowInFolderCommand}" />
-                <Button Content="{x:Static res:Strings.OpenWithDefaultApp}" Command="{Binding OpenWithDefaultAppCommand}"
-                        ToolTip.Tip="{x:Static res:Strings.OpenWithDefaultAppTip}" />
                 <Button Content="{x:Static res:Strings.SetKept}" Command="{Binding SetKeptCommand}" />
                 <Button Content="{x:Static res:Strings.SetYeeted}" Command="{Binding SetYeetedCommand}" />
                 <Button Content="{x:Static res:Strings.ShowMarkers}" Command="{Binding ShowMarkersCommand}"
