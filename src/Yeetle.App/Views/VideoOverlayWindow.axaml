@@ -37,6 +37,9 @@
         <SolidColorBrush x:Key="TagChipBrush" Color="#D92F6FD6" />
         <x:Double x:Key="SecondaryTextOpacity">0.75</x:Double>
         <x:Double x:Key="DisabledOpacity">0.4</x:Double>
+        <!-- The speed dot: as tall as an icon button, round while closed. -->
+        <x:Double x:Key="SpeedDotSize">38</x:Double>
+        <CornerRadius x:Key="SpeedDotRadius">19</CornerRadius>
         <!-- Room left for the bottom controls, so reaching the speed block never opens the Tags panel. -->
         <Thickness x:Key="TagEdgeMargin">0,0,0,180</Thickness>
     </Window.Resources>
@@ -173,11 +176,24 @@
         <Style Selector="Border.expandable:pointerover :is(Control).less, Border.expandable.pinned :is(Control).less">
             <Setter Property="IsVisible" Value="False" />
         </Style>
+        <!-- The speed dot (#94): a small circle with the speed in use; on hover it opens into a
+             rounded bar of speed buttons. -->
+        <Style Selector="Border.speedDot">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="MinWidth" Value="{StaticResource SpeedDotSize}" />
+            <Setter Property="Height" Value="{StaticResource SpeedDotSize}" />
+            <Setter Property="CornerRadius" Value="{StaticResource SpeedDotRadius}" />
+        </Style>
+        <Style Selector="Border.speedDot:pointerover">
+            <Setter Property="Padding" Value="4,0" />
+            <Setter Property="CornerRadius" Value="{StaticResource BlockCornerRadius}" />
+        </Style>
         <!-- The collapsed speed block: the speed in use, as large as an icon button (#93, #94). -->
         <Style Selector="TextBlock.speedNow">
-            <Setter Property="MinWidth" Value="36" />
-            <Setter Property="Height" Value="34" />
-            <Setter Property="Padding" Value="4,8" />
+            <Setter Property="MinWidth" Value="{StaticResource SpeedDotSize}" />
+            <Setter Property="Padding" Value="6,0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="13" />
             <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="FontWeight" Value="SemiBold" />
         </Style>
@@ -343,34 +359,37 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Right: speed and theatre mode. -->
+                <!-- Right (decided in #94): a small dot with the speed in use, which opens to the speed
+                     buttons on hover, then theatre mode as a plain button of its own. The dot grows to
+                     the left, so the theatre button never moves. -->
                 <Canvas Grid.Column="2">
-                <Border Classes="block expandable" Canvas.Right="0" Canvas.Bottom="0" Padding="8,4"
-                        ToolTip.Tip="{res:Tr SpeedBlockTip}">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <TextBlock Classes="less speedNow" Text="{Binding Player.SpeedLabel}" />
-                        <StackPanel Classes="more" Orientation="Horizontal" Spacing="6">
-                        <ItemsControl ItemsSource="{Binding Player.Speeds}" VerticalAlignment="Center">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" Spacing="2" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="vm:SpeedOptionViewModel">
-                                    <Button Classes="speed" Content="{Binding Label}" Classes.current="{Binding IsCurrent}"
-                                            Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Player.SetSpeedCommand}"
-                                            CommandParameter="{Binding Speed}" />
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                <StackPanel Canvas.Right="0" Canvas.Bottom="0" Orientation="Horizontal" Spacing="8">
+                    <Border Classes="block expandable speedDot" VerticalAlignment="Center" ToolTip.Tip="{res:Tr SpeedBlockTip}">
+                        <Panel>
+                            <TextBlock Classes="less speedNow" Text="{Binding Player.SpeedLabel}" />
+                            <ItemsControl Classes="more" ItemsSource="{Binding Player.Speeds}" VerticalAlignment="Center">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" Spacing="2" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:SpeedOptionViewModel">
+                                        <Button Classes="speed" Content="{Binding Label}" Classes.current="{Binding IsCurrent}"
+                                                Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Player.SetSpeedCommand}"
+                                                CommandParameter="{Binding Speed}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Panel>
+                    </Border>
+                    <Border Classes="block" Padding="4">
                         <Button Classes="icon" Command="{Binding ToggleTheatreCommand}" Classes.current="{Binding IsTheatre}"
                                 ToolTip.Tip="{res:Tr TheatreTip}" AutomationProperties.Name="{res:Tr Theatre}">
                             <TextBlock Classes="icon" Text="{StaticResource IconTheatre}" />
                         </Button>
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
+                    </Border>
+                </StackPanel>
                 </Canvas>
             </Grid>
 

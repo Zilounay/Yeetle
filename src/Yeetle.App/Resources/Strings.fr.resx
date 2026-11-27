@@ -1214,6 +1214,6 @@ On ne pourra plus le choisir. Les {1} clip(s) qui l'ont déjà le gardent sous c
     <value>Désactivé</value>
   </data>
   <data name="SpeedBlockTip" xml:space="preserve">
-    <value>Vitesse et mode théâtre</value>
+    <value>Vitesse</value>
   </data>
 </root>
