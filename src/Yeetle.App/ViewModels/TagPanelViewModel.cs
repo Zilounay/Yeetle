@@ -86,6 +86,10 @@ public sealed partial class TagPanelViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isEmpty;
 
+    // The tags on the clip, in box order: shown over the video in theatre mode (#95).
+    [ObservableProperty]
+    private IReadOnlyList<ChipViewModel> _selectedChips = [];
+
     // Set when Keep was refused because a visible required box is empty; cleared by any change.
     private bool _showRequiredWarning;
 
@@ -141,6 +145,7 @@ public sealed partial class TagPanelViewModel : ViewModelBase
         {
             Groups.Clear();
             _groupsCatalog = null;
+            SelectedChips = [];
             return;
         }
         var catalog = _session.Catalog;
@@ -163,6 +168,7 @@ public sealed partial class TagPanelViewModel : ViewModelBase
             return new ChipGroupViewModel(group.Box.Id, Title(group), warning, chips);
         }).ToList();
         Sync(Groups, wanted);
+        SelectedChips = Groups.SelectMany(g => g.Chips).Where(c => c.IsSelected).ToList();
         HasCarriedOver = !review.CarriedOver.IsEmpty;
         IsEmpty = catalog.Vocabulary.InManagerOrder.Count == 0;
     }

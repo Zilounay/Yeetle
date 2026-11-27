@@ -36,6 +36,9 @@ public partial class VideoOverlayWindow : Window
         _idleTimer.Tick += (_, _) => GoIdle();
         PointerMoved += (_, _) => WakeUp();
         PointerEntered += (_, _) => WakeUp();
+        // Theatre mode (#95): the right edge slides the Tags panel in; leaving it slides it away.
+        TagEdge.PointerEntered += (_, _) => TagDrawer.Classes.Set(OpenClass, true);
+        TagDrawer.PointerExited += (_, _) => TagDrawer.Classes.Set(OpenClass, false);
         // A list opened from the sound block is a window of its own: the block stays open meanwhile.
         foreach (var list in new[] { AudioTracks, AudioDevices })
         {
@@ -88,6 +91,7 @@ public partial class VideoOverlayWindow : Window
     private const string IdleClass = "idle";
     private const string ChromeClass = "chrome";
     private const string PinnedClass = "pinned";
+    private const string OpenClass = "open";
 
     // Shows the overlay over the area and keeps it there as the owner moves or resizes.
     public void Follow(Window owner, Control area)
