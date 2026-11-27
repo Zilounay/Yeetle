@@ -13,24 +13,43 @@ using Yeetle.Domain.Tagging;
 
 namespace Yeetle.App.ViewModels;
 
-public sealed class ChipViewModel(Chip chip, string? colour, ICommand toggle)
+// A chip stays on screen from one change to the next: only its state is updated (#78).
+public sealed partial class ChipViewModel(Chip chip, string? colour, ICommand toggle) : ObservableObject
 {
+    [ObservableProperty]
+    private bool _isSelected = chip.IsSelected;
+
+    [ObservableProperty]
+    private bool _isCarriedOver = chip.IsCarriedOver;
+
     public IBrush? ColourBrush { get; } = TagColours.Brush(colour);
     public bool HasColour => ColourBrush is not null;
     public TagId Tag { get; } = chip.Tag;
     public string Name { get; } = chip.Name;
     public string? Hotkey { get; } = chip.Hotkey is { } key ? HotkeyLabels.Short(key) : null;
     public bool HasHotkey => Hotkey is not null;
-    public bool IsSelected { get; } = chip.IsSelected;
-    public bool IsCarriedOver { get; } = chip.IsCarriedOver;
     public ICommand Toggle { get; } = toggle;
+
+    public void Update(Chip state)
+    {
+        IsSelected = state.IsSelected;
+        IsCarriedOver = state.IsCarriedOver;
+    }
 }
 
-public sealed class ChipGroupViewModel(string title, bool showRequiredWarning, IReadOnlyList<ChipViewModel> chips)
+public sealed partial class ChipGroupViewModel(BoxId box, string title, bool showRequiredWarning, IReadOnlyList<ChipViewModel> chips)
+    : ObservableObject
 {
+    [ObservableProperty]
+    private bool _showRequiredWarning = showRequiredWarning;
+
+    public BoxId Box { get; } = box;
     public string Title { get; } = title;
-    public bool ShowRequiredWarning { get; } = showRequiredWarning;
     public IReadOnlyList<ChipViewModel> Chips { get; } = chips;
+
+    // True when this group shows the same tags, in the same order, as the fresh one.
+    public bool Matches(ChipGroup group) =>
+        group.Box.Id == Box && group.Chips.Select(c => c.Tag).SequenceEqual(Chips.Select(c => c.Tag));
 }
 
 public sealed record TagSuggestion(TagId Tag, string Path);
@@ -46,6 +65,8 @@ public sealed partial class TagPanelViewModel : ViewModelBase
     private readonly IDialogs _dialogs;
     private readonly List<(Hotkey Key, TagId Tag)> _tagKeys = [];
     private IClipEditing? _session;
+    // The catalog the groups on screen were made from.
+    private TagCatalog? _groupsCatalog;
 
     [ObservableProperty]
     private bool _isTyping;
@@ -109,21 +130,59 @@ public sealed partial class TagPanelViewModel : ViewModelBase
         Refresh();
     }
 
-    // Called after every change in the session.
+    // Called after every change in the session. Groups and chips already on screen are kept and
+    // only their state changes: rebuilding a few hundred chips on each click froze the window (#78).
     public void Refresh()
     {
-        Groups.Clear();
         if (_session?.CurrentReview is not { } review)
-            return;
-        var catalog = _session.Catalog;
-        foreach (var group in TagChips.For(catalog, review.Tags, review.CarriedOver))
         {
+            Groups.Clear();
+            _groupsCatalog = null;
+            return;
+        }
+        var catalog = _session.Catalog;
+        // Another catalog (Tag Manager changes) may bring other names, colours or hotkeys.
+        if (!ReferenceEquals(catalog, _groupsCatalog))
+            Groups.Clear();
+        _groupsCatalog = catalog;
+        var wanted = TagChips.For(catalog, review.Tags, review.CarriedOver).Select(group =>
+        {
+            var warning = _showRequiredWarning && group.IsMissingRequired;
+            if (Groups.FirstOrDefault(g => g.Matches(group)) is { } kept)
+            {
+                kept.ShowRequiredWarning = warning;
+                foreach (var (chip, state) in kept.Chips.Zip(group.Chips))
+                    chip.Update(state);
+                return kept;
+            }
             var chips = group.Chips.Select(c =>
                 new ChipViewModel(c, catalog.Colours.GetValueOrDefault(c.Tag), new RelayCommand(() => Toggle(c.Tag)))).ToList();
-            Groups.Add(new ChipGroupViewModel(Title(group), _showRequiredWarning && group.IsMissingRequired, chips));
-        }
+            return new ChipGroupViewModel(group.Box.Id, Title(group), warning, chips);
+        }).ToList();
+        Sync(Groups, wanted);
         HasCarriedOver = !review.CarriedOver.IsEmpty;
         IsEmpty = catalog.Vocabulary.InManagerOrder.Count == 0;
+    }
+
+    // Brings the collection to the wanted list with as few changes as possible, so the controls of
+    // the items that stay are not created again.
+    private static void Sync<T>(ObservableCollection<T> items, IReadOnlyList<T> wanted) where T : class
+    {
+        for (var i = items.Count - 1; i >= 0; i--)
+        {
+            if (!wanted.Contains(items[i]))
+                items.RemoveAt(i);
+        }
+        for (var i = 0; i < wanted.Count; i++)
+        {
+            var at = items.IndexOf(wanted[i]);
+            if (at == i)
+                continue;
+            if (at >= 0)
+                items.Move(at, i);
+            else
+                items.Insert(i, wanted[i]);
+        }
     }
 
     public void ClearRequiredWarning() => _showRequiredWarning = false;

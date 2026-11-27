@@ -93,7 +93,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
                 ShowExplorerCommand.NotifyCanExecuteChanged();
             }
         };
-        editor.PropertyChanged += (_, _) => OnPropertyChanged(nameof(HasInfo));
+        editor.PropertyChanged += (_, e) =>
+        {
+            OnPropertyChanged(nameof(HasInfo));
+            if (e.PropertyName == nameof(EditorViewModel.IsOpen))
+                OnLayoutChanged();
+        };
         // Decisions changed or wiped in the Explorer change how many clips wait for a session.
         library.Changed += (_, _) => _ = Session.RefreshHomeAsync();
         explorer.OpenRequested += (_, clip) => _ = OpenClipAsync(clip);
@@ -137,7 +142,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     // page of its own shows instead of a black video area with a message over it (#62).
     public bool CollapsePlayer => ShowHome;
 
-    public bool ShowSidePanels => !IsTheatre && (IsEditorPage || (IsSessionPage && Session.IsActive));
+    public bool ShowSidePanels => !IsTheatre && (IsEditorOpen || (IsSessionPage && Session.IsActive));
 
     // The clip strip is hidden for now: it added little (#62). Its code stays for a later return.
     public bool ShowStrip => false;
@@ -149,7 +154,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     public bool ShowScanSummary => ScanSummary.Length > 0;
 
     // The playback controls: while a session runs or a clip is open.
-    public bool ShowControls => IsEditorPage || (IsSessionPage && Session.IsActive);
+    public bool ShowControls => IsEditorOpen || (IsSessionPage && Session.IsActive);
+
+    // The editor page shows at once; its clip follows a moment later (#78).
+    private bool IsEditorOpen => IsEditorPage && Editor.IsOpen;
 
     // The Tags and Markers panels follow the session or the opened clip.
     public TagPanelViewModel SideTags => IsEditorPage ? Editor.Tags : Session.Tags;
@@ -272,12 +280,13 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     [RelayCommand]
     private void ToggleTheatre() => IsTheatre = !IsTheatre;
 
+    // Every page switch shows the new page first; closing the clip and loading follow (#78).
     [RelayCommand]
     private async Task ShowSessionAsync()
     {
-        if (IsEditorPage)
-            await Editor.CloseCommand.ExecuteAsync(null);
+        var leaving = IsEditorPage ? Editor.LeaveAsync() : Task.CompletedTask;
         CurrentPage = Page.Session;
+        await leaving;
         await Session.RefreshHomeAsync();
     }
 
@@ -287,18 +296,20 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
 
     private bool CanShowExplorer() => !Session.IsActive;
 
+    // The list on screen stays until the new one is read; a clip just closed is saved first, so the
+    // list shows its last changes.
     private async Task ShowExplorerPageAsync()
     {
         CurrentPage = Page.Explorer;
+        await Editor.Closing;
         await Explorer.LoadAsync();
     }
 
     private async Task OpenClipAsync(Domain.Clips.ClipId clip)
     {
-        if (await Editor.OpenAsync(clip))
-            CurrentPage = Page.Editor;
-        else
-            await Explorer.LoadAsync();
+        CurrentPage = Page.Editor;
+        if (!await Editor.OpenAsync(clip))
+            await ShowExplorerPageAsync();
     }
 
     private Task RefreshExplorerAsync() => IsExplorerPage ? Explorer.LoadAsync() : Task.CompletedTask;

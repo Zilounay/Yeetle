@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -53,6 +52,7 @@ public sealed partial class TagFilterItem(string label, int level, TagId? tag) :
     private bool _isChecked;
 
     public string Label { get; } = label;
+    public int Level { get; } = level;
     public TagId? Tag { get; } = tag;
     public bool IsTag => Tag is not null;
     public bool IsHeader => Tag is null;
@@ -125,6 +125,7 @@ public sealed partial class ExplorerViewModel : ViewModelBase
     private string _notice = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowEmpty))]
     private bool _isEmpty;
 
     public ExplorerViewModel(ClipLibrary library, FileOperations files, PlayerViewModel player, IDialogs dialogs, IShell shell)
@@ -137,9 +138,24 @@ public sealed partial class ExplorerViewModel : ViewModelBase
         PropertyChanged += OnFilterChanged;
     }
 
-    public ObservableCollection<ExplorerRowViewModel> Rows { get; } = [];
+    // Swapped as a whole: adding rows one by one makes the list react to each of them (#78).
+    [ObservableProperty]
+    private IReadOnlyList<ExplorerRowViewModel> _rows = [];
 
-    public ObservableCollection<TagFilterItem> TagFilters { get; } = [];
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasTagFilters))]
+    private IReadOnlyList<TagFilterItem> _tagFilters = [];
+
+    // Until the first load is done, placeholders show in place of the list and the filters (#78).
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowEmpty))]
+    private bool _isLoaded;
+
+    // Set while the library is read again or an action runs, for the thin progress bar (#78).
+    [ObservableProperty]
+    private bool _isBusy;
+
+    public bool ShowEmpty => IsLoaded && IsEmpty;
 
     public bool HasTagFilters => TagFilters.Any(f => f.IsTag);
 
@@ -165,12 +181,19 @@ public sealed partial class ExplorerViewModel : ViewModelBase
     // every action.
     public async Task LoadAsync()
     {
-        _all = await _library.LoadAsync();
-        var catalog = await _library.LoadCatalogAsync();
-        if (!ReferenceEquals(catalog.Vocabulary, _catalog.Vocabulary))
+        IsBusy = true;
+        try
+        {
+            (_all, var catalog) = await _library.LoadWithCatalogAsync();
             FillTagFilters(catalog);
-        _catalog = catalog;
-        Apply();
+            _catalog = catalog;
+            Apply();
+            IsLoaded = true;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     // The view hands over the list's selection whenever it changes.
@@ -259,7 +282,7 @@ public sealed partial class ExplorerViewModel : ViewModelBase
         }
         await RunFileOperationAsync(async () =>
         {
-            var preview = await _files.PlanRenameAsync(kept);
+            var preview = await BusyAsync(_files.PlanRenameAsync(kept));
             if (preview.ToRename.Count == 0)
             {
                 Notice = Strings.NothingToRename;
@@ -296,7 +319,7 @@ public sealed partial class ExplorerViewModel : ViewModelBase
     [RelayCommand(CanExecute = nameof(HasSelection))]
     private Task DeleteAsync() => RunFileOperationAsync(async () =>
     {
-        var plan = await _files.PlanDeleteAsync(_selected.Select(r => r.Clip.Id).ToList());
+        var plan = await BusyAsync(_files.PlanDeleteAsync(_selected.Select(r => r.Clip.Id).ToList()));
         if (plan.Items.Count == 0)
         {
             Notice = Strings.NothingToDelete;
@@ -332,7 +355,7 @@ public sealed partial class ExplorerViewModel : ViewModelBase
     private async Task SetDecisionAsync(Decision decision)
     {
         var clips = _selected.Select(r => r.Clip.Id).ToList();
-        await _library.SetDecisionAsync(clips, decision);
+        await BusyAsync(_library.SetDecisionAsync(clips, decision));
         Notice = string.Format(decision == Decision.Kept ? Strings.ClipsSetKept : Strings.ClipsSetYeeted, clips.Count);
         await LoadAsync();
     }
@@ -365,30 +388,35 @@ public sealed partial class ExplorerViewModel : ViewModelBase
         await LoadAsync();
     }
 
+    // Only when the tags changed: with the starter tags this list has over a thousand lines, and
+    // rebuilding it on every visit froze the window for most of a second (#78).
     private void FillTagFilters(TagCatalog catalog)
     {
+        var vocabulary = catalog.Vocabulary;
+        var lines = new List<(string Label, int Level, TagId? Tag)>();
+        AddBoxes(null, level: 0);
+        if (lines.SequenceEqual(TagFilters.Select(f => (f.Label, f.Level, f.Tag))))
+            return;
         var checkedTags = TagFilters.Where(f => f.IsChecked).Select(f => f.Tag).ToHashSet();
         foreach (var filter in TagFilters)
             filter.PropertyChanged -= OnTagFilterChanged;
-        TagFilters.Clear();
-        var vocabulary = catalog.Vocabulary;
-        AddBoxes(null, level: 0);
-        foreach (var filter in TagFilters)
+        var filters = lines.Select(line => new TagFilterItem(line.Label, line.Level, line.Tag)).ToList();
+        foreach (var filter in filters)
         {
             filter.IsChecked = filter.Tag is { } tag && checkedTags.Contains(tag);
             filter.PropertyChanged += OnTagFilterChanged;
         }
-        OnPropertyChanged(nameof(HasTagFilters));
+        TagFilters = filters;
 
         void AddBoxes(TagId? parent, int level)
         {
             foreach (var box in vocabulary.BoxesUnder(parent))
             {
                 if (box.IsNamed)
-                    TagFilters.Add(new TagFilterItem(box.Name, level, null));
+                    lines.Add((box.Name, level, null));
                 foreach (var tag in vocabulary.TagsIn(box.Id))
                 {
-                    TagFilters.Add(new TagFilterItem(tag.Name, level, tag.Id));
+                    lines.Add((tag.Name, level, tag.Id));
                     AddBoxes(tag.Id, level + 1);
                 }
             }
@@ -433,12 +461,32 @@ public sealed partial class ExplorerViewModel : ViewModelBase
         var filter = new LibraryFilter(decisions, states, tags, SearchText, IncompleteOnly);
         var vocabulary = _catalog.Vocabulary;
         var shown = LibraryQuery.Apply(_all, filter, vocabulary, Sort, Descending);
-        Rows.Clear();
-        foreach (var clip in shown)
-            Rows.Add(new ExplorerRowViewModel(clip, string.Join(TagSeparator, vocabulary.NamesOf(clip.Tags))));
+        Rows = shown.Select(clip => new ExplorerRowViewModel(clip, string.Join(TagSeparator, vocabulary.NamesOf(clip.Tags)))).ToList();
         MatchText = string.Format(Strings.MatchCount, shown.Count, _all.Count);
         IsEmpty = shown.Count == 0;
         SetSelection([]);
+    }
+
+    // Work the user waits for without a dialog shows the thin progress bar (#78).
+    private async Task BusyAsync(Task work) => await BusyAsync(WithResult(work));
+
+    private async Task<T> BusyAsync<T>(Task<T> work)
+    {
+        IsBusy = true;
+        try
+        {
+            return await work;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private static async Task<bool> WithResult(Task work)
+    {
+        await work;
+        return true;
     }
 
     private string Arrow(LibrarySort column) => column != Sort ? string.Empty : Descending ? SortDown : SortUp;

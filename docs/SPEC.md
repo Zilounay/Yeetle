@@ -22,6 +22,7 @@ This document supersedes the ChatGPT spec v0.1. Anything not yet decided is list
 5. The library is virtual: Yeetle's organization comes from tags, never from folders.
 6. Dragging clips out hands other apps the real files, as a copy.
 7. The review loop must feel instant (target: next clip playing in under 150 ms).
+8. The whole UI responds at once (#78): a click shows its page or window first, slow work follows in the background, and what is still loading shows as pulsing placeholders or a thin progress bar.
 
 ## 2. Scope
 
@@ -494,7 +495,7 @@ Rules are tested automatically from the first slice; file safety is tested again
 - Drag-out to Explorer, Premiere, Resolve and a browser upload.
 - Hotkeys while typing a marker label or in the type-to-tag box.
 
-**Performance targets.** Next clip playing in under 150 ms; scan of 2,000 clips under 1 second on a local SSD; app ready in under 2 seconds.
+**Performance targets.** Next clip playing in under 150 ms; scan of 2,000 clips under 1 second on a local SSD; app ready in under 2 seconds. No click freezes the window: page switches and tag clicks redraw in the next frame (#78).
 
 ## 17. Still open
 
