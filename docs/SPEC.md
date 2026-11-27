@@ -329,7 +329,9 @@ Yeetle is free, open source under GPL-3.0, funded by PayPal donations, and updat
 
 **Donations.** PayPal only, to ZiL's account, through a donation link rather than a raw email address in the code. A prompt appears only at app start or on the session summary, never mid-session, at milestones such as 30 days of actual use or 1,000 clips yeeted. Yeetle remembers the last prompt and waits at least 14 days before another one. Each prompt offers Donate / Not now / Don't ask again.
 
-**Updates (MVP).** Velopack with GitHub Releases. Yeetle checks in the background at startup; when a version is available it shows "Update available", and one click downloads it and restarts. Installation is per-user and needs no administrator rights.
+**Updates (MVP).** Velopack with GitHub Releases. Yeetle checks in the background at startup; when a version is available the top bar shows "Update to X.Y.Z", and one click downloads it and restarts (during a session, the Save / Discard / Cancel choice comes first). A failed check is only logged. Installation is per-user and needs no administrator rights. The app installs to `%LOCALAPPDATA%\YeetleApp\`, apart from the user's data in `%LOCALAPPDATA%\Yeetle\` (section 10), so updates and uninstalling never touch the data.
+
+**Versions (decided in #22).** Plain X.Y.Z, no `-beta`: the first release is 0.0.1, then minor and major numbers climb; every 0.x release is a beta and 1.0.0 is the public release. Builds between releases carry the CI run number in their file version (`0.0.1.<build>`). A pushed `vX.Y.Z` tag publishes the release (`docs/RELEASING.md`); tags of 1.0.0 and later are refused while a `release blocker` issue is open.
 
 **Signing.** MVP builds are unsigned, so testers will see a Windows SmartScreen warning (More info → Run anyway). Before v1.0, builds are signed for free through the SignPath Foundation program for open-source projects (eligibility to confirm). Azure Artifact Signing is not available to individuals in the EU.
 

@@ -5,4 +5,14 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+
+  <!-- Version (#22, docs/RELEASING.md). Releases are plain X.Y.Z, no -beta: the release workflow
+       passes the tag's version (vX.Y.Z) as VersionPrefix. Between releases this is the version
+       being built. The file version adds the CI run number (0 locally): 0.0.1.<build>. -->
+  <PropertyGroup>
+    <VersionPrefix>0.0.1</VersionPrefix>
+    <BuildNumber Condition="'$(BuildNumber)' == ''">$(GITHUB_RUN_NUMBER)</BuildNumber>
+    <BuildNumber Condition="'$(BuildNumber)' == ''">0</BuildNumber>
+    <FileVersion>$(VersionPrefix).$(BuildNumber)</FileVersion>
+  </PropertyGroup>
 </Project>

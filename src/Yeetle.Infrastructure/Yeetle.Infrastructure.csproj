@@ -13,6 +13,7 @@
   <ItemGroup>
     <PackageReference Include="Dapper" />
     <PackageReference Include="Microsoft.Data.Sqlite" />
+    <PackageReference Include="Velopack" />
   </ItemGroup>
 
 </Project>

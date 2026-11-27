@@ -880,4 +880,28 @@ On ne pourra plus le choisir. Les {1} clip(s) qui l'ont déjà le gardent sous c
   <data name="TimelineName" xml:space="preserve">
     <value>Clips de la session</value>
   </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Mettre à jour vers {0}</value>
+  </data>
+  <data name="UpdateTip" xml:space="preserve">
+    <value>Yeetle {0} est disponible : le télécharger et redémarrer</value>
+  </data>
+  <data name="UpdateDownloading" xml:space="preserve">
+    <value>Téléchargement de la mise à jour… {0} %</value>
+  </data>
+  <data name="UpdateFailed" xml:space="preserve">
+    <value>Échec de la mise à jour, réessayer</value>
+  </data>
+  <data name="UpdateFailedTip" xml:space="preserve">
+    <value>Yeetle {0} n'a pas pu être téléchargé. Vérifiez la connexion et cliquez pour réessayer.</value>
+  </data>
+  <data name="UpdateDuringSessionMessage" xml:space="preserve">
+    <value>{0} gardés, {1} yeetés, {2} passés jusqu'ici. Enregistrer ces décisions avant la mise à jour ? Yeetle redémarre avec la nouvelle version.</value>
+  </data>
+  <data name="SaveAndUpdate" xml:space="preserve">
+    <value>Enregistrer et mettre à jour</value>
+  </data>
+  <data name="DiscardAndUpdate" xml:space="preserve">
+    <value>Abandonner et mettre à jour</value>
+  </data>
 </root>

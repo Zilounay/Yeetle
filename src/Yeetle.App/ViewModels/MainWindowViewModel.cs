@@ -8,6 +8,7 @@ using Yeetle.App.Services;
 using Yeetle.Application.Files;
 using Yeetle.Application.Library;
 using Yeetle.Application.Settings;
+using Yeetle.Application.Updates;
 
 namespace Yeetle.App.ViewModels;
 
@@ -25,6 +26,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     private readonly IDialogs _dialogs;
     private readonly FileOperations _files;
     private readonly ClipDurations _durations;
+    private readonly UpdateChecker _updates;
     // First-scan questions, asked one at a time (spec §4). A folder is in _queued from the moment
     // a scan reports it until its question closes, so a second scan does not ask again meanwhile.
     private readonly Queue<PendingFirstScan> _questions = new();
@@ -44,10 +46,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
 
     public MainWindowViewModel(PlayerViewModel player, SessionViewModel session, ExplorerViewModel explorer,
         EditorViewModel editor, ScanScheduler scans, IDialogs dialogs, LoadedSettings settings, FileOperations files,
-        ClipDurations durations, ClipLibrary library)
+        ClipDurations durations, ClipLibrary library, UpdateChecker updates)
     {
         _files = files;
         _durations = durations;
+        _updates = updates;
         Player = player;
         Session = session;
         Explorer = explorer;
@@ -188,9 +191,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
     }
 
     // File operations cut short by a crash are checked first (spec §9), then a scan runs (spec §4),
-    // then an interrupted session is offered back (spec §5).
+    // then an interrupted session is offered back (spec §5). The update check runs alongside and
+    // never delays any of it (spec §12).
     public async Task StartAsync()
     {
+        _ = CheckForUpdateAsync();
         await _files.RecoverInterruptedAsync();
         await _scans.RequestAsync(ScanTrigger.Startup);
         await Session.OfferUnfinishedAsync();
@@ -204,6 +209,65 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IHotkeyTarget
 
     // Called when the window is about to close, while its video windows still exist.
     public void OnClosing() => Player.Stop();
+
+    // One-click updates (spec §12): the top bar offers the version found at startup.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasUpdate), nameof(UpdateText), nameof(UpdateTip))]
+    private AvailableUpdate? _update;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(UpdateText))]
+    [NotifyCanExecuteChangedFor(nameof(InstallUpdateCommand))]
+    private bool _isDownloadingUpdate;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(UpdateText))]
+    private int _updateProgress;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(UpdateText), nameof(UpdateTip))]
+    private bool _updateFailed;
+
+    public bool HasUpdate => Update is not null;
+
+    public string UpdateText => Update is not { } update
+        ? string.Empty
+        : IsDownloadingUpdate
+            ? string.Format(Resources.Strings.UpdateDownloading, UpdateProgress)
+            : UpdateFailed
+                ? Resources.Strings.UpdateFailed
+                : string.Format(Resources.Strings.UpdateAvailable, update.Version);
+
+    public string UpdateTip => Update is not { } update
+        ? string.Empty
+        : string.Format(UpdateFailed ? Resources.Strings.UpdateFailedTip : Resources.Strings.UpdateTip, update.Version);
+
+    private async Task CheckForUpdateAsync() => Update = await _updates.CheckAsync();
+
+    // A running session is ended first, as when closing; then the update downloads and Yeetle
+    // restarts into it.
+    [RelayCommand(CanExecute = nameof(CanInstallUpdate))]
+    private async Task InstallUpdateAsync()
+    {
+        if (Update is not { } update || !await Session.ConfirmUpdateAsync())
+            return;
+        UpdateFailed = false;
+        UpdateProgress = 0;
+        IsDownloadingUpdate = true;
+        var downloaded = await _updates.DownloadAsync(update,
+            percent => Dispatcher.UIThread.Post(() => UpdateProgress = percent));
+        if (downloaded)
+        {
+            // The player lets go of its files before Yeetle closes.
+            Player.Stop();
+            _updates.RestartIntoUpdate(update);
+            return;
+        }
+        IsDownloadingUpdate = false;
+        UpdateFailed = true;
+    }
+
+    private bool CanInstallUpdate() => !IsDownloadingUpdate;
 
     [RelayCommand]
     private void ToggleTheatre() => IsTheatre = !IsTheatre;

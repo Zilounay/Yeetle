@@ -72,6 +72,11 @@
         <Style Selector="Button.start:disabled /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Opacity" Value="{StaticResource DisabledOpacity}" />
         </Style>
+        <!-- Update available: the accent blue, so it stands out among the grey top-bar buttons. -->
+        <Style Selector="Button.update /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource CurrentCardBrush}" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
         <Style Selector="Border.card">
             <Setter Property="Background" Value="{StaticResource CardBrush}" />
             <Setter Property="CornerRadius" Value="{StaticResource CardCornerRadius}" />
@@ -131,6 +136,9 @@
                                               ToolTip.Tip="{Binding Session.ProgressTip}" />
                     </StackPanel>
                     <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                        <!-- One-click update (spec §12): shown once the startup check finds a newer version. -->
+                        <Button Classes="update" Content="{Binding UpdateText}" ToolTip.Tip="{Binding UpdateTip}"
+                                Command="{Binding InstallUpdateCommand}" IsVisible="{Binding HasUpdate}" />
                         <Button Content="{x:Static res:Strings.Rescan}" ToolTip.Tip="{x:Static res:Strings.RescanTip}"
                                 Command="{Binding RescanCommand}" />
                         <Button Content="{x:Static res:Strings.TagManagerTitle}" Command="{Binding OpenTagManagerCommand}" />
