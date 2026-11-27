@@ -82,12 +82,16 @@ public sealed class Hotkey
     private KeyModifiers PositionModifiers(KeyModifiers pressed) =>
         IsNumberRow(Position) && !Modifiers.HasFlag(KeyModifiers.Shift) ? pressed & ~KeyModifiers.Shift : pressed;
 
-    // The virtual key of a letter or digit, which follows the keyboard layout.
+    // The virtual key of a letter, digit, comma or period, which follows the keyboard layout.
     private static Key? KeyFor(string character) => character[0] switch
     {
         var c and >= 'a' and <= 'z' => Key.A + (c - 'a'),
         var c and >= 'A' and <= 'Z' => Key.A + (c - 'A'),
         var c and >= '0' and <= '9' => Key.D0 + (c - '0'),
+        // Ctrl+, opens Settings (#20): with Ctrl held the comma key types nothing, so it is matched
+        // by its key, which Windows names after the comma on every layout.
+        ',' => Key.OemComma,
+        '.' => Key.OemPeriod,
         _ => null,
     };
 

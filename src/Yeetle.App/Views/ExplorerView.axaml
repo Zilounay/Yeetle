@@ -89,19 +89,19 @@
                 Padding="16,12">
             <DockPanel>
                 <!-- Clips | Sessions (#72): the library as it is now, or what each past session decided. -->
-                <Border DockPanel.Dock="Top" Classes="modes" Margin="0,0,0,12" ToolTip.Tip="{x:Static res:Strings.ExplorerModeTip}">
+                <Border DockPanel.Dock="Top" Classes="modes" Margin="0,0,0,12" ToolTip.Tip="{res:Tr ExplorerModeTip}">
                     <UniformGrid Rows="1">
-                        <Button Classes="mode" Classes.current="{Binding IsClipsMode}" Content="{x:Static res:Strings.ExplorerModeClips}"
+                        <Button Classes="mode" Classes.current="{Binding IsClipsMode}" Content="{res:Tr ExplorerModeClips}"
                                 Command="{Binding ShowClipsCommand}" />
                         <Button Classes="mode" Classes.current="{Binding IsSessionsMode}"
-                                Content="{x:Static res:Strings.ExplorerModeSessions}" Command="{Binding ShowSessionsCommand}" />
+                                Content="{res:Tr ExplorerModeSessions}" Command="{Binding ShowSessionsCommand}" />
                     </UniformGrid>
                 </Border>
-                <Button DockPanel.Dock="Bottom" Margin="0,12,0,0" Content="{x:Static res:Strings.ClearFilters}"
+                <Button DockPanel.Dock="Bottom" Margin="0,12,0,0" Content="{res:Tr ClearFilters}"
                         Command="{Binding ClearFiltersCommand}" />
                 <!-- The committed sessions, most recent first (#72). -->
                 <DockPanel DockPanel.Dock="Top" MaxHeight="320" Margin="0,0,0,8" IsVisible="{Binding IsSessionsMode}">
-                    <TextBlock DockPanel.Dock="Top" Text="{x:Static res:Strings.NoPastSessions}" TextWrapping="Wrap"
+                    <TextBlock DockPanel.Dock="Top" Text="{res:Tr NoPastSessions}" TextWrapping="Wrap"
                                Opacity="{StaticResource SecondaryTextOpacity}" IsVisible="{Binding ShowNoPastSessions}" />
                     <ListBox ItemsSource="{Binding PastSessions}" SelectedItem="{Binding SelectedSession}" Background="Transparent"
                              Classes="sessions">
@@ -118,10 +118,10 @@
                 </DockPanel>
                 <ScrollViewer>
                     <StackPanel>
-                        <TextBlock FontSize="16" FontWeight="Bold" Text="{x:Static res:Strings.FiltersTitle}" IsVisible="{Binding IsClipsMode}" />
-                        <TextBlock FontSize="16" FontWeight="Bold" Text="{x:Static res:Strings.FilterInSession}"
+                        <TextBlock FontSize="16" FontWeight="Bold" Text="{res:Tr FiltersTitle}" IsVisible="{Binding IsClipsMode}" />
+                        <TextBlock FontSize="16" FontWeight="Bold" Text="{res:Tr FilterInSession}"
                                    IsVisible="{Binding IsSessionsMode}" />
-                        <TextBlock Classes="section" Text="{x:Static res:Strings.FilterTags}" />
+                        <TextBlock Classes="section" Text="{res:Tr FilterTags}" />
                         <!-- Placeholders until the first load (#78). -->
                         <StackPanel Spacing="10" Margin="0,6,0,0" IsVisible="{Binding !IsLoaded}">
                             <Border Classes="skeleton" Width="90" />
@@ -130,7 +130,7 @@
                             <Border Classes="skeleton" Width="140" />
                             <Border Classes="skeleton" Width="100" />
                         </StackPanel>
-                        <TextBlock Text="{x:Static res:Strings.NoTagsToFilter}" Opacity="{StaticResource SecondaryTextOpacity}">
+                        <TextBlock Text="{res:Tr NoTagsToFilter}" Opacity="{StaticResource SecondaryTextOpacity}">
                             <TextBlock.IsVisible>
                                 <MultiBinding Converter="{x:Static BoolConverters.And}">
                                     <Binding Path="IsLoaded" />
@@ -165,28 +165,28 @@
                                 </TreeDataTemplate>
                             </TreeView.ItemTemplate>
                         </TreeView>
-                        <TextBlock Classes="section" Text="{x:Static res:Strings.FilterDecision}" />
+                        <TextBlock Classes="section" Text="{res:Tr FilterDecision}" />
                         <StackPanel IsVisible="{Binding IsClipsMode}">
-                            <CheckBox Content="{x:Static res:Strings.KeptLabel}" IsChecked="{Binding ShowKept}" />
-                            <CheckBox Content="{x:Static res:Strings.DecisionNew}" IsChecked="{Binding ShowNew}" />
-                            <CheckBox Content="{x:Static res:Strings.DecisionYeeted}" IsChecked="{Binding ShowYeeted}" />
+                            <CheckBox Content="{res:Tr KeptLabel}" IsChecked="{Binding ShowKept}" />
+                            <CheckBox Content="{res:Tr DecisionNew}" IsChecked="{Binding ShowNew}" />
+                            <CheckBox Content="{res:Tr DecisionYeeted}" IsChecked="{Binding ShowYeeted}" />
                         </StackPanel>
                         <!-- In a session: the decision taken then (#72). -->
                         <StackPanel IsVisible="{Binding IsSessionsMode}">
-                            <CheckBox Content="{x:Static res:Strings.BadgeKept}" IsChecked="{Binding ShowSessionKept}" />
-                            <CheckBox Content="{x:Static res:Strings.DecisionYeeted}" IsChecked="{Binding ShowSessionYeeted}" />
-                            <CheckBox Content="{x:Static res:Strings.BadgeSkipped}" IsChecked="{Binding ShowSessionSkipped}" />
+                            <CheckBox Content="{res:Tr BadgeKept}" IsChecked="{Binding ShowSessionKept}" />
+                            <CheckBox Content="{res:Tr DecisionYeeted}" IsChecked="{Binding ShowSessionYeeted}" />
+                            <CheckBox Content="{res:Tr BadgeSkipped}" IsChecked="{Binding ShowSessionSkipped}" />
                         </StackPanel>
                         <StackPanel IsVisible="{Binding IsClipsMode}">
-                            <TextBlock Classes="section" Text="{x:Static res:Strings.FilterFileState}" />
-                            <CheckBox Content="{x:Static res:Strings.StatePresent}" IsChecked="{Binding ShowPresent}" />
-                            <CheckBox Content="{x:Static res:Strings.StateMissing}" IsChecked="{Binding ShowMissing}" />
-                            <CheckBox Content="{x:Static res:Strings.StateOffline}" IsChecked="{Binding ShowOffline}" />
-                            <CheckBox Content="{x:Static res:Strings.StateDeleted}" IsChecked="{Binding ShowDeleted}" />
-                            <CheckBox Content="{x:Static res:Strings.StateNeedsAttention}" IsChecked="{Binding ShowNeedsAttention}" />
-                            <TextBlock Classes="section" Text="{x:Static res:Strings.FilterOther}" />
+                            <TextBlock Classes="section" Text="{res:Tr FilterFileState}" />
+                            <CheckBox Content="{res:Tr StatePresent}" IsChecked="{Binding ShowPresent}" />
+                            <CheckBox Content="{res:Tr StateMissing}" IsChecked="{Binding ShowMissing}" />
+                            <CheckBox Content="{res:Tr StateOffline}" IsChecked="{Binding ShowOffline}" />
+                            <CheckBox Content="{res:Tr StateDeleted}" IsChecked="{Binding ShowDeleted}" />
+                            <CheckBox Content="{res:Tr StateNeedsAttention}" IsChecked="{Binding ShowNeedsAttention}" />
+                            <TextBlock Classes="section" Text="{res:Tr FilterOther}" />
                             <CheckBox IsChecked="{Binding IncompleteOnly}">
-                                <TextBlock Text="{x:Static res:Strings.FilterIncomplete}" TextWrapping="Wrap" />
+                                <TextBlock Text="{res:Tr FilterIncomplete}" TextWrapping="Wrap" />
                             </CheckBox>
                         </StackPanel>
                     </StackPanel>
@@ -195,22 +195,22 @@
         </Border>
 
         <DockPanel Grid.Column="1" Margin="16,12,16,12">
-            <TextBox DockPanel.Dock="Top" Text="{Binding SearchText}" PlaceholderText="{x:Static res:Strings.SearchPlaceholder}"
+            <TextBox DockPanel.Dock="Top" Text="{Binding SearchText}" PlaceholderText="{res:Tr SearchPlaceholder}"
                      Margin="0,0,0,10" />
 
             <!-- Selection toolbar. -->
             <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,10" ItemSpacing="6" LineSpacing="6">
                 <TextBlock Text="{Binding SelectionText}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,6,0"
                            IsVisible="{Binding HasSelection}" />
-                <Button Content="{x:Static res:Strings.ShowInFolder}" Command="{Binding ShowInFolderCommand}" />
-                <Button Content="{x:Static res:Strings.SetKept}" Command="{Binding SetKeptCommand}" />
-                <Button Content="{x:Static res:Strings.SetYeeted}" Command="{Binding SetYeetedCommand}" />
-                <Button Content="{x:Static res:Strings.ShowMarkers}" Command="{Binding ShowMarkersCommand}"
-                        ToolTip.Tip="{x:Static res:Strings.ShowMarkersTip}" />
-                <Button Content="{x:Static res:Strings.RenameByTags}" Command="{Binding RenameByTagsCommand}" />
-                <Button Content="{x:Static res:Strings.RestoreNames}" Command="{Binding RestoreNamesCommand}" />
-                <Button Content="{x:Static res:Strings.WipeData}" Command="{Binding WipeCommand}" />
-                <Button Content="{x:Static res:Strings.DeleteFromDisk}" Command="{Binding DeleteCommand}" />
+                <Button Content="{res:Tr ShowInFolder}" Command="{Binding ShowInFolderCommand}" />
+                <Button Content="{res:Tr SetKept}" Command="{Binding SetKeptCommand}" />
+                <Button Content="{res:Tr SetYeeted}" Command="{Binding SetYeetedCommand}" />
+                <Button Content="{res:Tr ShowMarkers}" Command="{Binding ShowMarkersCommand}"
+                        ToolTip.Tip="{res:Tr ShowMarkersTip}" />
+                <Button Content="{res:Tr RenameByTags}" Command="{Binding RenameByTagsCommand}" />
+                <Button Content="{res:Tr RestoreNames}" Command="{Binding RestoreNamesCommand}" />
+                <Button Content="{res:Tr WipeData}" Command="{Binding WipeCommand}" />
+                <Button Content="{res:Tr DeleteFromDisk}" Command="{Binding DeleteCommand}" />
             </WrapPanel>
 
             <!-- Footer: match count, drag hint, and what the last action did. -->
@@ -219,7 +219,7 @@
                            IsVisible="{Binding Notice, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
                     <TextBlock Text="{Binding MatchText}" FontWeight="SemiBold" />
-                    <TextBlock Grid.Column="1" Text="{x:Static res:Strings.DragHint}" TextTrimming="CharacterEllipsis"
+                    <TextBlock Grid.Column="1" Text="{res:Tr DragHint}" TextTrimming="CharacterEllipsis"
                                Opacity="{StaticResource SecondaryTextOpacity}" />
                 </Grid>
             </StackPanel>
@@ -240,14 +240,14 @@
                     <Button Grid.Column="2" Classes="header" Content="{Binding DurationHeader}" Command="{Binding SortByCommand}"
                             CommandParameter="{x:Static library:LibrarySort.Duration}" />
                     <TextBlock Grid.Column="3" FontWeight="SemiBold" VerticalAlignment="Center"
-                               Text="{x:Static res:Strings.ColumnTags}" />
+                               Text="{res:Tr ColumnTags}" />
                 </Grid>
             </Border>
 
             <Panel>
-                <TextBlock Margin="8,16" Text="{x:Static res:Strings.PickASession}" Opacity="{StaticResource SecondaryTextOpacity}"
+                <TextBlock Margin="8,16" Text="{res:Tr PickASession}" Opacity="{StaticResource SecondaryTextOpacity}"
                            IsVisible="{Binding ShowPickASession}" />
-                <TextBlock Margin="8,16" Text="{x:Static res:Strings.NoClipsMatch}" Opacity="{StaticResource SecondaryTextOpacity}"
+                <TextBlock Margin="8,16" Text="{res:Tr NoClipsMatch}" Opacity="{StaticResource SecondaryTextOpacity}"
                            IsVisible="{Binding ShowEmpty}" />
                 <!-- Placeholder rows until the first load (#78), in the columns of the real ones. -->
                 <ItemsControl IsVisible="{Binding !IsLoaded}" Margin="8,6" ItemsSource="{x:Static views:Placeholders.ExplorerRows}">
@@ -292,7 +292,7 @@
                                     </Border>
                                     <!-- A past session's clip decided otherwise since: "now Kept" (#72). -->
                                     <TextBlock DockPanel.Dock="Right" Classes="count" Margin="6,0,0,0" Text="{Binding DecisionNow}"
-                                               IsVisible="{Binding HasDecisionNow}" ToolTip.Tip="{x:Static res:Strings.DecisionNowTip}" />
+                                               IsVisible="{Binding HasDecisionNow}" ToolTip.Tip="{res:Tr DecisionNowTip}" />
                                     <Border DockPanel.Dock="Right" Classes="badge" Classes.yeeted="{Binding IsYeeted}"
                                             Classes.kept="{Binding IsKept}" IsVisible="{Binding HasDecisionBadge}">
                                         <TextBlock FontSize="11" Text="{Binding DecisionBadge}" />
@@ -306,7 +306,7 @@
                                 <DockPanel Grid.Column="3">
                                     <!-- The tags shown are the current ones; this sign says they changed since the session (#72). -->
                                     <TextBlock DockPanel.Dock="Left" Classes="changed" Text="≠" IsVisible="{Binding TagsChanged}"
-                                               ToolTip.Tip="{x:Static res:Strings.TagsChangedTip}" />
+                                               ToolTip.Tip="{res:Tr TagsChangedTip}" />
                                     <TextBlock Text="{Binding Tags}" TextTrimming="CharacterEllipsis"
                                                ToolTip.Tip="{Binding Tags}" VerticalAlignment="Center"
                                                Opacity="{StaticResource SecondaryTextOpacity}" />

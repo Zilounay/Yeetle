@@ -93,7 +93,7 @@ public sealed record ColourChoice(string? Colour, IBrush? Brush, string Tip);
 
 // The Tag Manager (spec §6, layout from #9): the vocabulary as nested box cards on the left, the
 // selected tag or box on the right. Every change is saved at once.
-public sealed partial class TagManagerViewModel : ViewModelBase
+public sealed partial class TagManagerViewModel : ViewModelBase, IDisposable
 {
     private const string PathSeparator = " › ";
 
@@ -160,6 +160,7 @@ public sealed partial class TagManagerViewModel : ViewModelBase
         _actionKeys = new HotkeyMap(actions, actions.Keys.ToHashSet());
         Colours = TagColours.Palette.Select(c => new ColourChoice(c, TagColours.Brush(c), c))
             .Prepend(new ColourChoice(null, null, Strings.NoColour)).ToList();
+        Loc.Instance.Changed += OnLanguageChanged;
     }
 
     public ObservableCollection<BoxCardViewModel> Boxes { get; } = [];
@@ -178,6 +179,12 @@ public sealed partial class TagManagerViewModel : ViewModelBase
 
     // Asks the view to put the cursor in the name field, after a box or tag was created.
     public event EventHandler? NameFocusRequested;
+
+    // Stops following the language once the window is closed.
+    public void Dispose() => Loc.Instance.Changed -= OnLanguageChanged;
+
+    // Box titles and texts are made again in the new language (#20).
+    private void OnLanguageChanged(object? sender, EventArgs e) => _ = LoadAsync();
 
     public async Task LoadAsync()
     {

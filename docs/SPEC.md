@@ -306,17 +306,19 @@ Counts are adjustable in Settings. Only the database is backed up, never video f
 
 Settings are reachable at any time, including during a session; anything configurable elsewhere in this document lives here.
 
+**Window and saving (decided in #20).** Settings is its own window, like the Tag Manager, opened from the top bar or Ctrl+, (sections on the left). Every change applies at once and is saved to `settings.json`; there is no OK or Cancel, and invalid input (a key already used) is refused on the spot. The language switches live, without a restart. Privacy appears with usage statistics (#21) and Appearance (colour themes) with the visual pass (#69).
+
 | Area | Settings |
 | --- | --- |
 | Library | Source folders (add, remove, include subfolders), supported extensions, Rescan |
 | Tags | Opens the Tag Manager |
-| Hotkeys | Every action and tag hotkey, rejects duplicates (one key = one action), restore defaults |
+| Hotkeys | Every action's keys (add with "+ Key" then the key, remove with ×), tag hotkeys listed (set in the Tag Manager), rejects duplicates (one key = one action), restore defaults |
 | Player | Default speed, default volume, seek steps (default 5 s, and 30 s with Ctrl), volume step (default 5), theatre mode, background preparation of neighbouring clips (on/off, for low-memory PCs) |
 | Review | Sticky tags on/off, marker offset (default 1 s before the key press) |
-| Library view | Default filters |
-| Data | Backup counts per pool, open the data folder, restore a backup |
+| Library view | Default decision and file-state filters of the Explorer; once filters are changed in the Explorer, the last ones used are remembered instead, and changing the defaults (or Clear filters) brings them back |
+| Data | Backup counts per pool, open the data folder, restore a backup: a safety backup of the current database is taken, then Yeetle restarts and puts the chosen one in place before opening it (the replaced files are kept); not during a session |
 | Privacy | Usage statistics on/off |
-| General | Language (English, French), check for updates |
+| General | Language (English, French; Windows' language until one is picked), check for updates now (with its result) and at startup (on by default) |
 
 ## 12. Telemetry, donations, updates and license
 

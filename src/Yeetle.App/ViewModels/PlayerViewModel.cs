@@ -94,6 +94,15 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
 
     public IReadOnlyList<SpeedOptionViewModel> Speeds { get; }
 
+    // After a language switch (#20).
+    public void Relocalize()
+    {
+        foreach (var speed in Speeds)
+            speed.Relocalize();
+        OnPropertyChanged(nameof(PlayPauseLabel));
+        OnPropertyChanged(nameof(MuteLabel));
+    }
+
     public string PlayPauseLabel => IsPlaying ? Strings.Pause : Strings.Play;
 
     public string MuteLabel => IsMuted ? Strings.Unmute : Strings.Mute;

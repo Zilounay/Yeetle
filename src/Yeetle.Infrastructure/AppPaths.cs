@@ -26,4 +26,7 @@ public sealed class AppPaths(string root)
     public string Backups => Path.Combine(Root, "Backups");
 
     public string Logs => Path.Combine(Root, "Logs");
+
+    // Holds the path of a backup to restore at the next start (#20).
+    public string RestorePending => Path.Combine(Root, "restore-pending.txt");
 }

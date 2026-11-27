@@ -51,6 +51,18 @@ public class UpdateCheckerTests
     }
 
     [Fact]
+    public async Task Check_now_tells_up_to_date_found_failed_and_not_installed()
+    {
+        Assert.Equal(new UpdateCheck(UpdateOutcome.UpToDate), await _checker.CheckNowAsync(Cancellation));
+        _updates.Found = Newer;
+        Assert.Equal(new UpdateCheck(UpdateOutcome.Found, Newer), await _checker.CheckNowAsync(Cancellation));
+        _updates.CheckFailure = new HttpRequestException("offline");
+        Assert.Equal(new UpdateCheck(UpdateOutcome.Failed), await _checker.CheckNowAsync(Cancellation));
+        _updates.IsInstalled = false;
+        Assert.Equal(new UpdateCheck(UpdateOutcome.NotInstalled), await _checker.CheckNowAsync(Cancellation));
+    }
+
+    [Fact]
     public async Task Download_reports_success_and_progress()
     {
         var reported = new List<int>();

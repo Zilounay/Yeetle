@@ -6,6 +6,7 @@ using Yeetle.App.Services;
 using Yeetle.Application.Files;
 using Yeetle.Application.Library;
 using Yeetle.Application.Sessions;
+using Yeetle.Application.Settings;
 using Yeetle.Application.Shell;
 using Yeetle.Domain.Clips;
 using Yeetle.Domain.Library;
@@ -130,6 +131,9 @@ public sealed partial class TagFilterItem(string label, TagId? tag, BoxId? box, 
     public bool HasCount => Count > 0;
     public string CountText => string.Format(Strings.TagFilterCount, Count);
 
+    // After a language switch (#20).
+    public void Relocalize() => OnPropertyChanged(nameof(CountText));
+
     public IEnumerable<TagFilterItem> SelfAndBelow() => Children.SelectMany(c => c.SelfAndBelow()).Prepend(this);
 
     // The same boxes and tags, with the same names, in the same order.
@@ -151,6 +155,7 @@ public sealed partial class ExplorerViewModel : ViewModelBase
     private readonly IDialogs _dialogs;
     private readonly IShell _shell;
     private readonly SessionService _sessions;
+    private readonly SettingsService _settings;
     private IReadOnlyList<LibraryClip> _all = [];
     private Dictionary<ClipId, LibraryClip> _byId = [];
     private IReadOnlyList<PastSession> _history = [];
@@ -253,15 +258,19 @@ public sealed partial class ExplorerViewModel : ViewModelBase
     public bool ShowPickASession => IsSessionsMode && HasPastSessions && SelectedSession is null;
 
     public ExplorerViewModel(ClipLibrary library, FileOperations files, PlayerViewModel player, IDialogs dialogs, IShell shell,
-        SessionService sessions)
+        SessionService sessions, SettingsService settings)
     {
         _sessions = sessions;
+        _settings = settings;
         _library = library;
         _files = files;
         _player = player;
         _dialogs = dialogs;
         _shell = shell;
         PropertyChanged += OnFilterChanged;
+        ShowFilters(settings.Values.LibraryView.LastUsed is { } last
+            ? (last.Decisions, last.States)
+            : (settings.Values.LibraryView.DefaultDecisions, settings.Values.LibraryView.DefaultStates));
     }
 
     // Swapped as a whole: adding rows one by one makes the list react to each of them (#78).
@@ -391,11 +400,13 @@ public sealed partial class ExplorerViewModel : ViewModelBase
     [RelayCommand]
     private void ClearFilters()
     {
+        // Back to the defaults chosen in Settings, which are then what opens next time (#20).
+        var view = _settings.Values.LibraryView;
+        ShowFilters((view.DefaultDecisions, view.DefaultStates));
+        _ = _settings.ChangeAsync(s => s.LibraryView.LastUsed = null);
         _loading = true;
         foreach (var filter in AllTagFilters())
             filter.IsChecked = false;
-        (ShowKept, ShowNew, ShowYeeted) = (true, false, false);
-        (ShowPresent, ShowMissing, ShowOffline, ShowDeleted, ShowNeedsAttention) = (true, true, true, false, true);
         IncompleteOnly = false;
         (ShowSessionKept, ShowSessionYeeted, ShowSessionSkipped) = (true, true, true);
         SearchText = string.Empty;
@@ -590,6 +601,14 @@ public sealed partial class ExplorerViewModel : ViewModelBase
 
     private void OnFilterChanged(object? sender, PropertyChangedEventArgs e)
     {
+        // The decision and file-state filters used last are remembered for next time (#20).
+        if (!_loading && e.PropertyName is nameof(ShowKept) or nameof(ShowNew) or nameof(ShowYeeted) or nameof(ShowPresent)
+                or nameof(ShowMissing) or nameof(ShowOffline) or nameof(ShowDeleted) or nameof(ShowNeedsAttention))
+            _ = _settings.ChangeAsync(s => s.LibraryView.LastUsed = new ExplorerFilters
+            {
+                Decisions = ShownDecisions().ToList(),
+                States = ShownStates().ToList(),
+            });
         if (!_loading && e.PropertyName is nameof(SearchText) or nameof(ShowKept) or nameof(ShowNew) or nameof(ShowYeeted)
                 or nameof(ShowPresent) or nameof(ShowMissing) or nameof(ShowOffline) or nameof(ShowDeleted)
                 or nameof(ShowNeedsAttention) or nameof(IncompleteOnly) or nameof(Sort) or nameof(Descending)
@@ -638,13 +657,68 @@ public sealed partial class ExplorerViewModel : ViewModelBase
 
     // A committed session never changes, so the list is rebuilt only when sessions were added; the
     // one picked stays picked (the list control drops its selection when its items are replaced).
-    private void FillPastSessions()
+    private void FillPastSessions(bool force = false)
     {
-        if (_history.Select(s => s.Id).SequenceEqual(PastSessions.Select(p => p.Session.Id)))
+        if (!force && _history.Select(s => s.Id).SequenceEqual(PastSessions.Select(p => p.Session.Id)))
             return;
         var picked = SelectedSession?.Session.Id;
         PastSessions = _history.Select(s => new PastSessionViewModel(s)).ToList();
         SelectedSession = PastSessions.FirstOrDefault(p => p.Session.Id == picked);
+    }
+
+    // After a language switch (#20): every text this page made is made again.
+    public void Relocalize()
+    {
+        FillPastSessions(force: true);
+        foreach (var filter in AllTagFilters())
+            filter.Relocalize();
+        Apply();
+        OnPropertyChanged(nameof(NameHeader));
+        OnPropertyChanged(nameof(DateHeader));
+        OnPropertyChanged(nameof(DurationHeader));
+    }
+
+    // The defaults chosen in Settings, which also forget the last filters used (#20).
+    public void UseDefaultFilters()
+    {
+        var view = _settings.Values.LibraryView;
+        ShowFilters((view.DefaultDecisions, view.DefaultStates));
+        Apply();
+    }
+
+    private void ShowFilters((IReadOnlyCollection<Decision> Decisions, IReadOnlyCollection<FileState> States) filters)
+    {
+        _loading = true;
+        (ShowKept, ShowNew, ShowYeeted) = (filters.Decisions.Contains(Decision.Kept), filters.Decisions.Contains(Decision.New),
+            filters.Decisions.Contains(Decision.Yeeted));
+        (ShowPresent, ShowMissing, ShowOffline, ShowDeleted, ShowNeedsAttention) = (filters.States.Contains(FileState.Present),
+            filters.States.Contains(FileState.Missing), filters.States.Contains(FileState.Offline),
+            filters.States.Contains(FileState.Deleted), filters.States.Contains(FileState.NeedsAttention));
+        _loading = false;
+    }
+
+    private IEnumerable<Decision> ShownDecisions()
+    {
+        if (ShowKept)
+            yield return Decision.Kept;
+        if (ShowNew)
+            yield return Decision.New;
+        if (ShowYeeted)
+            yield return Decision.Yeeted;
+    }
+
+    private IEnumerable<FileState> ShownStates()
+    {
+        if (ShowPresent)
+            yield return FileState.Present;
+        if (ShowMissing)
+            yield return FileState.Missing;
+        if (ShowOffline)
+            yield return FileState.Offline;
+        if (ShowDeleted)
+            yield return FileState.Deleted;
+        if (ShowNeedsAttention)
+            yield return FileState.NeedsAttention;
     }
 
     private void ApplyClips()

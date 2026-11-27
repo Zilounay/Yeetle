@@ -59,12 +59,12 @@
             CornerRadius="12" Padding="14">
         <DockPanel>
             <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,12">
-                <TextBlock FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Text="{x:Static res:Strings.Tags}" />
-                <Button Grid.Column="1" Command="{Binding OpenTypeTagCommand}" ToolTip.Tip="{x:Static res:Strings.TypeTagTip}"
-                        AutomationProperties.Name="{x:Static res:Strings.TypeTag}">
+                <TextBlock FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Text="{res:Tr Tags}" />
+                <Button Grid.Column="1" Command="{Binding OpenTypeTagCommand}" ToolTip.Tip="{res:Tr TypeTagTip}"
+                        AutomationProperties.Name="{res:Tr TypeTag}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Classes="icon" FontSize="14" Text="{StaticResource IconSearch}" />
-                        <TextBlock Text="{x:Static res:Strings.TypeTag}" VerticalAlignment="Center" />
+                        <TextBlock Text="{res:Tr TypeTag}" VerticalAlignment="Center" />
                         <Border Classes="key"><TextBlock FontSize="11" Text="T" /></Border>
                     </StackPanel>
                 </Button>
@@ -72,7 +72,7 @@
 
             <!-- T: type-to-tag with path suggestions (spec §6). Hotkeys pause while typing. -->
             <StackPanel DockPanel.Dock="Top" Spacing="6" Margin="0,0,0,12" IsVisible="{Binding IsTyping}">
-                <TextBox x:Name="TypedBox" Text="{Binding TypedText}" PlaceholderText="{x:Static res:Strings.TypeTagWatermark}" />
+                <TextBox x:Name="TypedBox" Text="{Binding TypedText}" PlaceholderText="{res:Tr TypeTagWatermark}" />
                 <ListBox x:Name="SuggestionList" ItemsSource="{Binding Suggestions}" SelectedItem="{Binding SelectedSuggestion}" MaxHeight="220"
                          Focusable="False">
                     <ListBox.ItemTemplate>
@@ -86,11 +86,11 @@
             <TextBlock DockPanel.Dock="Top" Text="{Binding Message}" TextWrapping="Wrap" Margin="0,0,0,10"
                        Foreground="{StaticResource WarningTextBrush}"
                        IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-            <TextBlock DockPanel.Dock="Top" Text="{x:Static res:Strings.NoTagsYet}" TextWrapping="Wrap"
+            <TextBlock DockPanel.Dock="Top" Text="{res:Tr NoTagsYet}" TextWrapping="Wrap"
                        Opacity="{StaticResource SecondaryTextOpacity}" IsVisible="{Binding IsEmpty}" />
 
             <TextBlock DockPanel.Dock="Bottom" FontSize="12" Opacity="{StaticResource SecondaryTextOpacity}" TextWrapping="Wrap"
-                       Margin="0,10,0,0" Text="{x:Static res:Strings.CarriedOverHint}" IsVisible="{Binding HasCarriedOver}" />
+                       Margin="0,10,0,0" Text="{res:Tr CarriedOverHint}" IsVisible="{Binding HasCarriedOver}" />
 
             <ScrollViewer>
                 <ItemsControl ItemsSource="{Binding Groups}">
@@ -126,14 +126,14 @@
                                                             <TextBlock FontSize="11" Text="{Binding Hotkey}" />
                                                         </Border>
                                                         <TextBlock Text="×" IsVisible="{Binding IsCarriedOver}"
-                                                                   ToolTip.Tip="{x:Static res:Strings.RemoveTagTip}" />
+                                                                   ToolTip.Tip="{res:Tr RemoveTagTip}" />
                                                     </StackPanel>
                                                 </Button>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
                                     <TextBlock FontSize="12" Foreground="{StaticResource WarningTextBrush}" TextWrapping="Wrap"
-                                               Text="{x:Static res:Strings.RequiredBoxEmpty}" IsVisible="{Binding ShowRequiredWarning}" />
+                                               Text="{res:Tr RequiredBoxEmpty}" IsVisible="{Binding ShowRequiredWarning}" />
                                 </StackPanel>
                             </Border>
                         </DataTemplate>

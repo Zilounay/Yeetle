@@ -282,4 +282,21 @@ public class ReviewSessionTests
         Assert.Equal([new DateTime(2026, 11, 27, 21, 0, 0), new DateTime(2026, 11, 27, 21, 1, 0), (DateTime?)null],
             session.Clips.Select(c => c.ReviewedAt));
     }
+
+    [Fact]
+    public void With_sticky_tags_off_the_next_clip_starts_without_tags()
+    {
+        var sticky = true;
+        var session = new ReviewSession(new TagRules(Create()), Enumerable.Range(1, 3).Select(i => new ClipId(i)))
+        {
+            CarryTags = () => sticky,
+        };
+
+        TagAndKeep(session);
+        Assert.Contains(Dota2, session.Current!.Tags);
+        sticky = false;
+        TagAndKeep(session);
+
+        Assert.Empty(session.Current!.Tags);
+    }
 }

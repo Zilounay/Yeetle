@@ -940,4 +940,277 @@ It can no longer be picked. The {1} clip(s) that already carry it keep it under 
   <data name="UnknownTime" xml:space="preserve">
     <value>—</value>
   </data>
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="SettingsButtonTip" xml:space="preserve">
+    <value>Settings (Ctrl+,)</value>
+  </data>
+  <data name="SettingsLibrary" xml:space="preserve">
+    <value>Library</value>
+  </data>
+  <data name="SettingsTags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="SettingsHotkeys" xml:space="preserve">
+    <value>Hotkeys</value>
+  </data>
+  <data name="SettingsPlayer" xml:space="preserve">
+    <value>Player</value>
+  </data>
+  <data name="SettingsReview" xml:space="preserve">
+    <value>Review</value>
+  </data>
+  <data name="SettingsLibraryView" xml:space="preserve">
+    <value>Explorer filters</value>
+  </data>
+  <data name="SettingsData" xml:space="preserve">
+    <value>Data</value>
+  </data>
+  <data name="SettingsGeneral" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="SettingsFileHint" xml:space="preserve">
+    <value>Saved as soon as you change something, in {0}.</value>
+  </data>
+  <data name="SourceFoldersButton" xml:space="preserve">
+    <value>Source folders…</value>
+  </data>
+  <data name="ExtensionsLabel" xml:space="preserve">
+    <value>Video file types</value>
+  </data>
+  <data name="ExtensionsHint" xml:space="preserve">
+    <value>Separated by commas, e.g. .mp4, .mkv. Used from the next scan.</value>
+  </data>
+  <data name="ExtensionsEmpty" xml:space="preserve">
+    <value>Keep at least one file type, or no clip would be found.</value>
+  </data>
+  <data name="TagsSectionHint" xml:space="preserve">
+    <value>Boxes, tags, their colours and hotkeys are edited in the Tag Manager.</value>
+  </data>
+  <data name="DefaultSpeedLabel" xml:space="preserve">
+    <value>Default speed</value>
+  </data>
+  <data name="DefaultVolumeLabel" xml:space="preserve">
+    <value>Default volume</value>
+  </data>
+  <data name="PlayerDefaultsHint" xml:space="preserve">
+    <value>Default speed and volume apply from the next start.</value>
+  </data>
+  <data name="SeekStepLabel" xml:space="preserve">
+    <value>Seek step (seconds)</value>
+  </data>
+  <data name="LongSeekStepLabel" xml:space="preserve">
+    <value>Long seek step, with Ctrl (seconds)</value>
+  </data>
+  <data name="VolumeStepLabel" xml:space="preserve">
+    <value>Volume step</value>
+  </data>
+  <data name="TheatreAtStartLabel" xml:space="preserve">
+    <value>Start in theatre mode</value>
+  </data>
+  <data name="PrepareNeighboursLabel" xml:space="preserve">
+    <value>Prepare the next and previous clips in the background</value>
+  </data>
+  <data name="PrepareNeighboursHint" xml:space="preserve">
+    <value>Makes moving between clips instant. Turn off on PCs with little memory.</value>
+  </data>
+  <data name="StickyTagsLabel" xml:space="preserve">
+    <value>Sticky tags</value>
+  </data>
+  <data name="StickyTagsHint" xml:space="preserve">
+    <value>A clip with no tags yet gets the tags of the clip before it.</value>
+  </data>
+  <data name="MarkerOffsetLabel" xml:space="preserve">
+    <value>Marker offset (seconds)</value>
+  </data>
+  <data name="MarkerOffsetHint" xml:space="preserve">
+    <value>A marker lands this long before the key press, since the moment has just happened.</value>
+  </data>
+  <data name="LibraryViewHint" xml:space="preserve">
+    <value>The filters the Explorer opens with. Once you change the filters in the Explorer, it remembers the last ones you used; changing these brings them back.</value>
+  </data>
+  <data name="BackupCountsLabel" xml:space="preserve">
+    <value>Backups kept, per kind</value>
+  </data>
+  <data name="RestoreBackupLabel" xml:space="preserve">
+    <value>Restore a backup</value>
+  </data>
+  <data name="RestoreBackupHint" xml:space="preserve">
+    <value>Yeetle backs up your library first, then restarts on the backup you pick. Your clips are never touched.</value>
+  </data>
+  <data name="RestoreButton" xml:space="preserve">
+    <value>Restore…</value>
+  </data>
+  <data name="RestoreDuringSession" xml:space="preserve">
+    <value>End the session before restoring a backup.</value>
+  </data>
+  <data name="RestoreBackupTitle" xml:space="preserve">
+    <value>Restore a backup</value>
+  </data>
+  <data name="RestoreBackupMessage" xml:space="preserve">
+    <value>Restore {0}? Your library goes back to that moment: decisions, tags and markers made since are left out (a backup of them is taken first). Yeetle restarts.</value>
+  </data>
+  <data name="RestoreAndRestart" xml:space="preserve">
+    <value>Restore and restart</value>
+  </data>
+  <data name="BackupLabelFormat" xml:space="preserve">
+    <value>{0} · {1:g} · {2}</value>
+  </data>
+  <data name="UpdatesLabel" xml:space="preserve">
+    <value>Updates</value>
+  </data>
+  <data name="CheckNow" xml:space="preserve">
+    <value>Check now</value>
+  </data>
+  <data name="CheckAtStartupLabel" xml:space="preserve">
+    <value>Check for updates at startup</value>
+  </data>
+  <data name="UpdateChecking" xml:space="preserve">
+    <value>Checking…</value>
+  </data>
+  <data name="UpdateFound" xml:space="preserve">
+    <value>Version {0} is available: use the button at the top of the window.</value>
+  </data>
+  <data name="UpdateUpToDate" xml:space="preserve">
+    <value>Yeetle is up to date.</value>
+  </data>
+  <data name="UpdateNotInstalled" xml:space="preserve">
+    <value>This copy runs from a build folder, not from the installer: there is nothing to update.</value>
+  </data>
+  <data name="UpdateCheckFailed" xml:space="preserve">
+    <value>The check failed (offline, or GitHub unreachable).</value>
+  </data>
+  <data name="VersionFormat" xml:space="preserve">
+    <value>Yeetle {0}</value>
+  </data>
+  <data name="ActionKeep" xml:space="preserve">
+    <value>Keep</value>
+  </data>
+  <data name="ActionYeet" xml:space="preserve">
+    <value>Yeet</value>
+  </data>
+  <data name="ActionRescan" xml:space="preserve">
+    <value>Rescan the folders</value>
+  </data>
+  <data name="ActionUndo" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="ActionStopSession" xml:space="preserve">
+    <value>Stop the session / back to the library</value>
+  </data>
+  <data name="ActionTypeTag" xml:space="preserve">
+    <value>Type a tag</value>
+  </data>
+  <data name="ActionAddMarker" xml:space="preserve">
+    <value>Add a marker</value>
+  </data>
+  <data name="ActionTogglePause" xml:space="preserve">
+    <value>Play / pause</value>
+  </data>
+  <data name="ActionNextClip" xml:space="preserve">
+    <value>Next clip (skip)</value>
+  </data>
+  <data name="ActionPreviousClip" xml:space="preserve">
+    <value>Previous clip</value>
+  </data>
+  <data name="ActionSeekForward" xml:space="preserve">
+    <value>Seek forward</value>
+  </data>
+  <data name="ActionSeekBack" xml:space="preserve">
+    <value>Seek back</value>
+  </data>
+  <data name="ActionLongSeekForward" xml:space="preserve">
+    <value>Long seek forward</value>
+  </data>
+  <data name="ActionLongSeekBack" xml:space="preserve">
+    <value>Long seek back</value>
+  </data>
+  <data name="ActionVolumeUp" xml:space="preserve">
+    <value>Volume up</value>
+  </data>
+  <data name="ActionVolumeDown" xml:space="preserve">
+    <value>Volume down</value>
+  </data>
+  <data name="ActionMute" xml:space="preserve">
+    <value>Mute</value>
+  </data>
+  <data name="ActionNextAudioTrack" xml:space="preserve">
+    <value>Next audio track</value>
+  </data>
+  <data name="ActionSlower" xml:space="preserve">
+    <value>Slower</value>
+  </data>
+  <data name="ActionFaster" xml:space="preserve">
+    <value>Faster</value>
+  </data>
+  <data name="ActionNormalSpeed" xml:space="preserve">
+    <value>Normal speed</value>
+  </data>
+  <data name="ActionNextFrame" xml:space="preserve">
+    <value>Next frame</value>
+  </data>
+  <data name="ActionTheatreMode" xml:space="preserve">
+    <value>Theatre mode</value>
+  </data>
+  <data name="ActionMarkerWindow" xml:space="preserve">
+    <value>Markers of the selected clips</value>
+  </data>
+  <data name="ActionSettings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="ActionSpeedFormat" xml:space="preserve">
+    <value>Speed {0}</value>
+  </data>
+  <data name="HotkeysHint" xml:space="preserve">
+    <value>One key, one action. Click + Key, then press the key; Esc cancels. Changes work at once.</value>
+  </data>
+  <data name="AddKey" xml:space="preserve">
+    <value>+ Key</value>
+  </data>
+  <data name="RemoveKeyTip" xml:space="preserve">
+    <value>Remove this key</value>
+  </data>
+  <data name="PressKeyFor" xml:space="preserve">
+    <value>Press the key for “{0}”… (Esc cancels)</value>
+  </data>
+  <data name="KeyTakenByAction" xml:space="preserve">
+    <value>{0} is already used by “{1}”.</value>
+  </data>
+  <data name="KeyTakenByTag" xml:space="preserve">
+    <value>{0} is already the hotkey of the tag “{1}”.</value>
+  </data>
+  <data name="RestoreDefaultKeys" xml:space="preserve">
+    <value>Restore the default keys</value>
+  </data>
+  <data name="RestoreDefaultKeysMessage" xml:space="preserve">
+    <value>Every action gets its default keys back. Tag hotkeys stay as they are.</value>
+  </data>
+  <data name="TagHotkeysLabel" xml:space="preserve">
+    <value>Tag hotkeys</value>
+  </data>
+  <data name="TagHotkeysHint" xml:space="preserve">
+    <value>Set in the Tag Manager, on each tag.</value>
+  </data>
+  <data name="NoKey" xml:space="preserve">
+    <value>No key</value>
+  </data>
+  <data name="LanguageLabel" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="LanguageHint" xml:space="preserve">
+    <value>Applies at once, no restart needed.</value>
+  </data>
+  <data name="LanguageEnglish" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="LanguageFrench" xml:space="preserve">
+    <value>Français</value>
+  </data>
+  <data name="SwitchOn" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="SwitchOff" xml:space="preserve">
+    <value>Off</value>
+  </data>
 </root>

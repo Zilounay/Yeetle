@@ -16,6 +16,7 @@ using Yeetle.Infrastructure.Clips;
 using Yeetle.Infrastructure.Data;
 using Yeetle.Infrastructure.Diagnostics;
 using Yeetle.Infrastructure.Files;
+using Yeetle.Infrastructure.Settings;
 using Yeetle.Infrastructure.Shell;
 using Yeetle.Infrastructure.Tagging;
 using Yeetle.Infrastructure.Updates;
@@ -32,6 +33,11 @@ internal static class Composition
             .AddSingleton(settings.Values)
             .AddSingleton(settings.Values.Backups)
             .AddSingleton(settings.Values.Library)
+            .AddSingleton(settings.Values.Player)
+            .AddSingleton(settings.Values.Review)
+            .AddSingleton(settings.Values.General)
+            .AddSingleton<ISettingsStore>(new JsonSettingsStore(paths.Settings))
+            .AddSingleton<SettingsService>()
             .AddSingleton(paths)
             .AddSingleton(TimeProvider.System)
             .AddSingleton(activation)
@@ -72,8 +78,11 @@ internal static class Composition
             // App
             .AddSingleton<IFolderPicker, StorageFolderPicker>()
             .AddSingleton<IDialogs>(s => new WindowDialogs(s.GetRequiredService<SourceFoldersViewModel>,
-                s.GetRequiredService<TagManagerViewModel>, s.GetRequiredService<IShell>()))
+                s.GetRequiredService<TagManagerViewModel>, s.GetRequiredService<SettingsViewModel>, s.GetRequiredService<IShell>()))
             .AddTransient<TagManagerViewModel>()
+            .AddTransient<SettingsViewModel>()
+            .AddTransient<HotkeysViewModel>()
+            .AddSingleton<IAppRestart, DesktopRestart>()
             .AddTransient<SourceFoldersViewModel>()
             .AddSingleton<PlayerViewModel>()
             // One each for the session and the clip editor.

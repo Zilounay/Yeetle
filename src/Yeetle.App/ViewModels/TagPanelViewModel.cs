@@ -61,7 +61,7 @@ public sealed partial class TagPanelViewModel : ViewModelBase
     private const string PathSeparator = " › ";
     private const string RuleSeparator = " · ";
 
-    private readonly HashSet<string> _actionKeys;
+    private readonly LoadedSettings _settings;
     private readonly IDialogs _dialogs;
     private readonly List<(Hotkey Key, TagId Tag)> _tagKeys = [];
     private IClipEditing? _session;
@@ -95,7 +95,7 @@ public sealed partial class TagPanelViewModel : ViewModelBase
     public TagPanelViewModel(LoadedSettings settings, IDialogs dialogs)
     {
         _dialogs = dialogs;
-        _actionKeys = settings.Values.Hotkeys.Values.SelectMany(k => k).Select(Normalize).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        _settings = settings;
     }
 
     public ObservableCollection<ChipGroupViewModel> Groups { get; } = [];
@@ -110,10 +110,13 @@ public sealed partial class TagPanelViewModel : ViewModelBase
         IsTyping = false;
         if (session is not null)
         {
+            // Read now, not once: action keys can change in Settings (#20).
+            var actionKeys = _settings.Values.Hotkeys.Values.SelectMany(k => k).Select(Normalize)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
             var clashes = new List<string>();
             foreach (var (tag, text) in session.Catalog.Hotkeys)
             {
-                if (_actionKeys.Contains(Normalize(text)) || Hotkey.Parse(text) is not { } key)
+                if (actionKeys.Contains(Normalize(text)) || Hotkey.Parse(text) is not { } key)
                     clashes.Add(string.Format(Strings.TagHotkeyClash, text, session.Catalog.Vocabulary.Tag(tag).Name));
                 else
                     _tagKeys.Add((key, tag));
@@ -183,6 +186,13 @@ public sealed partial class TagPanelViewModel : ViewModelBase
             else
                 items.Insert(i, wanted[i]);
         }
+    }
+
+    // After a language switch (#20): the box titles are made again.
+    public void Relocalize()
+    {
+        _groupsCatalog = null;
+        Refresh();
     }
 
     public void ClearRequiredWarning() => _showRequiredWarning = false;

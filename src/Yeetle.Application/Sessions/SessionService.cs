@@ -1,6 +1,7 @@
 using Yeetle.Application.Data;
 using Yeetle.Application.Diagnostics;
 using Yeetle.Application.Library;
+using Yeetle.Application.Settings;
 using Yeetle.Domain.Sessions;
 using Yeetle.Domain.Tagging;
 
@@ -9,7 +10,8 @@ namespace Yeetle.Application.Sessions;
 // Starts, resumes and ends review sessions (spec §5). Database work runs in the background;
 // journal entries are written one after another, in the order the actions happened.
 public sealed class SessionService(
-    ISessionStore store, ITagStore tags, IBackups backups, ScanScheduler scans, TimeProvider clock, ILog log)
+    ISessionStore store, ITagStore tags, IBackups backups, ScanScheduler scans, TimeProvider clock, ILog log,
+    ReviewSettings reviewSettings)
 {
     private readonly SemaphoreSlim _journalGate = new(1, 1);
     private Task _journalTail = Task.CompletedTask;
@@ -33,7 +35,11 @@ public sealed class SessionService(
             clips.Select(c => new ClipReview(c.Id, Domain.Clips.Decision.New, c.Tags, [], Visited: false)
             {
                 Markers = c.Markers,
-            }), position: 0) { Clock = () => Now };
+            }), position: 0)
+        {
+            Clock = () => Now,
+            CarryTags = () => reviewSettings.StickyTags,
+        };
         var session = Create(id, review, clips, catalog);
         Journal(id, session.Snapshot());
         log.Info($"Session {id} started with {clips.Count} clips.");
@@ -50,6 +56,7 @@ public sealed class SessionService(
         var review = new ReviewSession(new TagRules(catalog.Vocabulary), reviews, unfinished.Snapshot.Position)
         {
             Clock = () => Now,
+            CarryTags = () => reviewSettings.StickyTags,
         };
         // Tags deleted since the journal was written are dropped.
         review.UseVocabulary(catalog.Vocabulary);

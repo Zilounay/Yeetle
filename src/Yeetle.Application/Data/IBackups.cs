@@ -24,4 +24,10 @@ public interface IBackups
 
     // Puts the backup in place of the database. The current file is renamed, never deleted.
     void Restore(BackupInfo backup);
+
+    // Settings' restore (#20): takes a safety backup now and restores at the next start.
+    void ScheduleRestore(BackupInfo backup);
+
+    // Called first thing at startup; true when a scheduled restore was put in place.
+    bool ApplyScheduledRestore();
 }

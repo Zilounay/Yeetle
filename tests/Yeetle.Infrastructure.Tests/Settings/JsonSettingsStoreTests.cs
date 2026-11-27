@@ -84,4 +84,40 @@ public sealed class JsonSettingsStoreTests : IDisposable
         Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath)!);
         File.WriteAllText(SettingsPath, json);
     }
+
+    [Fact]
+    public async Task A_change_is_saved_and_read_back_with_its_new_sections()
+    {
+        var store = new JsonSettingsStore(SettingsPath);
+        var settings = new SettingsService(store.Load(), store, new Data.NullLog());
+
+        await settings.ChangeAsync(s =>
+        {
+            s.Review.StickyTags = false;
+            s.General.CheckForUpdatesAtStartup = false;
+            s.LibraryView.LastUsed = new ExplorerFilters { Decisions = [Domain.Clips.Decision.New], States = [] };
+        });
+
+        var reread = new JsonSettingsStore(SettingsPath).Load();
+        Assert.Null(reread.Problem);
+        Assert.False(reread.Values.Review.StickyTags);
+        Assert.False(reread.Values.General.CheckForUpdatesAtStartup);
+        Assert.Equal([Domain.Clips.Decision.New], reread.Values.LibraryView.LastUsed!.Decisions);
+        Assert.Contains("\"New\"", await File.ReadAllTextAsync(SettingsPath, TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public void A_file_from_before_the_new_sections_gets_their_defaults()
+    {
+        Write("""{ "player": { "seekSeconds": 7 } }""");
+
+        var values = new JsonSettingsStore(SettingsPath).Load().Values;
+
+        Assert.Equal(7, values.Player.SeekSeconds);
+        Assert.True(values.Player.PrepareNeighbours);
+        Assert.True(values.Review.StickyTags);
+        Assert.True(values.General.CheckForUpdatesAtStartup);
+        Assert.Equal([Domain.Clips.Decision.Kept], values.LibraryView.DefaultDecisions);
+        Assert.Null(values.LibraryView.LastUsed);
+    }
 }

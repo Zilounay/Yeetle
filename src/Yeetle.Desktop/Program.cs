@@ -19,17 +19,26 @@ internal static class Program
         // First of all (#22): when the installer or an update runs Yeetle to finish its work, this
         // does it and exits, before any window or lock exists.
         VelopackApp.Build().Run();
+        int exitCode;
         // One instance per data folder, so a test copy on a throwaway folder can run beside the real one.
-        using var instance = new SingleInstance(AppPaths.Default.Root);
-        if (!instance.IsFirst)
+        using (var instance = new SingleInstance(AppPaths.Default.Root))
         {
-            instance.ActivateFirst();
-            return 0;
+            if (!instance.IsFirst)
+            {
+                instance.ActivateFirst();
+                return 0;
+            }
+            // Read before anything starts, since every part may depend on the settings.
+            var settings = new JsonSettingsStore(AppPaths.Default.Settings).Load();
+            // Before any text is made (#20).
+            App.Resources.Loc.Instance.Use(settings.Values.General.Language);
+            using var services = Composition.CreateServices(settings, AppPaths.Default, instance);
+            exitCode = BuildAvaloniaApp(services).StartWithClassicDesktopLifetime(args);
         }
-        // Read before anything starts, since every part may depend on the settings.
-        var settings = new JsonSettingsStore(AppPaths.Default.Settings).Load();
-        using var services = Composition.CreateServices(settings, AppPaths.Default, instance);
-        return BuildAvaloniaApp(services).StartWithClassicDesktopLifetime(args);
+        // A restart asked from Settings (#20): the lock is released above, so the new copy is the first.
+        if (DesktopRestart.Requested && Environment.ProcessPath is { } exe)
+            System.Diagnostics.Process.Start(exe, args);
+        return exitCode;
     }
 
     // Also used by the visual designer, which never creates the main window.

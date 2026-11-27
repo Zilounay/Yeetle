@@ -83,4 +83,24 @@ public class BackupTests : IDisposable
 
         Assert.Equal(DatabaseState.Ready, _data.Startup.Prepare().State);
     }
+
+    [Fact]
+    public void A_scheduled_restore_takes_a_safety_backup_and_happens_at_the_next_start()
+    {
+        _data.Backups.Create(BackupPool.Session);
+        var chosen = _data.Backups.List().First(b => b.Pool == BackupPool.Session);
+        using (var connection = _data.Connections.Open())
+            connection.Execute("INSERT INTO Sessions (StartedAt) VALUES ('2026-11-27T20:00:00');");
+        Tick();
+
+        _data.Backups.ScheduleRestore(chosen);
+        Assert.Contains(_data.Backups.List(), b => b.Pool == BackupPool.Safety);
+        Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+        _data.Startup.Prepare();
+
+        using var reopened = _data.Connections.Open();
+        Assert.Equal(0, reopened.ExecuteScalar<int>("SELECT COUNT(*) FROM Sessions;"));
+        Assert.False(File.Exists(_data.Paths.RestorePending));
+        Assert.Single(Directory.GetFiles(_data.Paths.Root, "yeetle.db.replaced-*")); // with its WAL side files
+    }
 }
