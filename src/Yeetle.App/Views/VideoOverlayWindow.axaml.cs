@@ -2,6 +2,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 using Yeetle.App.Input;
 using Yeetle.App.Services;
 using Yeetle.App.ViewModels;
@@ -29,7 +31,63 @@ public partial class VideoOverlayWindow : Window
         SeekBar.AddHandler(PointerPressedEvent, (_, _) => SetScrubbing(true), RoutingStrategies.Tunnel, true);
         SeekBar.AddHandler(PointerReleasedEvent, (_, _) => SetScrubbing(false), RoutingStrategies.Tunnel, true);
         SeekBar.AddHandler(PointerCaptureLostEvent, (_, _) => SetScrubbing(false), RoutingStrategies.Tunnel, true);
+        // The controls rest out of sight while the mouse rests (#93).
+        _idleTimer = new DispatcherTimer { Interval = IdleDelay };
+        _idleTimer.Tick += (_, _) => GoIdle();
+        PointerMoved += (_, _) => WakeUp();
+        PointerEntered += (_, _) => WakeUp();
+        // A list opened from the sound block is a window of its own: the block stays open meanwhile.
+        foreach (var list in new[] { AudioTracks, AudioDevices })
+        {
+            list.DropDownOpened += (_, _) => SetPinned(true);
+            list.DropDownClosed += (_, _) => SetPinned(false);
+        }
     }
+
+    // How long the mouse may rest over the video before the controls fade out (#93).
+    private static readonly TimeSpan IdleDelay = TimeSpan.FromSeconds(2.5);
+
+    private static readonly Cursor HiddenCursor = new(StandardCursorType.None);
+
+    private readonly DispatcherTimer _idleTimer;
+    private bool _listOpen;
+
+    private void WakeUp()
+    {
+        Root.Classes.Set(IdleClass, false);
+        Cursor = Cursor.Default;
+        _idleTimer.Stop();
+        _idleTimer.Start();
+    }
+
+    // Not while the pointer is on a control, a list is open or the seek bar is being dragged: the
+    // controls would vanish from under it.
+    private void GoIdle()
+    {
+        _idleTimer.Stop();
+        if (_listOpen || IsScrubbing() || Root.GetVisualDescendants().OfType<Control>()
+                .Any(c => c.Classes.Contains(ChromeClass) && c.IsPointerOver))
+        {
+            _idleTimer.Start();
+            return;
+        }
+        Root.Classes.Set(IdleClass, true);
+        Cursor = HiddenCursor;
+    }
+
+    private void SetPinned(bool open)
+    {
+        _listOpen = open;
+        SoundBlock.Classes.Set(PinnedClass, open);
+        if (!open)
+            WakeUp();
+    }
+
+    private bool IsScrubbing() => DataContext is MainWindowViewModel { Player.IsScrubbing: true };
+
+    private const string IdleClass = "idle";
+    private const string ChromeClass = "chrome";
+    private const string PinnedClass = "pinned";
 
     // Shows the overlay over the area and keeps it there as the owner moves or resizes.
     public void Follow(Window owner, Control area)
@@ -93,6 +151,8 @@ public partial class VideoOverlayWindow : Window
         Show(_owner);
         WindowStacking.PlaceAbove(this, _owner);
         FitToArea();
+        // The controls show when the video appears, then rest like after any mouse move (#93).
+        WakeUp();
     }
 
     private void FitToArea()

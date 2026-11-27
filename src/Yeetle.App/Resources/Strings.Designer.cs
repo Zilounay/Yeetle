@@ -2951,6 +2951,15 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Speed and theatre mode.
+        /// </summary>
+        public static string SpeedBlockTip {
+            get {
+                return ResourceManager.GetString("SpeedBlockTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0}x.
         /// </summary>
         public static string SpeedFormat {

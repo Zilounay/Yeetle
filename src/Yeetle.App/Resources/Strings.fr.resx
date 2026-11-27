@@ -1213,4 +1213,7 @@ On ne pourra plus le choisir. Les {1} clip(s) qui l'ont déjà le gardent sous c
   <data name="SwitchOff" xml:space="preserve">
     <value>Désactivé</value>
   </data>
+  <data name="SpeedBlockTip" xml:space="preserve">
+    <value>Vitesse et mode théâtre</value>
+  </data>
 </root>

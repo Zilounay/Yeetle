@@ -94,6 +94,9 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
 
     public IReadOnlyList<SpeedOptionViewModel> Speeds { get; }
 
+    // The collapsed speed block shows the speed in use: "1.5x" (#93, icon to decide in #94).
+    public string SpeedLabel => string.Format(Strings.SpeedFormat, _player.Speed);
+
     // After a language switch (#20).
     public void Relocalize()
     {
@@ -101,6 +104,7 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
             speed.Relocalize();
         OnPropertyChanged(nameof(PlayPauseLabel));
         OnPropertyChanged(nameof(MuteLabel));
+        OnPropertyChanged(nameof(SpeedLabel));
     }
 
     public string PlayPauseLabel => IsPlaying ? Strings.Pause : Strings.Play;
@@ -264,6 +268,7 @@ public sealed partial class PlayerViewModel : ViewModelBase, IDisposable
             Message = string.Empty;
         foreach (var speed in Speeds)
             speed.IsCurrent = speed.Speed.Equals(_player.Speed);
+        OnPropertyChanged(nameof(SpeedLabel));
     }
 
     private void SyncAudio() => Sync(() =>

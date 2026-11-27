@@ -1213,4 +1213,7 @@ It can no longer be picked. The {1} clip(s) that already carry it keep it under 
   <data name="SwitchOff" xml:space="preserve">
     <value>Off</value>
   </data>
+  <data name="SpeedBlockTip" xml:space="preserve">
+    <value>Speed and theatre mode</value>
+  </data>
 </root>
