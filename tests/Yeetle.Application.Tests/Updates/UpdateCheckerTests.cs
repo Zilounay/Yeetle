@@ -7,6 +7,8 @@ public class UpdateCheckerTests
 {
     private static readonly AvailableUpdate Newer = new("0.0.2");
 
+    private static CancellationToken Cancellation => TestContext.Current.CancellationToken;
+
     private readonly FakeUpdates _updates = new();
     private readonly RecordingLog _log = new();
     private readonly UpdateChecker _checker;
@@ -18,7 +20,7 @@ public class UpdateCheckerTests
     {
         _updates.Found = Newer;
 
-        Assert.Equal(Newer, await _checker.CheckAsync());
+        Assert.Equal(Newer, await _checker.CheckAsync(Cancellation));
     }
 
     [Fact]
@@ -27,7 +29,7 @@ public class UpdateCheckerTests
         _updates.IsInstalled = false;
         _updates.Found = Newer;
 
-        Assert.Null(await _checker.CheckAsync());
+        Assert.Null(await _checker.CheckAsync(Cancellation));
         Assert.Equal(0, _updates.Checks);
     }
 
@@ -36,7 +38,7 @@ public class UpdateCheckerTests
     {
         _updates.CheckFailure = new HttpRequestException("offline");
 
-        Assert.Null(await _checker.CheckAsync());
+        Assert.Null(await _checker.CheckAsync(Cancellation));
         Assert.Single(_log.Errors);
     }
 
@@ -45,7 +47,7 @@ public class UpdateCheckerTests
     {
         _updates.CheckFailure = new OperationCanceledException();
 
-        await Assert.ThrowsAsync<OperationCanceledException>(() => _checker.CheckAsync());
+        await Assert.ThrowsAsync<OperationCanceledException>(() => _checker.CheckAsync(Cancellation));
     }
 
     [Fact]
@@ -53,7 +55,7 @@ public class UpdateCheckerTests
     {
         var reported = new List<int>();
 
-        Assert.True(await _checker.DownloadAsync(Newer, reported.Add));
+        Assert.True(await _checker.DownloadAsync(Newer, reported.Add, Cancellation));
         Assert.Equal([50, 100], reported);
     }
 
@@ -62,7 +64,7 @@ public class UpdateCheckerTests
     {
         _updates.DownloadFailure = new IOException("disk full");
 
-        Assert.False(await _checker.DownloadAsync(Newer, _ => { }));
+        Assert.False(await _checker.DownloadAsync(Newer, _ => { }, Cancellation));
         Assert.Single(_log.Errors);
     }
 
