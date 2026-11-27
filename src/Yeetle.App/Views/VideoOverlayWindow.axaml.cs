@@ -48,8 +48,7 @@ public partial class VideoOverlayWindow : Window
         };
         if (!_wanted || _dialogs > 0)
             return;
-        Show(owner);
-        FitToArea();
+        ShowOverOwner();
     }
 
     // Hidden while the video area is (home, the Explorer page): a window over them would take their clicks.
@@ -80,14 +79,20 @@ public partial class VideoOverlayWindow : Window
         if (_owner is null || shown == IsVisible)
             return;
         if (shown)
-        {
-            Show(_owner);
-            FitToArea();
-        }
+            ShowOverOwner();
         else
-        {
             Hide();
-        }
+    }
+
+    // Shown without taking the focus, this window can stay below the main one and be hidden by it:
+    // it is put back right above it.
+    private void ShowOverOwner()
+    {
+        if (_owner is null)
+            return;
+        Show(_owner);
+        WindowStacking.PlaceAbove(this, _owner);
+        FitToArea();
     }
 
     private void FitToArea()
