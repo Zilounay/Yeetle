@@ -110,6 +110,9 @@
                                             <Border Classes="key" IsVisible="{Binding HasHotkey}" VerticalAlignment="Center">
                                                 <TextBlock FontSize="11" Text="{Binding Hotkey}" />
                                             </Border>
+                                            <!-- Boxes under this tag: a click opens them below the card (#81). -->
+                                            <TextBlock Text="{Binding ExpandGlyph}" IsVisible="{Binding HasBoxes}" VerticalAlignment="Center"
+                                                       Opacity="{StaticResource SecondaryTextOpacity}" />
                                         </StackPanel>
                                     </Button>
                                 </DataTemplate>
@@ -117,21 +120,9 @@
                         </ItemsControl>
                         <Button Height="32" Content="{x:Static res:Strings.AddTag}" Command="{Binding AddTag}" />
                     </WrapPanel>
-                    <ItemsControl ItemsSource="{Binding TagsWithBoxes}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="vm:TagNodeViewModel">
-                                <StackPanel Margin="{StaticResource NestedIndent}" Spacing="6">
-                                    <Button Classes="plain" Command="{Binding ToggleExpandedCommand}" AutomationProperties.Name="{Binding UnderTitle}">
-                                        <StackPanel Orientation="Horizontal" Spacing="6">
-                                            <TextBlock Text="{Binding ExpandGlyph}" />
-                                            <TextBlock Text="{Binding UnderTitle}" Opacity="{StaticResource SecondaryTextOpacity}" />
-                                        </StackPanel>
-                                    </Button>
-                                    <ItemsControl ItemsSource="{Binding Boxes}" IsVisible="{Binding IsExpanded}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                    <!-- The boxes under the selected tag (or above the selection), nested (#81). -->
+                    <ItemsControl ItemsSource="{Binding OpenBoxes}" Margin="{StaticResource NestedIndent}"
+                                  IsVisible="{Binding HasOpenBoxes}" />
                 </StackPanel>
             </Border>
         </DataTemplate>
@@ -165,8 +156,24 @@
                 <StackPanel>
                     <TextBlock Text="{x:Static res:Strings.NoTagsInManager}" TextWrapping="Wrap" Margin="0,0,0,12"
                                IsVisible="{Binding IsEmpty}" Opacity="{StaticResource SecondaryTextOpacity}" />
+                    <!-- Placeholder cards until the tags are read (#78). -->
+                    <StackPanel Spacing="12" IsVisible="{Binding !IsLoaded}">
+                        <Border Classes="card">
+                            <StackPanel Spacing="12">
+                                <Border Classes="skeleton" Width="140" Height="16" />
+                                <Border Classes="skeleton" Width="420" Height="24" />
+                            </StackPanel>
+                        </Border>
+                        <Border Classes="card">
+                            <StackPanel Spacing="12">
+                                <Border Classes="skeleton" Width="110" Height="16" />
+                                <Border Classes="skeleton" Width="300" Height="24" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
                     <ItemsControl ItemsSource="{Binding Boxes}" />
-                    <Button Content="{x:Static res:Strings.AddTopLevelBox}" Command="{Binding AddTopLevelBoxCommand}" />
+                    <Button Content="{x:Static res:Strings.AddTopLevelBox}" Command="{Binding AddTopLevelBoxCommand}"
+                            IsVisible="{Binding IsLoaded}" />
                 </StackPanel>
             </ScrollViewer>
         </DockPanel>

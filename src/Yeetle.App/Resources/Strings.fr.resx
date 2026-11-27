@@ -363,9 +363,6 @@ Fermez tout programme qui pourrait l'utiliser, puis relancez Yeetle.</value>
   <data name="AddTag" xml:space="preserve">
     <value>+ Tag</value>
   </data>
-  <data name="BoxesUnderTag" xml:space="preserve">
-    <value>Sous {0} · {1} boîte(s)</value>
-  </data>
   <data name="DirectlyUnderTag" xml:space="preserve">
     <value>Directement sous {0}</value>
   </data>

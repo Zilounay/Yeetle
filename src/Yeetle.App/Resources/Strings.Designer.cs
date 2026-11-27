@@ -319,15 +319,6 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Under {0} · {1} box(es).
-        /// </summary>
-        public static string BoxesUnderTag {
-            get {
-                return ResourceManager.GetString("BoxesUnderTag", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string Cancel {
