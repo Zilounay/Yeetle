@@ -892,4 +892,7 @@ On ne pourra plus le choisir. Les {1} clip(s) qui l'ont déjà le gardent sous c
   <data name="DiscardAndUpdate" xml:space="preserve">
     <value>Abandonner et mettre à jour</value>
   </data>
+  <data name="TagFilterCount" xml:space="preserve">
+    <value>({0})</value>
+  </data>
 </root>

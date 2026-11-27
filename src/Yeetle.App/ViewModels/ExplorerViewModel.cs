@@ -43,20 +43,39 @@ public sealed class ExplorerRowViewModel(LibraryClip clip, string tags)
     public bool IsYeeted => Clip.Decision == Decision.Yeeted;
 }
 
-// A line of the tag filter: a box title, or a tag to tick. Boxes under a tag are indented.
-public sealed partial class TagFilterItem(string label, int level, TagId? tag) : ObservableObject
+// A node of the tag filter tree (#83): a box title, or a tag to tick. What sits under a tag is
+// folded into it, as folders in Windows Explorer, so a game's hundreds of tags only show when
+// the game is opened.
+public sealed partial class TagFilterItem(string label, TagId? tag, BoxId? box, IReadOnlyList<TagFilterItem> children)
+    : ObservableObject
 {
-    private const double IndentPerLevel = 16;
-
     [ObservableProperty]
     private bool _isChecked;
 
+    // Box titles start open, so opening a tag shows its boxes with their tags; tags start folded.
+    [ObservableProperty]
+    private bool _isExpanded = tag is null;
+
+    // How many clips of the library carry the tag, shown smaller and greyer after its name.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CountText), nameof(HasCount))]
+    private int _count;
+
     public string Label { get; } = label;
-    public int Level { get; } = level;
     public TagId? Tag { get; } = tag;
+    public BoxId? Box { get; } = box;
+    public IReadOnlyList<TagFilterItem> Children { get; } = children;
     public bool IsTag => Tag is not null;
     public bool IsHeader => Tag is null;
-    public Avalonia.Thickness Indent { get; } = new(level * IndentPerLevel, 0, 0, 0);
+    public bool HasCount => Count > 0;
+    public string CountText => string.Format(Strings.TagFilterCount, Count);
+
+    public IEnumerable<TagFilterItem> SelfAndBelow() => Children.SelectMany(c => c.SelfAndBelow()).Prepend(this);
+
+    // The same boxes and tags, with the same names, in the same order.
+    public bool SameShape(TagFilterItem other) =>
+        Label == other.Label && Tag == other.Tag && Box == other.Box && Children.Count == other.Children.Count
+        && Children.Zip(other.Children).All(pair => pair.First.SameShape(pair.Second));
 }
 
 // The Explorer (spec §8): every clip of the library, filtered, sorted and acted on.
@@ -157,7 +176,7 @@ public sealed partial class ExplorerViewModel : ViewModelBase
 
     public bool ShowEmpty => IsLoaded && IsEmpty;
 
-    public bool HasTagFilters => TagFilters.Any(f => f.IsTag);
+    public bool HasTagFilters => AllTagFilters().Any(f => f.IsTag);
 
     public string NameHeader => Strings.ColumnName + Arrow(LibrarySort.Name);
     public string DateHeader => Strings.ColumnRecorded + Arrow(LibrarySort.RecordedAt);
@@ -191,6 +210,7 @@ public sealed partial class ExplorerViewModel : ViewModelBase
             (_all, var catalog) = await _library.LoadWithCatalogAsync();
             FillTagFilters(catalog);
             _catalog = catalog;
+            CountTags();
             Apply();
             IsLoaded = true;
         }
@@ -246,7 +266,7 @@ public sealed partial class ExplorerViewModel : ViewModelBase
     private void ClearFilters()
     {
         _loading = true;
-        foreach (var filter in TagFilters)
+        foreach (var filter in AllTagFilters())
             filter.IsChecked = false;
         (ShowKept, ShowNew, ShowYeeted) = (true, false, false);
         (ShowPresent, ShowMissing, ShowOffline, ShowDeleted, ShowNeedsAttention) = (true, true, true, false, true);
@@ -379,40 +399,61 @@ public sealed partial class ExplorerViewModel : ViewModelBase
         await LoadAsync();
     }
 
-    // Only when the tags changed: with the starter tags this list has over a thousand lines, and
-    // rebuilding it on every visit froze the window for most of a second (#78).
+    // Only when the tags changed: with the starter tags this tree has over a thousand nodes, and
+    // rebuilding it on every visit froze the window (#78). What was ticked or opened stays so.
     private void FillTagFilters(TagCatalog catalog)
     {
         var vocabulary = catalog.Vocabulary;
-        var lines = new List<(string Label, int Level, TagId? Tag)>();
-        AddBoxes(null, level: 0);
-        if (lines.SequenceEqual(TagFilters.Select(f => (f.Label, f.Level, f.Tag))))
+        var roots = Nodes(null);
+        if (roots.Count == TagFilters.Count && roots.Zip(TagFilters).All(pair => pair.First.SameShape(pair.Second)))
             return;
-        var checkedTags = TagFilters.Where(f => f.IsChecked).Select(f => f.Tag).ToHashSet();
-        foreach (var filter in TagFilters)
+        var old = AllTagFilters().ToList();
+        var checkedTags = old.Where(f => f.IsChecked).Select(f => f.Tag).OfType<TagId>().ToHashSet();
+        var openTags = old.Where(f => f is { IsTag: true, IsExpanded: true }).Select(f => f.Tag).OfType<TagId>().ToHashSet();
+        var closedBoxes = old.Where(f => f is { IsHeader: true, IsExpanded: false }).Select(f => f.Box).OfType<BoxId>().ToHashSet();
+        foreach (var filter in old)
             filter.PropertyChanged -= OnTagFilterChanged;
-        var filters = lines.Select(line => new TagFilterItem(line.Label, line.Level, line.Tag)).ToList();
-        foreach (var filter in filters)
+        foreach (var filter in roots.SelectMany(r => r.SelfAndBelow()))
         {
-            filter.IsChecked = filter.Tag is { } tag && checkedTags.Contains(tag);
+            if (filter.Tag is { } tag)
+            {
+                filter.IsChecked = checkedTags.Contains(tag);
+                filter.IsExpanded = openTags.Contains(tag);
+            }
+            else if (filter.Box is { } box)
+            {
+                filter.IsExpanded = !closedBoxes.Contains(box);
+            }
             filter.PropertyChanged += OnTagFilterChanged;
         }
-        TagFilters = filters;
+        TagFilters = roots;
 
-        void AddBoxes(TagId? parent, int level)
+        // A named box is a title holding its tags; the tags of an unnamed box sit right under the
+        // tag above it.
+        List<TagFilterItem> Nodes(TagId? parent)
         {
+            var nodes = new List<TagFilterItem>();
             foreach (var box in vocabulary.BoxesUnder(parent))
             {
+                var tags = vocabulary.TagsIn(box.Id).Select(tag => new TagFilterItem(tag.Name, tag.Id, null, Nodes(tag.Id))).ToList();
                 if (box.IsNamed)
-                    lines.Add((box.Name, level, null));
-                foreach (var tag in vocabulary.TagsIn(box.Id))
-                {
-                    lines.Add((tag.Name, level, tag.Id));
-                    AddBoxes(tag.Id, level + 1);
-                }
+                    nodes.Add(new TagFilterItem(box.Name, null, box.Id, tags));
+                else
+                    nodes.AddRange(tags);
             }
+            return nodes;
         }
     }
+
+    // How many clips of the library carry each tag.
+    private void CountTags()
+    {
+        var counts = _all.SelectMany(c => c.Tags).CountBy(t => t).ToDictionary();
+        foreach (var filter in AllTagFilters())
+            filter.Count = filter.Tag is { } tag ? counts.GetValueOrDefault(tag) : 0;
+    }
+
+    private IEnumerable<TagFilterItem> AllTagFilters() => TagFilters.SelectMany(f => f.SelfAndBelow());
 
     private void OnTagFilterChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -448,7 +489,7 @@ public sealed partial class ExplorerViewModel : ViewModelBase
             states.Add(FileState.Deleted);
         if (ShowNeedsAttention)
             states.Add(FileState.NeedsAttention);
-        var tags = TagFilters.Where(f => f.IsChecked).Select(f => f.Tag).OfType<TagId>().ToList();
+        var tags = AllTagFilters().Where(f => f.IsChecked).Select(f => f.Tag).OfType<TagId>().ToList();
         var filter = new LibraryFilter(decisions, states, tags, SearchText, IncompleteOnly);
         var vocabulary = _catalog.Vocabulary;
         var shown = LibraryQuery.Apply(_all, filter, vocabulary, Sort, Descending);

@@ -2321,6 +2321,15 @@ namespace Yeetle.App.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ({0}).
+        /// </summary>
+        public static string TagFilterCount {
+            get {
+                return ResourceManager.GetString("TagFilterCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Tag hotkey {0} for {1} is already used by another action and was ignored..
         /// </summary>
         public static string TagHotkeyClash {

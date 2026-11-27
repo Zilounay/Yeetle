@@ -19,6 +19,9 @@
         <!-- Column widths, shared by the header and the rows. -->
         <GridLength x:Key="DateColumn">150</GridLength>
         <GridLength x:Key="DurationColumn">80</GridLength>
+        <!-- Tag filter tree rows (#83): tighter than the theme's 32 px, so more tags fit. -->
+        <x:Double x:Key="TreeViewItemMinHeight">26</x:Double>
+        <x:Double x:Key="CountOpacity">0.5</x:Double>
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -35,6 +38,12 @@
         </Style>
         <Style Selector="ListBoxItem">
             <Setter Property="Padding" Value="8,5" />
+        </Style>
+        <!-- A tag's clip count: smaller and greyer than its name (#83). -->
+        <Style Selector="TextBlock.count">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Opacity" Value="{StaticResource CountOpacity}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
         <Style Selector="Border.badge">
             <Setter Property="Background" Value="{StaticResource BadgeBrush}" />
@@ -75,23 +84,33 @@
                                 </MultiBinding>
                             </TextBlock.IsVisible>
                         </TextBlock>
-                        <!-- Over a thousand lines with the starter tags: only those on screen are created (#78). -->
-                        <ItemsControl ItemsSource="{Binding TagFilters}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <VirtualizingStackPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="vm:TagFilterItem">
-                                    <Panel Margin="{Binding Indent}">
-                                        <TextBlock Text="{Binding Label}" FontSize="12" Margin="0,6,0,0"
+                        <!-- A tree, as folders in Windows Explorer (#83): what is under a tag is folded into
+                             it, with the number of clips carrying each tag after its name. -->
+                        <TreeView Classes="filters" ItemsSource="{Binding TagFilters}" Margin="-8,0,0,0">
+                            <TreeView.Styles>
+                                <Style Selector="TreeView.filters TreeViewItem" x:DataType="vm:TagFilterItem">
+                                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                                </Style>
+                                <!-- Ticking is what filters; a selected row would only look like it does too. -->
+                                <Style Selector="TreeView.filters TreeViewItem:selected /template/ Border#PART_LayoutRoot">
+                                    <Setter Property="Background" Value="Transparent" />
+                                </Style>
+                            </TreeView.Styles>
+                            <TreeView.ItemTemplate>
+                                <TreeDataTemplate DataType="vm:TagFilterItem" ItemsSource="{Binding Children}">
+                                    <Panel>
+                                        <TextBlock Text="{Binding Label}" FontSize="12" VerticalAlignment="Center"
                                                    Opacity="{StaticResource SecondaryTextOpacity}" IsVisible="{Binding IsHeader}" />
-                                        <CheckBox Content="{Binding Label}" IsChecked="{Binding IsChecked}" IsVisible="{Binding IsTag}" />
+                                        <CheckBox IsChecked="{Binding IsChecked}" IsVisible="{Binding IsTag}" MinHeight="0">
+                                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                                <TextBlock Text="{Binding Label}" VerticalAlignment="Center" />
+                                                <TextBlock Classes="count" Text="{Binding CountText}" IsVisible="{Binding HasCount}" />
+                                            </StackPanel>
+                                        </CheckBox>
                                     </Panel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                                </TreeDataTemplate>
+                            </TreeView.ItemTemplate>
+                        </TreeView>
                         <TextBlock Classes="section" Text="{x:Static res:Strings.FilterDecision}" />
                         <CheckBox Content="{x:Static res:Strings.KeptLabel}" IsChecked="{Binding ShowKept}" />
                         <CheckBox Content="{x:Static res:Strings.DecisionNew}" IsChecked="{Binding ShowNew}" />
