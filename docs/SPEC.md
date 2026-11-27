@@ -467,7 +467,7 @@ Gate: choose the player, and with it whether buttons can sit over the video.
 **v1.0**
 
 1. Fixes and tuning from beta feedback.
-2. Final visual design.
+2. Visual design pass (#69): SukiUI with the Suki blue colour theme and a theme picker in Settings (direction decided on #28). Until then the MVP stays plain and functional. Issues labelled `release blocker` (#67, #69) must be closed before the public release; only ZiL can waive one.
 3. Code signing, privacy notice, landing page.
 4. Public release on GitHub Releases.
 
