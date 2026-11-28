@@ -42,7 +42,10 @@ public sealed partial class SessionViewModel : ViewModelBase
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(StartCommand))]
+    [NotifyPropertyChangedFor(nameof(HasNewClips))]
     private int _newCount;
+
+    public bool HasNewClips => NewCount > 0;
 
     [ObservableProperty]
     private string _counter = string.Empty;
@@ -62,6 +65,16 @@ public sealed partial class SessionViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _progressTip = string.Empty;
+
+    // The counts beside the progress bar, each in its colour (#69).
+    [ObservableProperty]
+    private string _keptText = string.Empty;
+
+    [ObservableProperty]
+    private string _yeetedText = string.Empty;
+
+    [ObservableProperty]
+    private string _skippedText = string.Empty;
 
     // One cell per clip of the session, for the timeline under the top bar (#68).
     [ObservableProperty]
@@ -114,6 +127,9 @@ public sealed partial class SessionViewModel : ViewModelBase
 
     // Raised when the review screen should look again (decisions, tags, position).
     public event EventHandler? Changed;
+
+    // A clip was just kept, yeeted or skipped (New), so the screen can flash its colour (#69).
+    public event EventHandler<Decision>? Decided;
 
     public ActiveSession? Session => _session;
 
@@ -206,7 +222,10 @@ public sealed partial class SessionViewModel : ViewModelBase
         // A refused Keep (empty required box) changes nothing; the tag panel shows why, and the
         // next Keep goes through (spec §5).
         if (_session.Keep() == KeepOutcome.Kept)
+        {
+            Decided?.Invoke(this, Decision.Kept);
             await AfterMoveAsync();
+        }
         else
             Tags.ShowRequiredWarning();
     }
@@ -217,6 +236,7 @@ public sealed partial class SessionViewModel : ViewModelBase
         if (_session?.Current is null)
             return;
         _session.Yeet();
+        Decided?.Invoke(this, Decision.Yeeted);
         await AfterMoveAsync();
     }
 
@@ -226,6 +246,7 @@ public sealed partial class SessionViewModel : ViewModelBase
         if (_session?.Current is null)
             return;
         _session.Skip();
+        Decided?.Invoke(this, Decision.New);
         await AfterMoveAsync();
     }
 
@@ -400,6 +421,9 @@ public sealed partial class SessionViewModel : ViewModelBase
         // Seen and left undecided; the clip on screen is not skipped yet.
         SkippedCount = session.Reviews.Where((r, i) => i != shown && r.Visited && r.Decision == Decision.New).Count();
         ProgressTip = string.Format(Strings.ProgressTip, KeptCount, YeetedCount, SkippedCount);
+        KeptText = string.Format(Strings.CountKept, KeptCount);
+        YeetedText = string.Format(Strings.CountYeeted, YeetedCount);
+        SkippedText = string.Format(Strings.CountSkipped, SkippedCount);
         var clip = session.Clip(session.Reviews[shown].Clip);
         ClipName = clip.FileName;
         ClipDate = string.Format(Strings.ClipDateFormat, clip.RecordedAt);

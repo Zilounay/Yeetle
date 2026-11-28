@@ -3659,6 +3659,168 @@ namespace Yeetle.App.Resources {
             get {
                 return ResourceManager.GetString("TimelineName", resourceCulture);
             }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to Appearance.
+        /// </summary>
+        public static string SettingsAppearance {
+            get {
+                return ResourceManager.GetString("SettingsAppearance", resourceCulture);
+            }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Colours apply at once. Keep stays green, Yeet red and Skip grey in every theme..
+        /// </summary>
+        public static string AppearanceIntro {
+            get {
+                return ResourceManager.GetString("AppearanceIntro", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Colour theme.
+        /// </summary>
+        public static string ColourThemeLabel {
+            get {
+                return ResourceManager.GetString("ColourThemeLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The colour of buttons, selected tags, the seek bar and the background glow..
+        /// </summary>
+        public static string ColourThemeHint {
+            get {
+                return ResourceManager.GetString("ColourThemeHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Suki blue.
+        /// </summary>
+        public static string ThemeSukiBlue {
+            get {
+                return ResourceManager.GetString("ThemeSukiBlue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default. SukiUI's own blue, warm yellow markers..
+        /// </summary>
+        public static string ThemeSukiBlueNote {
+            get {
+                return ResourceManager.GetString("ThemeSukiBlueNote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Neon violet.
+        /// </summary>
+        public static string ThemeNeonViolet {
+            get {
+                return ResourceManager.GetString("ThemeNeonViolet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Violet with cyan markers. The most gamer..
+        /// </summary>
+        public static string ThemeNeonVioletNote {
+            get {
+                return ResourceManager.GetString("ThemeNeonVioletNote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ember.
+        /// </summary>
+        public static string ThemeEmber {
+            get {
+                return ResourceManager.GetString("ThemeEmber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Amber on warm dark, blue markers..
+        /// </summary>
+        public static string ThemeEmberNote {
+            get {
+                return ResourceManager.GetString("ThemeEmberNote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Animated background.
+        /// </summary>
+        public static string AnimatedBackgroundLabel {
+            get {
+                return ResourceManager.GetString("AnimatedBackgroundLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The slow-moving glow behind the app. Turn off to save graphics power..
+        /// </summary>
+        public static string AnimatedBackgroundHint {
+            get {
+                return ResourceManager.GetString("AnimatedBackgroundHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reduce motion.
+        /// </summary>
+        public static string ReduceMotionLabel {
+            get {
+                return ResourceManager.GetString("ReduceMotionLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shorter, gentler transitions and no flashes on Keep or Yeet..
+        /// </summary>
+        public static string ReduceMotionHint {
+            get {
+                return ResourceManager.GetString("ReduceMotionHint", resourceCulture);
+            }
+        }        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} kept.
+        /// </summary>
+        public static string CountKept {
+            get {
+                return ResourceManager.GetString("CountKept", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} yeeted.
+        /// </summary>
+        public static string CountYeeted {
+            get {
+                return ResourceManager.GetString("CountYeeted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} skipped.
+        /// </summary>
+        public static string CountSkipped {
+            get {
+                return ResourceManager.GetString("CountSkipped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ready to review.
+        /// </summary>
+        public static string HomeReady {
+            get {
+                return ResourceManager.GetString("HomeReady", resourceCulture);
+            }
+        }
+
+
     }
 }

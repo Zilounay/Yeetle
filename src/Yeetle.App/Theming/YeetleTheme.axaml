@@ -558,6 +558,76 @@
         <Setter Property="BorderBrush" Value="{DynamicResource YtRowSelectedBorderBrush}" />
     </Style>
 
+    <!-- A list of sections or pages to pick from (Settings): ListBox.Void with a Border.navRow per
+         item; the selected row gets the soft theme colour and a dot. -->
+    <Style Selector="Border.navRow">
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Padding" Value="14,0" />
+        <Setter Property="CornerRadius" Value="{StaticResource YtControlRadius}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.2" />
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Border.navRow TextBlock">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="#B9BDC9" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Border.navRow Ellipse.dot">
+        <Setter Property="Width" Value="6" />
+        <Setter Property="Height" Value="6" />
+        <Setter Property="Fill" Value="Transparent" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="ListBoxItem:pointerover Border.navRow">
+        <Setter Property="Background" Value="{StaticResource YtControlBrush}" />
+    </Style>
+    <Style Selector="ListBoxItem:selected Border.navRow">
+        <Setter Property="Background" Value="{DynamicResource YtPrimarySoftBrush}" />
+    </Style>
+    <Style Selector="ListBoxItem:selected Border.navRow TextBlock">
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="ListBoxItem:selected Border.navRow Ellipse.dot">
+        <Setter Property="Fill" Value="{DynamicResource YtPrimaryLightBrush}" />
+    </Style>
+
+    <!-- A large choice card (colour themes): the chosen one has a theme-colour edge. -->
+    <Style Selector="Button.card">
+        <Setter Property="Padding" Value="14" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="Background" Value="{StaticResource YtCardSoftBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource YtCardBorderBrush}" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Top" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.2" />
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.14" Easing="CubicEaseOut" />
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.card:pointerover">
+        <Setter Property="Background" Value="{StaticResource YtControlBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
+    </Style>
+    <Style Selector="Button.card:pointerover /template/ Border#RootBorder">
+        <Setter Property="BorderBrush" Value="{StaticResource YtControlBorderBrush}" />
+    </Style>
+    <Style Selector="Button.card.current">
+        <Setter Property="BorderBrush" Value="{DynamicResource YtPrimaryLightBrush}" />
+    </Style>
+    <Style Selector="Button.card.current:pointerover /template/ Border#RootBorder">
+        <Setter Property="BorderBrush" Value="{DynamicResource YtPrimaryLightBrush}" />
+    </Style>
+
     <!-- Lists: rounded rows, the selected one in the soft theme colour. -->
     <Style Selector="ListBox">
         <Setter Property="Background" Value="Transparent" />

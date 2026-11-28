@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Yeetle.App.Resources;
 using Yeetle.App.Services;
+using Yeetle.App.Theming;
 using Yeetle.Application.Data;
 using Yeetle.Application.Library;
 using Yeetle.Application.Playback;
@@ -22,6 +23,7 @@ public enum SettingsSection
     Review,
     LibraryView,
     Data,
+    Appearance,
     General,
 }
 
@@ -30,8 +32,7 @@ public sealed record SettingsSectionItem(SettingsSection Section, string Label);
 public sealed record BackupChoice(BackupInfo Backup, string Label);
 
 // The Settings window (spec §11, decided in #20): sections on the left, each change applied and
-// saved at once, with no OK or Cancel. Privacy comes with usage statistics (#21) and Appearance
-// with the visual pass (#69).
+// saved at once, with no OK or Cancel. Privacy comes with usage statistics (#21).
 public sealed partial class SettingsViewModel : ViewModelBase, IDisposable
 {
     private const string ExtensionSeparators = ", ;";
@@ -52,7 +53,7 @@ public sealed partial class SettingsViewModel : ViewModelBase, IDisposable
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsLibrary), nameof(IsTags), nameof(IsHotkeys), nameof(IsPlayer), nameof(IsReview),
-        nameof(IsLibraryView), nameof(IsData), nameof(IsGeneral))]
+        nameof(IsLibraryView), nameof(IsData), nameof(IsAppearance), nameof(IsGeneral))]
     private SettingsSectionItem _selectedSection;
 
     // Library
@@ -136,6 +137,13 @@ public sealed partial class SettingsViewModel : ViewModelBase, IDisposable
     [ObservableProperty]
     private string _restoreProblem = string.Empty;
 
+    // Appearance (#69)
+    [ObservableProperty]
+    private bool _animatedBackground;
+
+    [ObservableProperty]
+    private bool _reduceMotion;
+
     // General
     [ObservableProperty]
     private bool _checkAtStartup;
@@ -161,6 +169,7 @@ public sealed partial class SettingsViewModel : ViewModelBase, IDisposable
         _selectedSection = _sections[0];
         Loc.Instance.Changed += OnLanguageChanged;
         Speeds = PlaybackSpeeds.All.Select(s => new SpeedOptionViewModel(s)).ToList();
+        ColourThemes = Palettes.All.Select(p => new ColourThemeOption(p, p.Theme == settings.Values.Appearance.ColourTheme)).ToList();
         Fill();
         PropertyChanged += (_, e) =>
         {
@@ -191,6 +200,8 @@ public sealed partial class SettingsViewModel : ViewModelBase, IDisposable
 
     public IReadOnlyList<SpeedOptionViewModel> Speeds { get; }
 
+    public IReadOnlyList<ColourThemeOption> ColourThemes { get; }
+
     public bool IsLibrary => SelectedSection.Section == SettingsSection.Library;
     public bool IsTags => SelectedSection.Section == SettingsSection.Tags;
     public bool IsHotkeys => SelectedSection.Section == SettingsSection.Hotkeys;
@@ -198,6 +209,7 @@ public sealed partial class SettingsViewModel : ViewModelBase, IDisposable
     public bool IsReview => SelectedSection.Section == SettingsSection.Review;
     public bool IsLibraryView => SelectedSection.Section == SettingsSection.LibraryView;
     public bool IsData => SelectedSection.Section == SettingsSection.Data;
+    public bool IsAppearance => SelectedSection.Section == SettingsSection.Appearance;
     public bool IsGeneral => SelectedSection.Section == SettingsSection.General;
 
     // A backup cannot replace the database under a running session.
@@ -245,6 +257,8 @@ public sealed partial class SettingsViewModel : ViewModelBase, IDisposable
         UpdateResult = string.Empty;
         Hotkeys.Relocalize();
         Speeds.ToList().ForEach(s => s.Relocalize());
+        foreach (var theme in ColourThemes)
+            theme.Relocalize();
         if (shown == SettingsSection.Data)
             _ = LoadBackupsAsync();
     }
@@ -258,8 +272,18 @@ public sealed partial class SettingsViewModel : ViewModelBase, IDisposable
         new(SettingsSection.Review, Strings.SettingsReview),
         new(SettingsSection.LibraryView, Strings.SettingsLibraryView),
         new(SettingsSection.Data, Strings.SettingsData),
+        new(SettingsSection.Appearance, Strings.SettingsAppearance),
         new(SettingsSection.General, Strings.SettingsGeneral),
     ];
+
+    // The colours change at once, in every window (#69).
+    [RelayCommand]
+    private void UseColourTheme(ColourThemeOption option)
+    {
+        foreach (var theme in ColourThemes)
+            theme.IsCurrent = theme == option;
+        _ = _settings.ChangeAsync(s => s.Appearance.ColourTheme = option.Theme);
+    }
 
     [RelayCommand]
     private Task OpenSourceFoldersAsync() => _dialogs.ShowSourceFoldersAsync();
@@ -338,6 +362,8 @@ public sealed partial class SettingsViewModel : ViewModelBase, IDisposable
         DailyBackups = values.Backups.DailyCount;
         SafetyBackups = values.Backups.SafetyCount;
         CheckAtStartup = values.General.CheckForUpdatesAtStartup;
+        AnimatedBackground = values.Appearance.AnimatedBackground;
+        ReduceMotion = values.Appearance.ReduceMotion;
         _filling = false;
     }
 
@@ -391,6 +417,12 @@ public sealed partial class SettingsViewModel : ViewModelBase, IDisposable
                 break;
             case nameof(CheckAtStartup):
                 _ = _settings.ChangeAsync(s => s.General.CheckForUpdatesAtStartup = CheckAtStartup);
+                break;
+            case nameof(AnimatedBackground):
+                _ = _settings.ChangeAsync(s => s.Appearance.AnimatedBackground = AnimatedBackground);
+                break;
+            case nameof(ReduceMotion):
+                _ = _settings.ChangeAsync(s => s.Appearance.ReduceMotion = ReduceMotion);
                 break;
         }
     }
