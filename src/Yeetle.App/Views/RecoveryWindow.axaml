@@ -6,19 +6,20 @@
         x:DataType="vm:RecoveryViewModel"
         Width="640" Height="520"
         WindowStartupLocation="CenterScreen"
-        Title="{res:Tr AppTitle}">
+        Title="{res:Tr AppTitle}"
+        RequestedThemeVariant="Dark" Classes="dialog">
     <Window.Resources>
-        <SolidColorBrush x:Key="ProblemBrush" Color="#E5534B" />
+        <SolidColorBrush x:Key="ProblemBrush" Color="#FF9C9C" />
     </Window.Resources>
-    <DockPanel Margin="24">
-        <TextBlock DockPanel.Dock="Top" FontSize="20" FontWeight="SemiBold"
+    <DockPanel Margin="28">
+        <TextBlock DockPanel.Dock="Top" FontSize="24" FontWeight="Bold"
                    Text="{res:Tr RecoveryTitle}" Margin="0,0,0,12" />
         <TextBlock DockPanel.Dock="Top" Text="{Binding Message}" TextWrapping="Wrap" Margin="0,0,0,16" />
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Margin="0,16,0,0">
-            <Button Content="{res:Tr OpenDataFolder}" Command="{Binding OpenDataFolderCommand}" />
+            <Button Classes="ghost" Content="{res:Tr OpenDataFolder}" Command="{Binding OpenDataFolderCommand}" />
             <Button Content="{res:Tr RestoreBackup}" Command="{Binding RestoreCommand}"
-                    IsVisible="{Binding CanRestoreBackups}" Classes="accent" />
-            <Button x:Name="QuitButton" Content="{res:Tr Quit}" />
+                    IsVisible="{Binding CanRestoreBackups}" Classes="primary" />
+            <Button Classes="ghost" x:Name="QuitButton" Content="{res:Tr Quit}" />
         </StackPanel>
         <TextBlock DockPanel.Dock="Bottom" Text="{Binding Problem}" Foreground="{StaticResource ProblemBrush}" TextWrapping="Wrap" />
         <DockPanel IsVisible="{Binding CanRestoreBackups}">

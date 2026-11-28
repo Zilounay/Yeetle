@@ -14,22 +14,13 @@
         RequestedThemeVariant="Dark"
         Title="{res:Tr AppTitle}">
     <Window.Resources>
-        <!-- The session screen layout decided in #9: dark page, a slightly lighter top bar. -->
-        <SolidColorBrush x:Key="PageBrush" Color="#0E1013" />
-        <SolidColorBrush x:Key="BarBrush" Color="#13161A" />
-        <SolidColorBrush x:Key="LineBrush" Color="#23272E" />
-        <SolidColorBrush x:Key="CardBrush" Color="#171A1F" />
-        <SolidColorBrush x:Key="CurrentCardBrush" Color="#2F6FD6" />
-        <SolidColorBrush x:Key="KeptBadgeBrush" Color="#2E7D32" />
-        <SolidColorBrush x:Key="YeetedBadgeBrush" Color="#C62828" />
-        <SolidColorBrush x:Key="SkippedBadgeBrush" Color="#37474F" />
-        <!-- On the thin progress bar the skip slate would vanish into the track: a lighter grey. -->
-        <SolidColorBrush x:Key="SkippedBarBrush" Color="#8A949E" />
-        <SolidColorBrush x:Key="HomeCardBrush" Color="#15181D" />
-        <x:Double x:Key="SecondaryTextOpacity">0.7</x:Double>
+        <!-- The video's frame: native windows cannot be rounded, so the picture sits in a rounded,
+             near-black frame instead (#28). -->
+        <SolidColorBrush x:Key="VideoFrameBrush" Color="#05060A" />
+        <Thickness x:Key="VideoFramePadding">6</Thickness>
+        <SolidColorBrush x:Key="CurrentCardBrush" Color="#4F7FFF" />
         <x:Double x:Key="OtherCardOpacity">0.8</x:Double>
-        <x:Double x:Key="DisabledOpacity">0.4</x:Double>
-        <CornerRadius x:Key="CardCornerRadius">10</CornerRadius>
+        <x:Double x:Key="SidePanelWidth">380</x:Double>
     </Window.Resources>
 
     <Window.Styles>
@@ -37,19 +28,8 @@
         <Style Selector="Button">
             <Setter Property="Focusable" Value="False" />
         </Style>
-        <!-- Session / Explorer tabs: the current one is underlined in the accent blue. -->
-        <Style Selector="Button.tab">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0,0,0,2" />
-            <Setter Property="BorderBrush" Value="Transparent" />
-            <Setter Property="CornerRadius" Value="0" />
-        </Style>
-        <Style Selector="Button.tab.current /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="BorderBrush" Value="{StaticResource CurrentCardBrush}" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-        </Style>
         <Style Selector="Grid.player">
-            <Setter Property="Margin" Value="16,16,16,14" />
+            <Setter Property="Margin" Value="24,20,24,24" />
         </Style>
         <!-- Home page: the video area takes no room, which hides its native windows without
              removing them (see MainWindowViewModel.CollapsePlayer). -->
@@ -58,32 +38,38 @@
             <Setter Property="Margin" Value="0" />
             <Setter Property="VerticalAlignment" Value="Top" />
         </Style>
-        <!-- Start session: large and green, like Keep over the video. -->
+        <Style Selector="Border.videoFrame">
+            <Setter Property="CornerRadius" Value="{StaticResource YtCardRadius}" />
+            <Setter Property="Background" Value="{StaticResource VideoFrameBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource YtCardBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="{StaticResource VideoFramePadding}" />
+            <Setter Property="BoxShadow" Value="0 20 60 0 #73000000" />
+        </Style>
+        <!-- Its frame then draws nothing either. -->
+        <Style Selector="Grid.player.collapsed Border.videoFrame">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="BoxShadow" Value="none" />
+        </Style>
+        <!-- Start session: large, in the theme colour, softly glowing (Home on the canvas). -->
         <Style Selector="Button.start">
-            <Setter Property="FontSize" Value="18" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Padding" Value="28,10" />
-            <Setter Property="CornerRadius" Value="{StaticResource CardCornerRadius}" />
+            <Setter Property="Height" Value="58" />
+            <Setter Property="Padding" Value="30,0" />
+            <Setter Property="FontSize" Value="19" />
+            <Setter Property="CornerRadius" Value="18" />
         </Style>
-        <Style Selector="Button.start /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource KeptBadgeBrush}" />
-            <Setter Property="Foreground" Value="White" />
+        <Style Selector="Button.start /template/ Border#RootBorder">
+            <Setter Property="BoxShadow" Value="0 10 30 0 #590A59F7" />
         </Style>
-        <Style Selector="Button.start:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Opacity" Value="{StaticResource DisabledOpacity}" />
-        </Style>
-        <!-- Update available: the accent blue, so it stands out among the grey top-bar buttons. -->
-        <Style Selector="Button.update /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource CurrentCardBrush}" />
-            <Setter Property="Foreground" Value="White" />
-        </Style>
+        <!-- The hidden clip strip (#62), kept for a later return. -->
         <Style Selector="Border.card">
-            <Setter Property="Background" Value="{StaticResource CardBrush}" />
-            <Setter Property="CornerRadius" Value="{StaticResource CardCornerRadius}" />
+            <Setter Property="Background" Value="{StaticResource YtCardBrush}" />
+            <Setter Property="CornerRadius" Value="{StaticResource YtBlockRadius}" />
             <Setter Property="Padding" Value="12,10" />
             <Setter Property="Margin" Value="5,0" />
-            <Setter Property="BorderThickness" Value="2" />
-            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{StaticResource YtCardBorderBrush}" />
             <Setter Property="Opacity" Value="{StaticResource OtherCardOpacity}" />
         </Style>
         <Style Selector="Border.card.current">
@@ -91,155 +77,194 @@
             <Setter Property="Opacity" Value="1" />
         </Style>
         <Style Selector="Border.badge">
-            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="CornerRadius" Value="6" />
             <Setter Property="Padding" Value="7,2" />
             <Setter Property="HorizontalAlignment" Value="Right" />
         </Style>
         <Style Selector="Border.badge.current">
-            <Setter Property="Background" Value="{StaticResource CurrentCardBrush}" />
+            <Setter Property="Background" Value="{DynamicResource YtPrimaryBrush}" />
         </Style>
         <Style Selector="Border.badge.kept">
-            <Setter Property="Background" Value="{StaticResource KeptBadgeBrush}" />
+            <Setter Property="Background" Value="{StaticResource YtKeepBrush}" />
         </Style>
         <Style Selector="Border.badge.yeeted">
-            <Setter Property="Background" Value="{StaticResource YeetedBadgeBrush}" />
+            <Setter Property="Background" Value="{StaticResource YtYeetBrush}" />
         </Style>
         <Style Selector="Border.badge.skipped">
-            <Setter Property="Background" Value="{StaticResource SkippedBadgeBrush}" />
+            <Setter Property="Background" Value="{StaticResource YtSkipBarBrush}" />
         </Style>
     </Window.Styles>
 
-    <Grid RowDefinitions="Auto,*,Auto" Background="{StaticResource PageBrush}">
-        <!-- Top bar: name, progress, library actions, Stop. -->
-        <Border Background="{StaticResource BarBrush}" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1"
-                Padding="20,10">
-            <StackPanel Spacing="10">
-                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
-                    <!-- Name, then the Session and Explorer tabs; the Explorer waits while a session runs. -->
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <TextBlock FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,14,0"
-                                   Text="{res:Tr AppTitle}" />
-                        <Button Classes="tab" Classes.current="{Binding IsSessionPage}" Content="{Binding SessionTabText}"
-                                Command="{Binding ShowSessionCommand}" />
-                        <Button Classes="tab" Classes.current="{Binding !IsSessionPage}" Content="{res:Tr TabExplorer}"
-                                Command="{Binding ShowExplorerCommand}" ToolTip.Tip="{res:Tr ExplorerDuringSession}"
-                                ToolTip.ShowOnDisabled="True" />
-                    </StackPanel>
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right"
-                                VerticalAlignment="Center" IsVisible="{Binding Session.IsActive}">
-                        <TextBlock FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding Session.Counter}" />
-                        <controls:DecisionBar Width="160" Height="8" VerticalAlignment="Center"
-                                              Kept="{Binding Session.KeptCount}" Yeeted="{Binding Session.YeetedCount}"
-                                              Skipped="{Binding Session.SkippedCount}" Total="{Binding Session.ClipCount}"
-                                              KeptBrush="{StaticResource KeptBadgeBrush}" YeetedBrush="{StaticResource YeetedBadgeBrush}"
-                                              SkippedBrush="{StaticResource SkippedBarBrush}" TrackBrush="{StaticResource LineBrush}"
-                                              ToolTip.Tip="{Binding Session.ProgressTip}" />
-                    </StackPanel>
-                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
-                        <!-- One-click update (spec §12): shown once the startup check finds a newer version. -->
-                        <Button Classes="update" Content="{Binding UpdateText}" ToolTip.Tip="{Binding UpdateTip}"
-                                Command="{Binding InstallUpdateCommand}" IsVisible="{Binding HasUpdate}" />
-                        <Button Content="{res:Tr Rescan}" ToolTip.Tip="{res:Tr RescanTip}"
-                                Command="{Binding RescanCommand}" />
-                        <Button Content="{res:Tr TagManagerTitle}" Command="{Binding OpenTagManagerCommand}" />
-                        <Button Content="{res:Tr Folders}" Command="{Binding OpenFoldersCommand}" />
-                        <Button Content="{res:Tr SettingsTitle}" ToolTip.Tip="{res:Tr SettingsButtonTip}"
-                                Command="{Binding OpenSettingsCommand}" />
-                        <Button Content="{res:Tr StopSession}" ToolTip.Tip="{res:Tr StopSessionTip}"
-                                Command="{Binding Session.StopCommand}" IsVisible="{Binding Session.IsActive}" />
-                    </StackPanel>
-                </Grid>
-                <!-- The session at a glance (#68): one cell per clip; click a clip already reached to go back to it. -->
-                <controls:ClipTimeline Height="12" IsVisible="{Binding Session.IsActive}"
-                                       Cells="{Binding Session.Timeline}" Command="{Binding Session.GoToClipCommand}"
-                                       KeptBrush="{StaticResource KeptBadgeBrush}" YeetedBrush="{StaticResource YeetedBadgeBrush}"
-                                       SkippedBrush="{StaticResource SkippedBarBrush}" CurrentBrush="{StaticResource CurrentCardBrush}"
-                                       TrackBrush="{StaticResource LineBrush}"
-                                       AutomationProperties.Name="{res:Tr TimelineName}" />
-            </StackPanel>
-        </Border>
-
-        <!-- The Explorer list (spec §8). The video is hidden meanwhile: it is a native window and
-             would cover the list. -->
-        <Panel Grid.Row="1" Grid.RowSpan="2" IsVisible="{Binding IsExplorerPage}">
-            <views:ExplorerView DataContext="{Binding Explorer}" />
-        </Panel>
-
-        <!-- Home: no session running (spec §5). A plain page for now; the dashboard is #63. -->
-        <Border Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="560"
-                Margin="16" Padding="40,32" CornerRadius="16" Background="{StaticResource HomeCardBrush}"
-                BorderBrush="{StaticResource LineBrush}" BorderThickness="1" IsVisible="{Binding ShowHome}">
-            <StackPanel Spacing="18">
-                <TextBlock FontSize="22" FontWeight="SemiBold" HorizontalAlignment="Center" TextAlignment="Center"
-                           TextWrapping="Wrap" Text="{Binding Session.HomeText}" IsVisible="{Binding Session.IsHomeLoaded}" />
-                <!-- Until the count of new clips arrives (#78): a placeholder as tall as the text. -->
-                <Border Classes="skeleton" Width="300" Height="22" Margin="0,4" HorizontalAlignment="Center"
-                        IsVisible="{Binding !Session.IsHomeLoaded}" />
-                <Button Classes="start" HorizontalAlignment="Center" Content="{res:Tr StartSession}"
-                        Command="{Binding Session.StartCommand}" />
-                <!-- Starting scans first, then loads the clips (#78). -->
-                <ProgressBar Classes="busy" Classes.on="{Binding Session.StartCommand.IsRunning}" Width="200"
-                             IsVisible="{Binding Session.StartCommand.IsRunning}" />
-                <TextBlock HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
-                           Opacity="{StaticResource SecondaryTextOpacity}" Text="{Binding Session.Notice}"
-                           IsVisible="{Binding ShowSessionNotice}" />
-                <TextBlock HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
-                           Opacity="{StaticResource SecondaryTextOpacity}" Text="{Binding ScanSummary}"
-                           IsVisible="{Binding ShowScanSummary}" />
-                <TextBlock HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
-                           Opacity="{StaticResource SecondaryTextOpacity}" Text="{Binding Player.Message}"
-                           IsVisible="{Binding Player.Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-            </StackPanel>
-        </Border>
-
-        <Grid Grid.Row="1" Classes="player" Classes.collapsed="{Binding CollapsePlayer}" ColumnDefinitions="*,Auto"
-              IsVisible="{Binding ShowPlayer}">
-            <!-- The video; its controls are in VideoOverlayWindow, laid over it. -->
-            <views:PlayerView x:Name="Player" DataContext="{Binding Player}" />
-            <!-- Tags, then markers, beside the video, never over it (spec §5, layout from #9): those of
-                 the session, or of the clip opened from the Explorer. -->
-            <Grid Grid.Column="1" Width="340" Margin="16,0,0,0" RowDefinitions="*,Auto" RowSpacing="12"
-                  IsVisible="{Binding ShowSidePanels}">
-                <views:TagsPanel DataContext="{Binding SideTags}" />
-                <views:MarkersPanel Grid.Row="1" MaxHeight="260" DataContext="{Binding SideMarkers}" />
-            </Grid>
-        </Grid>
-
-        <!-- Clip strip: two clips before and after the current one (spec §5). -->
-        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" Margin="16,0,16,16" IsVisible="{Binding ShowStrip}">
-            <Button Content="‹" VerticalAlignment="Stretch" ToolTip.Tip="{res:Tr StripEarlier}"
-                    AutomationProperties.Name="{res:Tr StripEarlier}"
-                    Command="{Binding Session.StripEarlierCommand}" />
-            <ItemsControl Grid.Column="1" ItemsSource="{Binding Session.Strip}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid Rows="1" Columns="5" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate x:DataType="vm:ClipCardViewModel">
-                        <Border Classes="card" Classes.current="{Binding IsCurrent}">
-                            <StackPanel Spacing="6">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock FontFamily="Consolas,monospace" FontSize="12"
-                                               Opacity="{StaticResource SecondaryTextOpacity}" Text="{Binding Number}" />
-                                    <Border Grid.Column="1" Classes="badge" Classes.current="{Binding IsCurrent}"
-                                            Classes.kept="{Binding IsKept}" Classes.yeeted="{Binding IsYeeted}"
-                                            Classes.skipped="{Binding IsSkipped}">
-                                        <TextBlock FontSize="11" FontWeight="Bold" Text="{Binding BadgeText}" />
-                                    </Border>
-                                </Grid>
-                                <TextBlock FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Text="{Binding Name}"
-                                           ToolTip.Tip="{Binding Name}" />
-                                <TextBlock FontSize="12" Opacity="{StaticResource SecondaryTextOpacity}" Text="{Binding Date}" />
+    <Panel>
+        <controls:GlowBackground />
+        <Grid RowDefinitions="Auto,*,Auto">
+            <!-- Top bar: the app, Session | Explorer, the progress, the library actions, Stop. -->
+            <Border Classes="header">
+                <StackPanel Spacing="10">
+                    <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="16">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <Border Classes="logo">
+                                <TextBlock Classes="icon" FontSize="18" Foreground="White" Text="{StaticResource IconVideo}" />
+                            </Border>
+                            <TextBlock FontSize="20" FontWeight="Bold" VerticalAlignment="Center" Text="{res:Tr AppTitle}" />
+                        </StackPanel>
+                        <!-- The Explorer waits while a session runs. -->
+                        <Border Grid.Column="1" Classes="segmented" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <Button Classes="segment" Classes.current="{Binding IsSessionPage}" Content="{Binding SessionTabText}"
+                                        Command="{Binding ShowSessionCommand}" />
+                                <Button Classes="segment" Classes.current="{Binding !IsSessionPage}" Content="{res:Tr TabExplorer}"
+                                        Command="{Binding ShowExplorerCommand}" ToolTip.Tip="{res:Tr ExplorerDuringSession}"
+                                        ToolTip.ShowOnDisabled="True" />
                             </StackPanel>
                         </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-            <Button Grid.Column="2" Content="›" VerticalAlignment="Stretch" ToolTip.Tip="{res:Tr StripLater}"
-                    AutomationProperties.Name="{res:Tr StripLater}"
-                    Command="{Binding Session.StripLaterCommand}" />
+                        <!-- Where the session stands: n / total, the decisions so far, in their colours. -->
+                        <Grid Grid.Column="2" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" VerticalAlignment="Center"
+                              IsVisible="{Binding Session.IsActive}">
+                            <TextBlock FontSize="15" FontWeight="Bold" VerticalAlignment="Center" Text="{Binding Session.Counter}" />
+                            <Border Grid.Column="1" Height="8" CornerRadius="4" ClipToBounds="True" VerticalAlignment="Center"
+                                    MinWidth="120" ToolTip.Tip="{Binding Session.ProgressTip}">
+                                <controls:DecisionBar Kept="{Binding Session.KeptCount}" Yeeted="{Binding Session.YeetedCount}"
+                                                      Skipped="{Binding Session.SkippedCount}" Total="{Binding Session.ClipCount}"
+                                                      KeptBrush="{StaticResource YtKeepBarBrush}" YeetedBrush="{StaticResource YtYeetBarBrush}"
+                                                      SkippedBrush="{StaticResource YtSkipBarBrush}" TrackBrush="{StaticResource YtTrackBrush}" />
+                            </Border>
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <TextBlock FontSize="12" Foreground="{StaticResource YtKeepTextBrush}" Text="{Binding Session.KeptText}" />
+                                <TextBlock FontSize="12" Classes="secondary" Text="·" />
+                                <TextBlock FontSize="12" Foreground="{StaticResource YtYeetTextBrush}" Text="{Binding Session.YeetedText}" />
+                                <TextBlock FontSize="12" Classes="secondary" Text="·" />
+                                <TextBlock FontSize="12" Classes="secondary" Text="{Binding Session.SkippedText}" />
+                            </StackPanel>
+                        </Grid>
+                        <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="6">
+                            <!-- One-click update (spec §12): shown once the startup check finds a newer version. -->
+                            <Button Classes="primary" Content="{Binding UpdateText}" ToolTip.Tip="{Binding UpdateTip}"
+                                    Command="{Binding InstallUpdateCommand}" IsVisible="{Binding HasUpdate}" />
+                            <Button Classes="iconButton" ToolTip.Tip="{res:Tr RescanTip}" AutomationProperties.Name="{res:Tr Rescan}"
+                                    Command="{Binding RescanCommand}">
+                                <TextBlock Classes="icon" Text="{StaticResource IconRescan}" />
+                            </Button>
+                            <Button Classes="iconButton" ToolTip.Tip="{res:Tr TagManagerTitle}" AutomationProperties.Name="{res:Tr TagManagerTitle}"
+                                    Command="{Binding OpenTagManagerCommand}">
+                                <TextBlock Classes="icon" Text="{StaticResource IconTag}" />
+                            </Button>
+                            <Button Classes="iconButton" ToolTip.Tip="{res:Tr Folders}" AutomationProperties.Name="{res:Tr Folders}"
+                                    Command="{Binding OpenFoldersCommand}">
+                                <TextBlock Classes="icon" Text="{StaticResource IconFolder}" />
+                            </Button>
+                            <Button Classes="iconButton" ToolTip.Tip="{res:Tr SettingsButtonTip}" AutomationProperties.Name="{res:Tr SettingsTitle}"
+                                    Command="{Binding OpenSettingsCommand}">
+                                <TextBlock Classes="icon" Text="{StaticResource IconSettings}" />
+                            </Button>
+                            <Button Classes="danger" ToolTip.Tip="{res:Tr StopSessionTip}" Command="{Binding Session.StopCommand}"
+                                    AutomationProperties.Name="{res:Tr StopSession}"
+                                    IsVisible="{Binding Session.IsActive}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Classes="icon" FontSize="12" Foreground="{StaticResource YtDangerTextBrush}" Text="{StaticResource IconStop}" />
+                                    <TextBlock VerticalAlignment="Center" Text="{res:Tr StopSession}" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                    <!-- The session at a glance (#68): one cell per clip; click a clip already reached to go back to it. -->
+                    <controls:ClipTimeline Height="10" IsVisible="{Binding Session.IsActive}"
+                                           Cells="{Binding Session.Timeline}" Command="{Binding Session.GoToClipCommand}"
+                                           KeptBrush="{StaticResource YtKeepBarBrush}" YeetedBrush="{StaticResource YtYeetBarBrush}"
+                                           SkippedBrush="{StaticResource YtSkipBarBrush}" CurrentBrush="{DynamicResource YtPrimaryLightBrush}"
+                                           TrackBrush="{StaticResource YtTrackBrush}"
+                                           AutomationProperties.Name="{res:Tr TimelineName}" />
+                </StackPanel>
+            </Border>
+
+            <!-- The Explorer list (spec §8). The video is hidden meanwhile: it is a native window and
+                 would cover the list. -->
+            <Panel Grid.Row="1" Grid.RowSpan="2" IsVisible="{Binding IsExplorerPage}">
+                <views:ExplorerView DataContext="{Binding Explorer}" />
+            </Panel>
+
+            <!-- Home: no session running (spec §5). The "Ready to review" card of the canvas; the
+                 full dashboard is #96. -->
+            <Border Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="760"
+                    Margin="24" Padding="32,28" CornerRadius="{StaticResource YtBigCardRadius}"
+                    Background="{DynamicResource YtRowSelectedBrush}" BorderBrush="{StaticResource YtCardBorderBrush}"
+                    BorderThickness="1" IsVisible="{Binding ShowHome}">
+                <StackPanel Spacing="20">
+                    <StackPanel Spacing="8">
+                        <TextBlock FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource YtTagPillTextBrush}"
+                                   Text="{res:Tr HomeReady}" IsVisible="{Binding Session.HasNewClips}" />
+                        <TextBlock FontSize="36" FontWeight="Bold" TextWrapping="Wrap" Text="{Binding Session.HomeText}"
+                                   IsVisible="{Binding Session.IsHomeLoaded}" />
+                        <!-- Until the count of new clips arrives (#78): a placeholder as tall as the text. -->
+                        <Border Classes="skeleton" Width="420" Height="36" Margin="0,4" IsVisible="{Binding !Session.IsHomeLoaded}" />
+                    </StackPanel>
+                    <Button Classes="primary start" HorizontalAlignment="Left" Command="{Binding Session.StartCommand}"
+                            AutomationProperties.Name="{res:Tr StartSession}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock Classes="icon" Foreground="White" Text="{StaticResource IconPlay}" />
+                            <TextBlock VerticalAlignment="Center" Text="{res:Tr StartSession}" />
+                        </StackPanel>
+                    </Button>
+                    <!-- Starting scans first, then loads the clips (#78). -->
+                    <ProgressBar Classes="busy" Classes.on="{Binding Session.StartCommand.IsRunning}" Width="240"
+                                 HorizontalAlignment="Left" IsVisible="{Binding Session.StartCommand.IsRunning}" />
+                    <TextBlock Classes="hint" FontSize="15" Text="{Binding Session.Notice}" IsVisible="{Binding ShowSessionNotice}" />
+                    <TextBlock Classes="hint" FontSize="15" Text="{Binding ScanSummary}" IsVisible="{Binding ShowScanSummary}" />
+                    <TextBlock Classes="hint" FontSize="15" Text="{Binding Player.Message}"
+                               IsVisible="{Binding Player.Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                </StackPanel>
+            </Border>
+
+            <Grid Grid.Row="1" Classes="player" Classes.collapsed="{Binding CollapsePlayer}" ColumnDefinitions="*,Auto"
+                  IsVisible="{Binding ShowPlayer}">
+                <!-- The video, in its frame; its controls are in VideoOverlayWindow, laid over it. -->
+                <Border Classes="videoFrame">
+                    <views:PlayerView x:Name="Player" DataContext="{Binding Player}" />
+                </Border>
+                <!-- Tags, then markers, beside the video, never over it (spec §5, layout from #9): those of
+                     the session, or of the clip opened from the Explorer. -->
+                <Grid Grid.Column="1" Width="{StaticResource SidePanelWidth}" Margin="20,0,0,0" RowDefinitions="*,Auto" RowSpacing="16"
+                      IsVisible="{Binding ShowSidePanels}">
+                    <views:TagsPanel DataContext="{Binding SideTags}" />
+                    <views:MarkersPanel Grid.Row="1" MaxHeight="280" DataContext="{Binding SideMarkers}" />
+                </Grid>
+            </Grid>
+
+            <!-- Clip strip: two clips before and after the current one (spec §5); hidden for now (#62). -->
+            <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" Margin="24,0,24,24" IsVisible="{Binding ShowStrip}">
+                <Button Classes="ghost" Content="‹" VerticalAlignment="Stretch" ToolTip.Tip="{res:Tr StripEarlier}"
+                        AutomationProperties.Name="{res:Tr StripEarlier}"
+                        Command="{Binding Session.StripEarlierCommand}" />
+                <ItemsControl Grid.Column="1" ItemsSource="{Binding Session.Strip}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="1" Columns="5" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ClipCardViewModel">
+                            <Border Classes="card" Classes.current="{Binding IsCurrent}">
+                                <StackPanel Spacing="6">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Classes="muted" Text="{Binding Number}" />
+                                        <Border Grid.Column="1" Classes="badge" Classes.current="{Binding IsCurrent}"
+                                                Classes.kept="{Binding IsKept}" Classes.yeeted="{Binding IsYeeted}"
+                                                Classes.skipped="{Binding IsSkipped}">
+                                            <TextBlock FontSize="11" FontWeight="Bold" Text="{Binding BadgeText}" />
+                                        </Border>
+                                    </Grid>
+                                    <TextBlock FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Text="{Binding Name}"
+                                               ToolTip.Tip="{Binding Name}" />
+                                    <TextBlock Classes="muted" Text="{Binding Date}" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button Grid.Column="2" Classes="ghost" Content="›" VerticalAlignment="Stretch" ToolTip.Tip="{res:Tr StripLater}"
+                        AutomationProperties.Name="{res:Tr StripLater}"
+                        Command="{Binding Session.StripLaterCommand}" />
+            </Grid>
         </Grid>
-    </Grid>
+    </Panel>
 </Window>

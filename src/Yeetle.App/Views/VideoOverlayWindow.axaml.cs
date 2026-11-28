@@ -1,4 +1,8 @@
 using Avalonia;
+using Avalonia.Animation;
+using Avalonia.Animation.Easings;
+using Avalonia.Media;
+using Avalonia.Styling;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -6,7 +10,9 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Yeetle.App.Input;
 using Yeetle.App.Services;
+using Yeetle.App.Theming;
 using Yeetle.App.ViewModels;
+using Yeetle.Domain.Clips;
 
 namespace Yeetle.App.Views;
 
@@ -45,6 +51,7 @@ public partial class VideoOverlayWindow : Window
             list.DropDownOpened += (_, _) => SetPinned(true);
             list.DropDownClosed += (_, _) => SetPinned(false);
         }
+        DataContextChanged += (_, _) => FollowDecisions();
     }
 
     // How long the mouse may rest over the video before the controls fade out (#93).
@@ -84,6 +91,51 @@ public partial class VideoOverlayWindow : Window
         SoundBlock.Classes.Set(PinnedClass, open);
         if (!open)
             WakeUp();
+    }
+
+    // The flash on Keep, Yeet and Skip (#69): the colour of the decision around the picture, gone in
+    // about half a second. Nothing with Reduce motion.
+    private static readonly TimeSpan FlashTime = TimeSpan.FromMilliseconds(560);
+    private const double FlashPeak = 0.18;
+    private static readonly BoxShadows KeepFlash = BoxShadows.Parse("inset 0 0 0 4 #2FBF71, inset 0 0 120 0 #8C2FBF71");
+    private static readonly BoxShadows YeetFlash = BoxShadows.Parse("inset 0 0 0 4 #EF5B5B, inset 0 0 120 0 #8CEF5B5B");
+    private static readonly BoxShadows SkipFlash = BoxShadows.Parse("inset 0 0 0 4 #8A8FA0, inset 0 0 100 0 #668A8FA0");
+    private SessionViewModel? _session;
+    private CancellationTokenSource? _flashing;
+
+    private void FollowDecisions()
+    {
+        if (_session is not null)
+            _session.Decided -= OnDecided;
+        _session = (DataContext as MainWindowViewModel)?.Session;
+        if (_session is not null)
+            _session.Decided += OnDecided;
+    }
+
+    private void OnDecided(object? sender, Decision decision)
+    {
+        if (Appearance.Instance.ReduceMotion)
+            return;
+        _flashing?.Cancel();
+        _flashing = new CancellationTokenSource();
+        Flash.BoxShadow = decision switch
+        {
+            Decision.Kept => KeepFlash,
+            Decision.Yeeted => YeetFlash,
+            _ => SkipFlash,
+        };
+        var animation = new Animation
+        {
+            Duration = FlashTime,
+            Easing = new CubicEaseOut(),
+            Children =
+            {
+                new KeyFrame { Cue = new Cue(0), Setters = { new Setter(OpacityProperty, 0d) } },
+                new KeyFrame { Cue = new Cue(FlashPeak), Setters = { new Setter(OpacityProperty, 1d) } },
+                new KeyFrame { Cue = new Cue(1), Setters = { new Setter(OpacityProperty, 0d) } },
+            },
+        };
+        _ = animation.RunAsync(Flash, _flashing.Token);
     }
 
     private bool IsScrubbing() => DataContext is MainWindowViewModel { Player.IsScrubbing: true };

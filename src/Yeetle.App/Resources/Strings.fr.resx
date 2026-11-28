@@ -1216,4 +1216,58 @@ On ne pourra plus le choisir. Les {1} clip(s) qui l'ont déjà le gardent sous c
   <data name="SpeedBlockTip" xml:space="preserve">
     <value>Vitesse</value>
   </data>
+  <data name="SettingsAppearance" xml:space="preserve">
+    <value>Apparence</value>
+  </data>
+  <data name="AppearanceIntro" xml:space="preserve">
+    <value>Les couleurs s'appliquent tout de suite. Garder reste vert, Yeet rouge et Passer gris dans tous les thèmes.</value>
+  </data>
+  <data name="ColourThemeLabel" xml:space="preserve">
+    <value>Thème de couleurs</value>
+  </data>
+  <data name="ColourThemeHint" xml:space="preserve">
+    <value>La couleur des boutons, des tags choisis, de la barre de lecture et de la lueur du fond.</value>
+  </data>
+  <data name="ThemeSukiBlue" xml:space="preserve">
+    <value>Bleu Suki</value>
+  </data>
+  <data name="ThemeSukiBlueNote" xml:space="preserve">
+    <value>Par défaut. Le bleu de SukiUI, marqueurs jaune chaud.</value>
+  </data>
+  <data name="ThemeNeonViolet" xml:space="preserve">
+    <value>Violet néon</value>
+  </data>
+  <data name="ThemeNeonVioletNote" xml:space="preserve">
+    <value>Violet avec des marqueurs cyan. Le plus gamer.</value>
+  </data>
+  <data name="ThemeEmber" xml:space="preserve">
+    <value>Braise</value>
+  </data>
+  <data name="ThemeEmberNote" xml:space="preserve">
+    <value>Ambre sur un sombre chaud, marqueurs bleus.</value>
+  </data>
+  <data name="AnimatedBackgroundLabel" xml:space="preserve">
+    <value>Fond animé</value>
+  </data>
+  <data name="AnimatedBackgroundHint" xml:space="preserve">
+    <value>La lueur qui bouge lentement derrière l'app. Désactivez-la pour économiser la carte graphique.</value>
+  </data>
+  <data name="ReduceMotionLabel" xml:space="preserve">
+    <value>Réduire les animations</value>
+  </data>
+  <data name="ReduceMotionHint" xml:space="preserve">
+    <value>Transitions plus courtes et plus douces, sans éclair sur Garder ou Yeet.</value>
+  </data>
+  <data name="CountKept" xml:space="preserve">
+    <value>{0} gardés</value>
+  </data>
+  <data name="CountYeeted" xml:space="preserve">
+    <value>{0} yeetés</value>
+  </data>
+  <data name="CountSkipped" xml:space="preserve">
+    <value>{0} passés</value>
+  </data>
+  <data name="HomeReady" xml:space="preserve">
+    <value>Prêt à trier</value>
+  </data>
 </root>

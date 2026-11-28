@@ -6,120 +6,134 @@
              xmlns:views="using:Yeetle.App.Views"
              x:Class="Yeetle.App.Views.ExplorerView"
              x:DataType="vm:ExplorerViewModel">
-    <!-- Layout decided in #9 (spec §8): filters on the left; selection toolbar, the clip table and
-         a footer on the right. -->
+    <!-- Layout decided in #9 (spec §8), look from ZiL's canvas (#69): filters on the left; search,
+         selection toolbar, the clip table and a footer on the right, each side a glass card. -->
     <UserControl.Resources>
-        <SolidColorBrush x:Key="PanelBrush" Color="#15181D" />
-        <SolidColorBrush x:Key="LineBrush" Color="#23272E" />
-        <SolidColorBrush x:Key="BadgeBrush" Color="#37474F" />
-        <SolidColorBrush x:Key="YeetedBadgeBrush" Color="#C62828" />
-        <SolidColorBrush x:Key="KeptBadgeBrush" Color="#2E7D32" />
-        <SolidColorBrush x:Key="AccentBrush" Color="#2F6FD6" />
-        <SolidColorBrush x:Key="NoticeBrush" Color="#F0B429" />
-        <x:Double x:Key="SecondaryTextOpacity">0.7</x:Double>
-        <x:Double x:Key="DimmedOpacity">0.5</x:Double>
+        <x:Double x:Key="DimmedOpacity">0.55</x:Double>
         <!-- Column widths, shared by the header and the rows. -->
         <GridLength x:Key="DateColumn">150</GridLength>
         <GridLength x:Key="DurationColumn">80</GridLength>
-        <!-- Tag filter tree rows (#83): tighter than the theme's 32 px, so more tags fit. -->
+        <!-- Tag filter tree rows (#83): tighter than the theme's, so more tags fit. -->
         <x:Double x:Key="TreeViewItemMinHeight">26</x:Double>
-        <x:Double x:Key="CountOpacity">0.5</x:Double>
     </UserControl.Resources>
 
     <UserControl.Styles>
         <Style Selector="TextBlock.section">
             <Setter Property="FontSize" Value="12" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Opacity" Value="{StaticResource SecondaryTextOpacity}" />
-            <Setter Property="Margin" Value="0,14,0,4" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="{StaticResource YtTextMutedBrush}" />
+            <Setter Property="Margin" Value="0,16,0,6" />
         </Style>
+        <!-- Column headers: small and grey; a click sorts. -->
         <Style Selector="Button.header">
             <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="0" />
-            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="{StaticResource YtTextMutedBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
         </Style>
-        <Style Selector="ListBoxItem">
-            <Setter Property="Padding" Value="8,5" />
+        <Style Selector="Button.header:pointerover">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
+        </Style>
+        <Style Selector="Button.header:pointerover /template/ Border#RootBorder">
+            <Setter Property="BorderBrush" Value="Transparent" />
         </Style>
         <!-- A tag's clip count: smaller and greyer than its name (#83). -->
         <Style Selector="TextBlock.count">
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="Opacity" Value="{StaticResource CountOpacity}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{StaticResource YtTextMutedBrush}" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
-        <Style Selector="Border.badge">
-            <Setter Property="Background" Value="{StaticResource BadgeBrush}" />
-            <Setter Property="CornerRadius" Value="4" />
-            <Setter Property="Padding" Value="6,1" />
-            <Setter Property="Margin" Value="8,0,0,0" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
-        <Style Selector="Border.badge.kept">
-            <Setter Property="Background" Value="{StaticResource KeptBadgeBrush}" />
-        </Style>
-        <!-- The Clips | Sessions switch (#72): two halves, the current one in the accent blue. -->
-        <Style Selector="Border.modes">
-            <Setter Property="Background" Value="{StaticResource LineBrush}" />
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="Padding" Value="2" />
-        </Style>
-        <Style Selector="Button.mode">
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <!-- A clip row: rounded, the selected ones in the soft theme colour with a theme edge. -->
+        <Style Selector="Border.clipRow">
+            <Setter Property="Padding" Value="12,9" />
+            <Setter Property="CornerRadius" Value="{StaticResource YtControlRadius}" />
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="1" />
         </Style>
-        <Style Selector="Button.mode.current /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource AccentBrush}" />
-            <Setter Property="Foreground" Value="White" />
+        <Style Selector="ListBox.clips ListBoxItem">
+            <Setter Property="Padding" Value="0,1" />
+        </Style>
+        <Style Selector="ListBox.clips ListBoxItem:pointerover Border.clipRow">
+            <Setter Property="Background" Value="{StaticResource YtControlBrush}" />
+        </Style>
+        <Style Selector="ListBox.clips ListBoxItem:selected Border.clipRow">
+            <Setter Property="Background" Value="{DynamicResource YtRowSelectedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource YtRowSelectedBorderBrush}" />
+        </Style>
+        <!-- A past session (#72): a tile, the picked one in the soft theme colour. -->
+        <Style Selector="ListBox.sessions ListBoxItem">
+            <Setter Property="Padding" Value="0,3" />
+        </Style>
+        <Style Selector="ListBox.sessions ListBoxItem:pointerover Border.tile">
+            <Setter Property="Background" Value="{StaticResource YtControlBrush}" />
+        </Style>
+        <Style Selector="ListBox.sessions ListBoxItem:selected Border.tile">
+            <Setter Property="Background" Value="{DynamicResource YtRowSelectedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource YtRowSelectedBorderBrush}" />
         </Style>
         <Style Selector="TextBlock.changed">
-            <Setter Property="Foreground" Value="{StaticResource NoticeBrush}" />
-            <Setter Property="Margin" Value="0,0,5,0" />
+            <Setter Property="Foreground" Value="{StaticResource YtWarningTextBrush}" />
+            <Setter Property="Margin" Value="0,0,6,0" />
             <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontWeight" Value="Bold" />
         </Style>
-        <Style Selector="Border.badge.yeeted">
-            <Setter Property="Background" Value="{StaticResource YeetedBadgeBrush}" />
+        <Style Selector="Border.clipRow Border.pill">
+            <Setter Property="Margin" Value="8,0,0,0" />
         </Style>
     </UserControl.Styles>
 
-    <Grid ColumnDefinitions="260,*">
+    <Grid ColumnDefinitions="300,*" ColumnSpacing="20" Margin="24,20,24,24">
         <!-- Filters (spec §8). -->
-        <Border Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,1,0"
-                Padding="16,12">
+        <Border Classes="glass" Padding="14">
             <DockPanel>
                 <!-- Clips | Sessions (#72): the library as it is now, or what each past session decided. -->
-                <Border DockPanel.Dock="Top" Classes="modes" Margin="0,0,0,12" ToolTip.Tip="{res:Tr ExplorerModeTip}">
-                    <UniformGrid Rows="1">
-                        <Button Classes="mode" Classes.current="{Binding IsClipsMode}" Content="{res:Tr ExplorerModeClips}"
-                                Command="{Binding ShowClipsCommand}" />
-                        <Button Classes="mode" Classes.current="{Binding IsSessionsMode}"
-                                Content="{res:Tr ExplorerModeSessions}" Command="{Binding ShowSessionsCommand}" />
+                <Border DockPanel.Dock="Top" Classes="segmented sunken" Margin="0,0,0,14" ToolTip.Tip="{res:Tr ExplorerModeTip}">
+                    <UniformGrid Rows="1" ColumnSpacing="4">
+                        <Button Classes="segment" Classes.chosen="{Binding IsClipsMode}" HorizontalAlignment="Stretch" AutomationProperties.Name="{res:Tr ExplorerModeClips}"
+                                HorizontalContentAlignment="Center" Command="{Binding ShowClipsCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Classes="icon" FontSize="14" Text="{StaticResource IconVideo}" />
+                                <TextBlock VerticalAlignment="Center" Text="{res:Tr ExplorerModeClips}" />
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="segment" Classes.chosen="{Binding IsSessionsMode}" HorizontalAlignment="Stretch" AutomationProperties.Name="{res:Tr ExplorerModeSessions}"
+                                HorizontalContentAlignment="Center" Command="{Binding ShowSessionsCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Classes="icon" FontSize="14" Text="{StaticResource IconHistory}" />
+                                <TextBlock VerticalAlignment="Center" Text="{res:Tr ExplorerModeSessions}" />
+                            </StackPanel>
+                        </Button>
                     </UniformGrid>
                 </Border>
-                <Button DockPanel.Dock="Bottom" Margin="0,12,0,0" Content="{res:Tr ClearFilters}"
+                <Button DockPanel.Dock="Bottom" Classes="link" HorizontalAlignment="Left" Margin="0,12,0,0" Content="{res:Tr ClearFilters}"
                         Command="{Binding ClearFiltersCommand}" />
                 <!-- The committed sessions, most recent first (#72). -->
                 <DockPanel DockPanel.Dock="Top" MaxHeight="320" Margin="0,0,0,8" IsVisible="{Binding IsSessionsMode}">
-                    <TextBlock DockPanel.Dock="Top" Text="{res:Tr NoPastSessions}" TextWrapping="Wrap"
-                               Opacity="{StaticResource SecondaryTextOpacity}" IsVisible="{Binding ShowNoPastSessions}" />
-                    <ListBox ItemsSource="{Binding PastSessions}" SelectedItem="{Binding SelectedSession}" Background="Transparent"
-                             Classes="sessions">
+                    <TextBlock DockPanel.Dock="Top" Classes="hint" Text="{res:Tr NoPastSessions}" IsVisible="{Binding ShowNoPastSessions}" />
+                    <ListBox Classes="Void sessions" ItemsSource="{Binding PastSessions}" SelectedItem="{Binding SelectedSession}">
                         <ListBox.ItemTemplate>
                             <DataTemplate x:DataType="vm:PastSessionViewModel">
-                                <StackPanel Spacing="2">
-                                    <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Classes="count" Text="{Binding Detail}" TextTrimming="CharacterEllipsis"
-                                               ToolTip.Tip="{Binding Detail}" />
-                                </StackPanel>
+                                <Border Classes="tile">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="{Binding Title}" FontSize="15" FontWeight="Bold" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Classes="count" Text="{Binding Detail}" TextTrimming="CharacterEllipsis"
+                                                   ToolTip.Tip="{Binding Detail}" />
+                                    </StackPanel>
+                                </Border>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </DockPanel>
                 <ScrollViewer>
                     <StackPanel>
-                        <TextBlock FontSize="16" FontWeight="Bold" Text="{res:Tr FiltersTitle}" IsVisible="{Binding IsClipsMode}" />
-                        <TextBlock FontSize="16" FontWeight="Bold" Text="{res:Tr FilterInSession}"
+                        <TextBlock Classes="h2" Text="{res:Tr FiltersTitle}" IsVisible="{Binding IsClipsMode}" />
+                        <TextBlock Classes="h2" Text="{res:Tr FilterInSession}"
                                    IsVisible="{Binding IsSessionsMode}" />
                         <TextBlock Classes="section" Text="{res:Tr FilterTags}" />
                         <!-- Placeholders until the first load (#78). -->
@@ -130,7 +144,7 @@
                             <Border Classes="skeleton" Width="140" />
                             <Border Classes="skeleton" Width="100" />
                         </StackPanel>
-                        <TextBlock Text="{res:Tr NoTagsToFilter}" Opacity="{StaticResource SecondaryTextOpacity}">
+                        <TextBlock Classes="hint" Text="{res:Tr NoTagsToFilter}">
                             <TextBlock.IsVisible>
                                 <MultiBinding Converter="{x:Static BoolConverters.And}">
                                     <Binding Path="IsLoaded" />
@@ -146,15 +160,17 @@
                                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                                 </Style>
                                 <!-- Ticking is what filters; a selected row would only look like it does too. -->
-                                <Style Selector="TreeView.filters TreeViewItem:selected /template/ Border#PART_LayoutRoot">
+                                <Style Selector="TreeView.filters TreeViewItem:selected /template/ Border#SelectionBorder">
                                     <Setter Property="Background" Value="Transparent" />
+                                </Style>
+                                <Style Selector="TreeView.filters TreeViewItem:selected /template/ Border#SelectionBorder > ContentPresenter#PART_HeaderPresenter">
+                                    <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
                                 </Style>
                             </TreeView.Styles>
                             <TreeView.ItemTemplate>
                                 <TreeDataTemplate DataType="vm:TagFilterItem" ItemsSource="{Binding Children}">
                                     <Panel>
-                                        <TextBlock Text="{Binding Label}" FontSize="12" VerticalAlignment="Center"
-                                                   Opacity="{StaticResource SecondaryTextOpacity}" IsVisible="{Binding IsHeader}" />
+                                        <TextBlock Classes="label" Text="{Binding Label}" VerticalAlignment="Center" IsVisible="{Binding IsHeader}" />
                                         <CheckBox IsChecked="{Binding IsChecked}" IsVisible="{Binding IsTag}" MinHeight="0">
                                             <StackPanel Orientation="Horizontal" Spacing="5">
                                                 <TextBlock Text="{Binding Label}" VerticalAlignment="Center" />
@@ -194,128 +210,151 @@
             </DockPanel>
         </Border>
 
-        <DockPanel Grid.Column="1" Margin="16,12,16,12">
-            <TextBox DockPanel.Dock="Top" Text="{Binding SearchText}" PlaceholderText="{res:Tr SearchPlaceholder}"
-                     Margin="0,0,0,10" />
-
-            <!-- Selection toolbar. -->
-            <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,10" ItemSpacing="6" LineSpacing="6">
-                <TextBlock Text="{Binding SelectionText}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,6,0"
-                           IsVisible="{Binding HasSelection}" />
-                <Button Content="{res:Tr ShowInFolder}" Command="{Binding ShowInFolderCommand}" />
-                <Button Content="{res:Tr SetKept}" Command="{Binding SetKeptCommand}" />
-                <Button Content="{res:Tr SetYeeted}" Command="{Binding SetYeetedCommand}" />
-                <Button Content="{res:Tr ShowMarkers}" Command="{Binding ShowMarkersCommand}"
-                        ToolTip.Tip="{res:Tr ShowMarkersTip}" />
-                <Button Content="{res:Tr RenameByTags}" Command="{Binding RenameByTagsCommand}" />
-                <Button Content="{res:Tr RestoreNames}" Command="{Binding RestoreNamesCommand}" />
-                <Button Content="{res:Tr WipeData}" Command="{Binding WipeCommand}" />
-                <Button Content="{res:Tr DeleteFromDisk}" Command="{Binding DeleteCommand}" />
-            </WrapPanel>
-
-            <!-- Footer: match count, drag hint, and what the last action did. -->
-            <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0" Spacing="2">
-                <TextBlock Text="{Binding Notice}" TextWrapping="Wrap" Foreground="{StaticResource NoticeBrush}"
-                           IsVisible="{Binding Notice, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
-                    <TextBlock Text="{Binding MatchText}" FontWeight="SemiBold" />
-                    <TextBlock Grid.Column="1" Text="{res:Tr DragHint}" TextTrimming="CharacterEllipsis"
-                               Opacity="{StaticResource SecondaryTextOpacity}" />
-                </Grid>
-            </StackPanel>
-
-            <!-- Column headers: a click sorts, a second click turns the order around. -->
-            <Border DockPanel.Dock="Top" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,0,0,1" Padding="8,4">
-                <Grid ColumnSpacing="12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="3*" />
-                        <ColumnDefinition Width="{StaticResource DateColumn}" />
-                        <ColumnDefinition Width="{StaticResource DurationColumn}" />
-                        <ColumnDefinition Width="2*" />
-                    </Grid.ColumnDefinitions>
-                    <Button Classes="header" Content="{Binding NameHeader}" Command="{Binding SortByCommand}"
-                            CommandParameter="{x:Static library:LibrarySort.Name}" />
-                    <Button Grid.Column="1" Classes="header" Content="{Binding DateHeader}" Command="{Binding SortByCommand}"
-                            CommandParameter="{x:Static library:LibrarySort.RecordedAt}" />
-                    <Button Grid.Column="2" Classes="header" Content="{Binding DurationHeader}" Command="{Binding SortByCommand}"
-                            CommandParameter="{x:Static library:LibrarySort.Duration}" />
-                    <TextBlock Grid.Column="3" FontWeight="SemiBold" VerticalAlignment="Center"
-                               Text="{res:Tr ColumnTags}" />
-                </Grid>
+        <DockPanel Grid.Column="1">
+            <!-- Search: names and marker labels. -->
+            <Border DockPanel.Dock="Top" Classes="segmented" Padding="14,0" Height="42" Margin="0,0,0,14"
+                    HorizontalAlignment="Left" MinWidth="420" MaxWidth="560" CornerRadius="13">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Left" Classes="icon" FontSize="14" Margin="0,0,10,0"
+                               Foreground="{StaticResource YtTextSecondaryBrush}" Text="{StaticResource IconSearch}" />
+                    <TextBox Classes="bare" Text="{Binding SearchText}" PlaceholderText="{res:Tr SearchPlaceholder}"
+                             VerticalAlignment="Center" AutomationProperties.Name="{res:Tr SearchPlaceholder}" />
+                </DockPanel>
             </Border>
 
-            <Panel>
-                <TextBlock Margin="8,16" Text="{res:Tr PickASession}" Opacity="{StaticResource SecondaryTextOpacity}"
-                           IsVisible="{Binding ShowPickASession}" />
-                <TextBlock Margin="8,16" Text="{res:Tr NoClipsMatch}" Opacity="{StaticResource SecondaryTextOpacity}"
-                           IsVisible="{Binding ShowEmpty}" />
-                <!-- Placeholder rows until the first load (#78), in the columns of the real ones. -->
-                <ItemsControl IsVisible="{Binding !IsLoaded}" Margin="8,6" ItemsSource="{x:Static views:Placeholders.ExplorerRows}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="Thickness">
-                            <Grid ColumnSpacing="12" Height="32">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="3*" />
-                                    <ColumnDefinition Width="{StaticResource DateColumn}" />
-                                    <ColumnDefinition Width="{StaticResource DurationColumn}" />
-                                    <ColumnDefinition Width="2*" />
-                                </Grid.ColumnDefinitions>
-                                <Border Classes="skeleton" HorizontalAlignment="Stretch" Margin="{Binding}" />
-                                <Border Grid.Column="1" Classes="skeleton" Width="110" />
-                                <Border Grid.Column="2" Classes="skeleton" Width="44" />
-                                <Border Grid.Column="3" Classes="skeleton" Width="120" />
+            <Border Classes="glass" Padding="0" ClipToBounds="True">
+                <DockPanel>
+                    <!-- Selection toolbar; tinted while something is selected. -->
+                    <Border DockPanel.Dock="Top" Padding="14,12" BorderBrush="{StaticResource YtLineBrush}" BorderThickness="0,0,0,1"
+                            Background="Transparent" Classes.selecting="{Binding HasSelection}">
+                        <Border.Styles>
+                            <Style Selector="Border.selecting">
+                                <Setter Property="Background" Value="{DynamicResource YtRowSelectedBrush}" />
+                            </Style>
+                        </Border.Styles>
+                        <WrapPanel ItemSpacing="8" LineSpacing="8">
+                            <TextBlock Text="{Binding SelectionText}" VerticalAlignment="Center" FontWeight="Bold" Margin="6,0,6,0"
+                                       IsVisible="{Binding HasSelection}" />
+                            <Button Classes="primary small" Content="{res:Tr OpenInYeetle}" Command="{Binding OpenCommand}" />
+                            <Button Classes="ghost small" Content="{res:Tr ShowInFolder}" Command="{Binding ShowInFolderCommand}" />
+                            <Button Classes="ghost small" Content="{res:Tr SetKept}" Command="{Binding SetKeptCommand}" />
+                            <Button Classes="ghost small" Content="{res:Tr SetYeeted}" Command="{Binding SetYeetedCommand}" />
+                            <Button Classes="ghost small" Content="{res:Tr ShowMarkers}" Command="{Binding ShowMarkersCommand}"
+                                    ToolTip.Tip="{res:Tr ShowMarkersTip}" />
+                            <Button Classes="ghost small" Content="{res:Tr RenameByTags}" Command="{Binding RenameByTagsCommand}" />
+                            <Button Classes="ghost small" Content="{res:Tr RestoreNames}" Command="{Binding RestoreNamesCommand}" />
+                            <Button Classes="ghost small" Content="{res:Tr WipeData}" Command="{Binding WipeCommand}" />
+                            <Button Classes="danger small" Content="{res:Tr DeleteFromDisk}" Command="{Binding DeleteCommand}" />
+                        </WrapPanel>
+                    </Border>
+
+                    <!-- Footer: match count, drag hint, and what the last action did. -->
+                    <Border DockPanel.Dock="Bottom" Padding="18,12" BorderBrush="{StaticResource YtLineBrush}" BorderThickness="0,1,0,0">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="{Binding Notice}" TextWrapping="Wrap" Foreground="{StaticResource YtWarningTextBrush}"
+                                       IsVisible="{Binding Notice, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
+                                <TextBlock FontSize="13" Classes="secondary" Text="{Binding MatchText}" />
+                                <TextBlock Grid.Column="1" FontSize="13" Classes="secondary" HorizontalAlignment="Right"
+                                           Text="{res:Tr DragHint}" TextTrimming="CharacterEllipsis" />
                             </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-                <ProgressBar Classes="busy" Classes.on="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalAlignment="Top" />
-                <!-- Multiple: click, Ctrl+click, Shift+click and Ctrl+A select as in Windows Explorer.
-                     The list is virtualized. -->
-                <ListBox x:Name="List" ItemsSource="{Binding Rows}" SelectionMode="Multiple" Background="Transparent">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate x:DataType="vm:ExplorerRowViewModel">
-                            <Grid ColumnSpacing="12" Classes.dimmed="{Binding IsDimmed}">
-                                <Grid.Styles>
-                                    <Style Selector="Grid.dimmed">
-                                        <Setter Property="Opacity" Value="{StaticResource DimmedOpacity}" />
-                                    </Style>
-                                </Grid.Styles>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="3*" />
-                                    <ColumnDefinition Width="{StaticResource DateColumn}" />
-                                    <ColumnDefinition Width="{StaticResource DurationColumn}" />
-                                    <ColumnDefinition Width="2*" />
-                                </Grid.ColumnDefinitions>
-                                <DockPanel>
-                                    <Border DockPanel.Dock="Right" Classes="badge" IsVisible="{Binding HasStateBadge}">
-                                        <TextBlock FontSize="11" Text="{Binding StateBadge}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Column headers: a click sorts, a second click turns the order around. -->
+                    <Border DockPanel.Dock="Top" BorderBrush="{StaticResource YtLineBrush}" BorderThickness="0,0,0,1" Padding="20,10">
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*" />
+                                <ColumnDefinition Width="{StaticResource DateColumn}" />
+                                <ColumnDefinition Width="{StaticResource DurationColumn}" />
+                                <ColumnDefinition Width="2*" />
+                            </Grid.ColumnDefinitions>
+                            <Button Classes="header" Content="{Binding NameHeader}" Command="{Binding SortByCommand}"
+                                    CommandParameter="{x:Static library:LibrarySort.Name}" />
+                            <Button Grid.Column="1" Classes="header" Content="{Binding DateHeader}" Command="{Binding SortByCommand}"
+                                    CommandParameter="{x:Static library:LibrarySort.RecordedAt}" />
+                            <Button Grid.Column="2" Classes="header" Content="{Binding DurationHeader}" Command="{Binding SortByCommand}"
+                                    CommandParameter="{x:Static library:LibrarySort.Duration}" />
+                            <TextBlock Grid.Column="3" Classes="label" VerticalAlignment="Center" Text="{res:Tr ColumnTags}" />
+                        </Grid>
+                    </Border>
+
+                    <Panel Margin="6">
+                        <TextBlock Margin="14,16" Classes="hint" FontSize="15" Text="{res:Tr PickASession}"
+                                   IsVisible="{Binding ShowPickASession}" />
+                        <TextBlock Margin="14,40" Classes="hint" FontSize="15" HorizontalAlignment="Center" Text="{res:Tr NoClipsMatch}"
+                                   IsVisible="{Binding ShowEmpty}" />
+                        <!-- Placeholder rows until the first load (#78), in the columns of the real ones. -->
+                        <ItemsControl IsVisible="{Binding !IsLoaded}" Margin="14,6" ItemsSource="{x:Static views:Placeholders.ExplorerRows}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="Thickness">
+                                    <Grid ColumnSpacing="12" Height="38">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="3*" />
+                                            <ColumnDefinition Width="{StaticResource DateColumn}" />
+                                            <ColumnDefinition Width="{StaticResource DurationColumn}" />
+                                            <ColumnDefinition Width="2*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Border Classes="skeleton" HorizontalAlignment="Stretch" Margin="{Binding}" />
+                                        <Border Grid.Column="1" Classes="skeleton" Width="110" />
+                                        <Border Grid.Column="2" Classes="skeleton" Width="44" />
+                                        <Border Grid.Column="3" Classes="skeleton" Width="120" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <ProgressBar Classes="busy" Classes.on="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalAlignment="Top" />
+                        <!-- Multiple: click, Ctrl+click, Shift+click and Ctrl+A select as in Windows Explorer.
+                             The list is virtualized; its rows are plain (ListBox.Void), drawn below. -->
+                        <ListBox x:Name="List" Classes="Void clips" ItemsSource="{Binding Rows}" SelectionMode="Multiple">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate x:DataType="vm:ExplorerRowViewModel">
+                                    <Border Classes="clipRow">
+                                        <Grid ColumnSpacing="12" Classes.dimmed="{Binding IsDimmed}">
+                                            <Grid.Styles>
+                                                <Style Selector="Grid.dimmed">
+                                                    <Setter Property="Opacity" Value="{StaticResource DimmedOpacity}" />
+                                                </Style>
+                                            </Grid.Styles>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="3*" />
+                                                <ColumnDefinition Width="{StaticResource DateColumn}" />
+                                                <ColumnDefinition Width="{StaticResource DurationColumn}" />
+                                                <ColumnDefinition Width="2*" />
+                                            </Grid.ColumnDefinitions>
+                                            <DockPanel>
+                                                <Border DockPanel.Dock="Right" Classes="pill warning" IsVisible="{Binding HasStateBadge}">
+                                                    <TextBlock Text="{Binding StateBadge}" />
+                                                </Border>
+                                                <!-- A past session's clip decided otherwise since: "now Kept" (#72). -->
+                                                <TextBlock DockPanel.Dock="Right" Classes="count" Margin="6,0,0,0" Text="{Binding DecisionNow}"
+                                                           IsVisible="{Binding HasDecisionNow}" ToolTip.Tip="{res:Tr DecisionNowTip}" />
+                                                <Border DockPanel.Dock="Right" Classes="pill neutral" Classes.yeeted="{Binding IsYeeted}"
+                                                        Classes.kept="{Binding IsKept}" IsVisible="{Binding HasDecisionBadge}">
+                                                    <TextBlock Text="{Binding DecisionBadge}" />
+                                                </Border>
+                                                <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
+                                                           ToolTip.Tip="{Binding Clip.FullPath}" VerticalAlignment="Center" />
+                                            </DockPanel>
+                                            <TextBlock Grid.Column="1" Classes="secondary" Text="{Binding Date}" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="2" Classes="secondary" Text="{Binding Duration}" VerticalAlignment="Center" />
+                                            <DockPanel Grid.Column="3">
+                                                <!-- The tags shown are the current ones; this sign says they changed since the session (#72). -->
+                                                <TextBlock DockPanel.Dock="Left" Classes="changed" Text="≠" IsVisible="{Binding TagsChanged}"
+                                                           ToolTip.Tip="{res:Tr TagsChangedTip}" />
+                                                <TextBlock Text="{Binding Tags}" FontSize="13" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
+                                                           ToolTip.Tip="{Binding Tags}" VerticalAlignment="Center"
+                                                           Foreground="{DynamicResource YtTagPillTextBrush}" />
+                                            </DockPanel>
+                                        </Grid>
                                     </Border>
-                                    <!-- A past session's clip decided otherwise since: "now Kept" (#72). -->
-                                    <TextBlock DockPanel.Dock="Right" Classes="count" Margin="6,0,0,0" Text="{Binding DecisionNow}"
-                                               IsVisible="{Binding HasDecisionNow}" ToolTip.Tip="{res:Tr DecisionNowTip}" />
-                                    <Border DockPanel.Dock="Right" Classes="badge" Classes.yeeted="{Binding IsYeeted}"
-                                            Classes.kept="{Binding IsKept}" IsVisible="{Binding HasDecisionBadge}">
-                                        <TextBlock FontSize="11" Text="{Binding DecisionBadge}" />
-                                    </Border>
-                                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Clip.FullPath}"
-                                               VerticalAlignment="Center" />
-                                </DockPanel>
-                                <TextBlock Grid.Column="1" Text="{Binding Date}" VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="2" Text="{Binding Duration}" FontFamily="Consolas,monospace"
-                                           VerticalAlignment="Center" />
-                                <DockPanel Grid.Column="3">
-                                    <!-- The tags shown are the current ones; this sign says they changed since the session (#72). -->
-                                    <TextBlock DockPanel.Dock="Left" Classes="changed" Text="≠" IsVisible="{Binding TagsChanged}"
-                                               ToolTip.Tip="{res:Tr TagsChangedTip}" />
-                                    <TextBlock Text="{Binding Tags}" TextTrimming="CharacterEllipsis"
-                                               ToolTip.Tip="{Binding Tags}" VerticalAlignment="Center"
-                                               Opacity="{StaticResource SecondaryTextOpacity}" />
-                                </DockPanel>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </Panel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Panel>
+                </DockPanel>
+            </Border>
         </DockPanel>
     </Grid>
 </UserControl>

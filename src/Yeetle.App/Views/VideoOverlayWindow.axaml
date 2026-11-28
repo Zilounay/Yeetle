@@ -19,24 +19,7 @@
         CanResize="False"
         RequestedThemeVariant="Dark">
     <Window.Resources>
-        <!-- Panels: a dark tint, about 70% opaque, readable over any picture. -->
-        <SolidColorBrush x:Key="BlockBrush" Color="#B8101216" />
-        <CornerRadius x:Key="BlockCornerRadius">10</CornerRadius>
-        <!-- Decision colours: green keeps, red yeets, slate skips; each a shade lighter on hover. -->
-        <SolidColorBrush x:Key="KeepBrush" Color="#2E7D32" />
-        <SolidColorBrush x:Key="KeepHoverBrush" Color="#388E3C" />
-        <SolidColorBrush x:Key="YeetBrush" Color="#C62828" />
-        <SolidColorBrush x:Key="YeetHoverBrush" Color="#D32F2F" />
-        <SolidColorBrush x:Key="SkipBrush" Color="#CC37474F" />
-        <SolidColorBrush x:Key="SkipHoverBrush" Color="#455A64" />
-        <!-- Marker ticks: amber, visible on the dark seek bar. -->
-        <SolidColorBrush x:Key="MarkerBrush" Color="#F0B429" />
-        <!-- The speed in use: the accent blue of the current clip card. -->
-        <SolidColorBrush x:Key="CurrentSpeedBrush" Color="#2F6FD6" />
-        <!-- A tag on the clip, over the picture: the selected-chip blue, slightly see-through. -->
-        <SolidColorBrush x:Key="TagChipBrush" Color="#D92F6FD6" />
         <x:Double x:Key="SecondaryTextOpacity">0.75</x:Double>
-        <x:Double x:Key="DisabledOpacity">0.4</x:Double>
         <!-- The speed dot: as tall as an icon button, round while closed. -->
         <x:Double x:Key="SpeedDotSize">38</x:Double>
         <CornerRadius x:Key="SpeedDotRadius">19</CornerRadius>
@@ -45,10 +28,13 @@
     </Window.Resources>
 
     <Window.Styles>
+        <!-- Over the video: dark translucent blocks with a thin edge, no blur (#28). -->
         <Style Selector="Border.block">
-            <Setter Property="Background" Value="{StaticResource BlockBrush}" />
-            <Setter Property="CornerRadius" Value="{StaticResource BlockCornerRadius}" />
-            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="Background" Value="{StaticResource YtOverlayBlockBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource YtCardBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{StaticResource YtBlockRadius}" />
+            <Setter Property="Padding" Value="14,8" />
         </Style>
         <!-- Buttons are for the mouse; keys are hotkeys. A focused button would also react to
              Space or Enter and fight the hotkey. -->
@@ -61,29 +47,16 @@
         </Style>
         <Style Selector="TextBlock.time">
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="FontFamily" Value="Consolas,monospace" />
-            <Setter Property="MinWidth" Value="48" />
-        </Style>
-        <!-- Icon buttons of the control blocks; the play button is the largest, in the middle. -->
-        <Style Selector="Button.icon">
-            <Setter Property="Width" Value="36" />
-            <Setter Property="Height" Value="34" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="HorizontalContentAlignment" Value="Center" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-        </Style>
-        <Style Selector="Button.icon.main">
-            <Setter Property="Width" Value="46" />
-            <Setter Property="Height" Value="42" />
-        </Style>
-        <Style Selector="Button.icon.main TextBlock.icon">
-            <Setter Property="FontSize" Value="22" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="MinWidth" Value="44" />
         </Style>
         <Style Selector="Button.speed">
             <Setter Property="MinWidth" Value="0" />
-            <Setter Property="Padding" Value="7,5" />
-            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Padding" Value="9,0" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="Bold" />
         </Style>
         <!-- Narrow enough that the sound block stays clear of the middle one at the default window size. -->
         <Style Selector="ComboBox.audio">
@@ -103,55 +76,14 @@
             <Setter Property="Padding" Value="0" />
             <Setter Property="CornerRadius" Value="2" />
         </Style>
-        <Style Selector="Button.tick /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource MarkerBrush}" />
+        <Style Selector="Button.tick, Button.tick:pointerover">
+            <Setter Property="Background" Value="{DynamicResource YtAccentBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
         </Style>
         <Style Selector="Button.tick:pointerover">
             <Setter Property="Width" Value="6" />
         </Style>
-        <!-- The speed button that matches the current speed. -->
-        <Style Selector="Button.current /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource CurrentSpeedBrush}" />
-        </Style>
 
-        <!-- Keep / Skip / Yeet: the review decisions, large and coloured. -->
-        <Style Selector="Button.decision">
-            <Setter Property="FontSize" Value="18" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="MinWidth" Value="132" />
-            <Setter Property="Padding" Value="20,10" />
-            <Setter Property="CornerRadius" Value="{StaticResource BlockCornerRadius}" />
-            <Setter Property="HorizontalContentAlignment" Value="Center" />
-        </Style>
-        <Style Selector="Button.decision /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Foreground" Value="White" />
-        </Style>
-        <Style Selector="Button.keep /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource KeepBrush}" />
-        </Style>
-        <Style Selector="Button.keep:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource KeepHoverBrush}" />
-        </Style>
-        <Style Selector="Button.yeet /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource YeetBrush}" />
-        </Style>
-        <Style Selector="Button.yeet:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource YeetHoverBrush}" />
-        </Style>
-        <Style Selector="Button.skip /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource SkipBrush}" />
-        </Style>
-        <Style Selector="Button.skip:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource SkipHoverBrush}" />
-        </Style>
-        <!-- The current decision of an opened clip. -->
-        <Style Selector="Button.decision.current /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="BorderBrush" Value="White" />
-            <Setter Property="BorderThickness" Value="3" />
-        </Style>
-        <Style Selector="Button.decision:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Opacity" Value="{StaticResource DisabledOpacity}" />
-        </Style>
         <!-- The info and the controls fade out when the mouse rests over the video, and come back when it
              moves (#93). The root panel gets "idle"; the code-behind decides when. -->
         <Style Selector=":is(Control).chrome">
@@ -186,7 +118,7 @@
         </Style>
         <Style Selector="Border.speedDot:pointerover">
             <Setter Property="Padding" Value="4,0" />
-            <Setter Property="CornerRadius" Value="{StaticResource BlockCornerRadius}" />
+            <Setter Property="CornerRadius" Value="{StaticResource YtBlockRadius}" />
         </Style>
         <!-- The collapsed speed block: the speed in use, as large as an icon button (#93, #94). -->
         <Style Selector="TextBlock.speedNow">
@@ -199,18 +131,21 @@
         </Style>
         <!-- Theatre mode (#95): the clip's tags over the picture, as small chips with nothing behind them. -->
         <Style Selector="Button.tagChip">
-            <Setter Property="Height" Value="30" />
+            <Setter Property="Height" Value="32" />
             <Setter Property="Padding" Value="12,0" />
-            <Setter Property="CornerRadius" Value="15" />
+            <Setter Property="CornerRadius" Value="{StaticResource YtChipRadius}" />
             <Setter Property="HorizontalAlignment" Value="Right" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
-        </Style>
-        <Style Selector="Button.tagChip /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource TagChipBrush}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Background" Value="{StaticResource YtOverlayBlockBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource YtChipSelectedBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Foreground" Value="White" />
         </Style>
-        <Style Selector="Button.tagChip:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource CurrentSpeedBrush}" />
+        <Style Selector="Button.tagChip:pointerover">
+            <Setter Property="Background" Value="{DynamicResource YtPrimaryBrush}" />
+            <Setter Property="Foreground" Value="White" />
         </Style>
         <!-- The full Tags panel, off to the right until the pointer reaches the edge of the video. -->
         <Style Selector="Border.drawer">
@@ -228,13 +163,17 @@
         </Style>
     </Window.Styles>
 
+    <Panel>
+    <!-- A short flash of the decision colour around the picture on Keep, Yeet and Skip (#69); none
+         with Reduce motion. Drawn by the code-behind. -->
+    <Border x:Name="Flash" Opacity="0" IsHitTestVisible="False" />
     <Panel x:Name="Root" Margin="12">
         <!-- Top left: what is playing, and any message. -->
         <Border Classes="block chrome" HorizontalAlignment="Left" VerticalAlignment="Top" MaxWidth="640"
                 IsVisible="{Binding HasInfo}">
             <StackPanel Spacing="2">
                 <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding Session.IsActive}">
-                    <TextBlock FontWeight="Bold" Text="{Binding Session.Counter}" />
+                    <Border Classes="pill primary"><TextBlock FontSize="13" Text="{Binding Session.Counter}" /></Border>
                     <TextBlock FontWeight="SemiBold" Text="{Binding Session.ClipName}" TextTrimming="CharacterEllipsis" />
                     <TextBlock Text="{Binding Session.ClipDate}" Opacity="{StaticResource SecondaryTextOpacity}" />
                 </StackPanel>
@@ -260,21 +199,42 @@
                  where the current decision is outlined and there is no Skip (spec §8). A clip whose
                  file is not on disk only keeps Back to library (#79). -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12" IsVisible="{Binding IsEditorPage}">
-                <Button Classes="decision skip" Content="{res:Tr BackToLibrary}" Command="{Binding Editor.CloseCommand}"
+                <Button Classes="skip" Content="{res:Tr BackToLibrary}" Command="{Binding Editor.CloseCommand}"
                         ToolTip.Tip="{res:Tr BackToLibraryTip}" />
-                <Button Classes="decision yeet" Classes.current="{Binding Editor.IsYeeted}" Content="{res:Tr Yeet}"
-                        Command="{Binding Editor.YeetCommand}" IsVisible="{Binding ShowControls}" />
-                <Button Classes="decision keep" Classes.current="{Binding Editor.IsKept}" Content="{res:Tr Keep}"
-                        Command="{Binding Editor.KeepCommand}" ToolTip.Tip="{res:Tr EditorSavedHint}"
-                        IsVisible="{Binding ShowControls}" />
+                <Button Classes="yeet" Classes.current="{Binding Editor.IsYeeted}" AutomationProperties.Name="{res:Tr Yeet}"
+                        Command="{Binding Editor.YeetCommand}" IsVisible="{Binding ShowControls}">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <TextBlock Classes="icon" Foreground="White" Text="{StaticResource IconClose}" />
+                            <TextBlock VerticalAlignment="Center" Text="{res:Tr Yeet}" />
+                        </StackPanel>
+                        </Button>
+                <Button Classes="keep" Classes.current="{Binding Editor.IsKept}" AutomationProperties.Name="{res:Tr Keep}"
+                        Command="{Binding Editor.KeepCommand}" ToolTip.Tip="{res:Tr EditorSavedHint}" IsVisible="{Binding ShowControls}">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <TextBlock Classes="icon" Foreground="White" Text="{StaticResource IconCheck}" />
+                            <TextBlock VerticalAlignment="Center" Text="{res:Tr Keep}" />
+                        </StackPanel>
+                        </Button>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12" IsVisible="{Binding IsSessionPage}">
-                <Button Classes="decision yeet" Content="{res:Tr Yeet}" Command="{Binding Session.YeetCommand}"
-                        ToolTip.Tip="{res:Tr YeetTip}" />
-                <Button Classes="decision skip" Content="{res:Tr Skip}" Command="{Binding Session.SkipCommand}"
-                        ToolTip.Tip="{res:Tr SkipTip}" />
-                <Button Classes="decision keep" Content="{res:Tr Keep}" Command="{Binding Session.KeepCommand}"
-                        ToolTip.Tip="{res:Tr KeepTip}" />
+                <Button Classes="yeet" Command="{Binding Session.YeetCommand}" AutomationProperties.Name="{res:Tr Yeet}" ToolTip.Tip="{res:Tr YeetTip}">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <TextBlock Classes="icon" Foreground="White" Text="{StaticResource IconClose}" />
+                            <TextBlock VerticalAlignment="Center" Text="{res:Tr Yeet}" />
+                        </StackPanel>
+                        </Button>
+                <Button Classes="skip" Command="{Binding Session.SkipCommand}" AutomationProperties.Name="{res:Tr Skip}" ToolTip.Tip="{res:Tr SkipTip}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock VerticalAlignment="Center" Text="{res:Tr Skip}" />
+                            <TextBlock Classes="icon" FontSize="13" Text="{StaticResource IconForward}" />
+                        </StackPanel>
+                        </Button>
+                <Button Classes="keep" Command="{Binding Session.KeepCommand}" AutomationProperties.Name="{res:Tr Keep}" ToolTip.Tip="{res:Tr KeepTip}">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <TextBlock Classes="icon" Foreground="White" Text="{StaticResource IconCheck}" />
+                            <TextBlock VerticalAlignment="Center" Text="{res:Tr Keep}" />
+                        </StackPanel>
+                        </Button>
             </StackPanel>
 
             <!-- Equal side columns keep the playback block in the exact middle, under Skip. -->
@@ -285,7 +245,7 @@
                 <Canvas Grid.Column="0">
                 <Border x:Name="SoundBlock" Classes="block expandable" Canvas.Left="0" Canvas.Bottom="0" Padding="8,6">
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Button Classes="icon" Command="{Binding Player.ToggleMuteCommand}" ToolTip.Tip="{Binding Player.MuteLabel}"
+                        <Button Classes="iconButton bare" Command="{Binding Player.ToggleMuteCommand}" ToolTip.Tip="{Binding Player.MuteLabel}"
                                 AutomationProperties.Name="{Binding Player.MuteLabel}" VerticalAlignment="Center">
                             <Panel>
                                 <TextBlock Classes="icon" Text="{StaticResource IconVolume}" IsVisible="{Binding !Player.IsMuted}" />
@@ -329,32 +289,32 @@
                 <!-- Middle: undo, previous, play / pause, next, marker. -->
                 <Border Grid.Column="1" Classes="block" VerticalAlignment="Bottom" Padding="8,4">
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                        <Button Classes="icon" Command="{Binding Session.UndoCommand}" IsVisible="{Binding IsSessionPage}"
+                        <Button Classes="iconButton bare" Command="{Binding Session.UndoCommand}" IsVisible="{Binding IsSessionPage}"
                                 ToolTip.Tip="{res:Tr UndoTip}" AutomationProperties.Name="{res:Tr Undo}">
                             <TextBlock Classes="icon" Text="{StaticResource IconUndo}" />
                         </Button>
-                        <Button Classes="icon" Command="{Binding Editor.UndoCommand}" IsVisible="{Binding IsEditorPage}"
+                        <Button Classes="iconButton bare" Command="{Binding Editor.UndoCommand}" IsVisible="{Binding IsEditorPage}"
                                 ToolTip.Tip="{res:Tr UndoTip}" AutomationProperties.Name="{res:Tr Undo}">
                             <TextBlock Classes="icon" Text="{StaticResource IconUndo}" />
                         </Button>
-                        <Button Classes="icon" Command="{Binding Session.BackCommand}" IsVisible="{Binding IsSessionPage}"
+                        <Button Classes="iconButton bare" Command="{Binding Session.BackCommand}" IsVisible="{Binding IsSessionPage}"
                                 ToolTip.Tip="{res:Tr BackTip}" AutomationProperties.Name="{res:Tr Back}">
                             <TextBlock Classes="icon" Text="{StaticResource IconPrevious}" />
                         </Button>
-                        <Button Classes="icon main" Command="{Binding Player.TogglePauseCommand}"
+                        <Button Classes="iconButton round" Command="{Binding Player.TogglePauseCommand}"
                                 ToolTip.Tip="{Binding Player.PlayPauseLabel}" AutomationProperties.Name="{Binding Player.PlayPauseLabel}">
                             <Panel>
                                 <TextBlock Classes="icon" Text="{StaticResource IconPause}" IsVisible="{Binding Player.IsPlaying}" />
                                 <TextBlock Classes="icon" Text="{StaticResource IconPlay}" IsVisible="{Binding !Player.IsPlaying}" />
                             </Panel>
                         </Button>
-                        <Button Classes="icon" Command="{Binding Session.SkipCommand}" IsVisible="{Binding IsSessionPage}"
+                        <Button Classes="iconButton bare" Command="{Binding Session.SkipCommand}" IsVisible="{Binding IsSessionPage}"
                                 ToolTip.Tip="{res:Tr SkipTip}" AutomationProperties.Name="{res:Tr Skip}">
                             <TextBlock Classes="icon" Text="{StaticResource IconNext}" />
                         </Button>
-                        <Button Classes="icon" Command="{Binding SideMarkers.AddCommand}"
+                        <Button Classes="iconButton bare" Command="{Binding SideMarkers.AddCommand}"
                                 ToolTip.Tip="{res:Tr AddMarkerTip}" AutomationProperties.Name="{res:Tr AddMarker}">
-                            <TextBlock Classes="icon" Text="{StaticResource IconMarker}" />
+                            <TextBlock Classes="icon" Foreground="{DynamicResource YtAccentBrush}" Text="{StaticResource IconMarker}" />
                         </Button>
                     </StackPanel>
                 </Border>
@@ -375,7 +335,7 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="vm:SpeedOptionViewModel">
-                                        <Button Classes="speed" Content="{Binding Label}" Classes.current="{Binding IsCurrent}"
+                                        <Button Classes="segment speed" Content="{Binding Label}" Classes.chosen="{Binding IsCurrent}"
                                                 Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Player.SetSpeedCommand}"
                                                 CommandParameter="{Binding Speed}" />
                                     </DataTemplate>
@@ -384,7 +344,7 @@
                         </Panel>
                     </Border>
                     <Border Classes="block" Padding="4">
-                        <Button Classes="icon" Command="{Binding ToggleTheatreCommand}" Classes.current="{Binding IsTheatre}"
+                        <Button Classes="iconButton bare" Command="{Binding ToggleTheatreCommand}" Classes.current="{Binding IsTheatre}"
                                 ToolTip.Tip="{res:Tr TheatreTip}" AutomationProperties.Name="{res:Tr Theatre}">
                             <TextBlock Classes="icon" Text="{StaticResource IconTheatre}" />
                         </Button>
@@ -449,5 +409,6 @@
                 IsVisible="{Binding ShowTheatreTags}">
             <views:TagsPanel DataContext="{Binding SideTags}" />
         </Border>
+    </Panel>
     </Panel>
 </Window>

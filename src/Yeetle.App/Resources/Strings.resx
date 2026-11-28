@@ -1216,4 +1216,58 @@ It can no longer be picked. The {1} clip(s) that already carry it keep it under 
   <data name="SpeedBlockTip" xml:space="preserve">
     <value>Speed</value>
   </data>
+  <data name="SettingsAppearance" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="AppearanceIntro" xml:space="preserve">
+    <value>Colours apply at once. Keep stays green, Yeet red and Skip grey in every theme.</value>
+  </data>
+  <data name="ColourThemeLabel" xml:space="preserve">
+    <value>Colour theme</value>
+  </data>
+  <data name="ColourThemeHint" xml:space="preserve">
+    <value>The colour of buttons, selected tags, the seek bar and the background glow.</value>
+  </data>
+  <data name="ThemeSukiBlue" xml:space="preserve">
+    <value>Suki blue</value>
+  </data>
+  <data name="ThemeSukiBlueNote" xml:space="preserve">
+    <value>Default. SukiUI's own blue, warm yellow markers.</value>
+  </data>
+  <data name="ThemeNeonViolet" xml:space="preserve">
+    <value>Neon violet</value>
+  </data>
+  <data name="ThemeNeonVioletNote" xml:space="preserve">
+    <value>Violet with cyan markers. The most gamer.</value>
+  </data>
+  <data name="ThemeEmber" xml:space="preserve">
+    <value>Ember</value>
+  </data>
+  <data name="ThemeEmberNote" xml:space="preserve">
+    <value>Amber on warm dark, blue markers.</value>
+  </data>
+  <data name="AnimatedBackgroundLabel" xml:space="preserve">
+    <value>Animated background</value>
+  </data>
+  <data name="AnimatedBackgroundHint" xml:space="preserve">
+    <value>The slow-moving glow behind the app. Turn off to save graphics power.</value>
+  </data>
+  <data name="ReduceMotionLabel" xml:space="preserve">
+    <value>Reduce motion</value>
+  </data>
+  <data name="ReduceMotionHint" xml:space="preserve">
+    <value>Shorter, gentler transitions and no flashes on Keep or Yeet.</value>
+  </data>
+  <data name="CountKept" xml:space="preserve">
+    <value>{0} kept</value>
+  </data>
+  <data name="CountYeeted" xml:space="preserve">
+    <value>{0} yeeted</value>
+  </data>
+  <data name="CountSkipped" xml:space="preserve">
+    <value>{0} skipped</value>
+  </data>
+  <data name="HomeReady" xml:space="preserve">
+    <value>Ready to review</value>
+  </data>
 </root>

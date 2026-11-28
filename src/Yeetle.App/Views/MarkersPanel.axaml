@@ -5,54 +5,56 @@
              x:Class="Yeetle.App.Views.MarkersPanel"
              x:DataType="vm:MarkersPanelViewModel"
              Focusable="True" FocusAdorner="{x:Null}">
-    <UserControl.Resources>
-        <SolidColorBrush x:Key="PanelBrush" Color="#15181D" />
-        <SolidColorBrush x:Key="PanelLineBrush" Color="#23272E" />
-        <SolidColorBrush x:Key="KeyBrush" Color="#24FFFFFF" />
-        <x:Double x:Key="SecondaryTextOpacity">0.7</x:Double>
-    </UserControl.Resources>
-
     <UserControl.Styles>
         <Style Selector="Button.small">
-            <Setter Property="Padding" Value="6,2" />
-            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Padding" Value="8,0" />
+            <Setter Property="MinHeight" Value="30" />
         </Style>
-        <Style Selector="Border.key">
-            <Setter Property="Background" Value="{StaticResource KeyBrush}" />
-            <Setter Property="CornerRadius" Value="4" />
-            <Setter Property="Padding" Value="5,1" />
+        <!-- The time of a marker: a small pill in the marker colour; clicking it seeks there. -->
+        <Style Selector="Button.time">
+            <Setter Property="Background" Value="{DynamicResource YtAccentSoftBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource YtAccentBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="{StaticResource YtSmallRadius}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+        <Style Selector="Button.time:pointerover">
+            <Setter Property="Background" Value="{DynamicResource YtAccentSoftBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
         </Style>
     </UserControl.Styles>
 
     <!-- The markers of the current clip, under the tags (spec §7, layout from #9). -->
-    <Border Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource PanelLineBrush}" BorderThickness="1"
-            CornerRadius="12" Padding="14">
+    <Border Classes="glass">
         <DockPanel>
             <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
-                <TextBlock FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Text="{res:Tr Markers}" />
-                <Button Grid.Column="1" Command="{Binding AddCommand}" ToolTip.Tip="{res:Tr AddMarkerTip}"
+                <TextBlock Classes="h2" VerticalAlignment="Center" Text="{res:Tr Markers}" />
+                <Button Grid.Column="1" Classes="ghost small" Command="{Binding AddCommand}" ToolTip.Tip="{res:Tr AddMarkerTip}"
                         AutomationProperties.Name="{res:Tr AddMarker}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="{res:Tr AddMarker}" />
-                        <Border Classes="key"><TextBlock FontSize="11" Text="K" /></Border>
+                        <Border Classes="key"><TextBlock Text="K" /></Border>
                     </StackPanel>
                 </Button>
             </Grid>
             <TextBlock DockPanel.Dock="Top" Text="{res:Tr NoMarkersYet}" TextWrapping="Wrap"
-                       Opacity="{StaticResource SecondaryTextOpacity}" IsVisible="{Binding IsEmpty}" />
+                       Classes="hint" IsVisible="{Binding IsEmpty}" />
             <ScrollViewer>
                 <ItemsControl x:Name="List" ItemsSource="{Binding Items}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="vm:MarkerItemViewModel">
-                            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="4" Margin="0,0,0,6">
-                                <Button Classes="small" FontFamily="Consolas,monospace" Content="{Binding TimeText}"
+                            <Border Classes="tile" Margin="0,0,0,8" Padding="8,6">
+                            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="6">
+                                <Button Classes="small time" Content="{Binding TimeText}"
                                         Command="{Binding Seek}" ToolTip.Tip="{res:Tr SeekToMarkerTip}" />
                                 <TextBox Grid.Column="1" Text="{Binding Label}" VerticalAlignment="Center" />
-                                <Button Grid.Column="2" Classes="small" Content="⤓" Command="{Binding MoveHere}"
+                                <Button Grid.Column="2" Classes="iconButton bare" Content="⤓" Command="{Binding MoveHere}"
                                         ToolTip.Tip="{res:Tr MoveMarkerHereTip}" />
-                                <Button Grid.Column="3" Classes="small" Content="×" Command="{Binding Delete}"
+                                <Button Grid.Column="3" Classes="iconButton bare" Content="×" Command="{Binding Delete}"
                                         ToolTip.Tip="{res:Tr DeleteMarkerTip}" />
                             </Grid>
+                            </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

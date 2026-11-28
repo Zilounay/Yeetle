@@ -306,7 +306,7 @@ Counts are adjustable in Settings. Only the database is backed up, never video f
 
 Settings are reachable at any time, including during a session; anything configurable elsewhere in this document lives here.
 
-**Window and saving (decided in #20).** Settings is its own window, like the Tag Manager, opened from the top bar or Ctrl+, (sections on the left). Every change applies at once and is saved to `settings.json`; there is no OK or Cancel, and invalid input (a key already used) is refused on the spot. The language switches live, without a restart. Privacy appears with usage statistics (#21) and Appearance (colour themes) with the visual pass (#69).
+**Window and saving (decided in #20).** Settings is its own window, like the Tag Manager, opened from the top bar or Ctrl+, (sections on the left). Every change applies at once and is saved to `settings.json`; there is no OK or Cancel, and invalid input (a key already used) is refused on the spot. The language switches live, without a restart. Privacy appears with usage statistics (#21).
 
 | Area | Settings |
 | --- | --- |
@@ -318,6 +318,7 @@ Settings are reachable at any time, including during a session; anything configu
 | Library view | Default decision and file-state filters of the Explorer; once filters are changed in the Explorer, the last ones used are remembered instead, and changing the defaults (or Clear filters) brings them back |
 | Data | Backup counts per pool, open the data folder, restore a backup: a safety backup of the current database is taken, then Yeetle restarts and puts the chosen one in place before opening it (the replaced files are kept); not during a session |
 | Privacy | Usage statistics on/off |
+| Appearance | Colour theme (Suki blue by default, Neon violet, Ember; Keep stays green, Yeet red and Skip grey in every theme), animated background (on by default), reduce motion (no drifting background, press motion or decision flash); all apply at once (#69) |
 | General | Language (English, French; Windows' language until one is picked), check for updates now (with its result) and at startup (on by default) |
 
 ## 12. Telemetry, donations, updates and license
