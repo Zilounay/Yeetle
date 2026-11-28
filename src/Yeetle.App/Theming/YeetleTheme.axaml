@@ -1,0 +1,621 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- The Yeetle look (#69): SukiUI underneath, with the colours, cards and controls of ZiL's canvas
+         "Yeetle · SukiUI look". Colours that follow the colour theme (Settings › Appearance) are
+         put in the application resources by Appearance.cs and used here as DynamicResource. -->
+    <Styles.Resources>
+        <ResourceDictionary>
+            <!-- Text on the dark pages. Secondary and muted text keep at least 4.5:1 on the page. -->
+            <SolidColorBrush x:Key="YtTextBrush" Color="#ECEEF4" />
+            <SolidColorBrush x:Key="YtTextSecondaryBrush" Color="#A9AEBB" />
+            <SolidColorBrush x:Key="YtTextMutedBrush" Color="#9A9FAD" />
+            <!-- Glass: white at a few percent over the page and its glow. -->
+            <SolidColorBrush x:Key="YtCardBrush" Color="#0BFFFFFF" />
+            <SolidColorBrush x:Key="YtCardBorderBrush" Color="#14FFFFFF" />
+            <SolidColorBrush x:Key="YtCardSoftBrush" Color="#09FFFFFF" />
+            <SolidColorBrush x:Key="YtHeaderBrush" Color="#590A0B0F" />
+            <SolidColorBrush x:Key="YtLineBrush" Color="#0FFFFFFF" />
+            <SolidColorBrush x:Key="YtControlBrush" Color="#0DFFFFFF" />
+            <SolidColorBrush x:Key="YtControlHoverBrush" Color="#1AFFFFFF" />
+            <SolidColorBrush x:Key="YtControlBorderBrush" Color="#1AFFFFFF" />
+            <SolidColorBrush x:Key="YtSunkenBrush" Color="#40000000" />
+            <SolidColorBrush x:Key="YtKeyBrush" Color="#14FFFFFF" />
+            <SolidColorBrush x:Key="YtTrackBrush" Color="#12FFFFFF" />
+            <!-- Dialogs: nearly opaque, so the page behind does not show through the text. -->
+            <SolidColorBrush x:Key="YtDialogBrush" Color="#EB161820" />
+            <SolidColorBrush x:Key="YtDialogBorderBrush" Color="#1AFFFFFF" />
+            <!-- Over the video: dark translucent blocks, no blur (a native window is underneath). -->
+            <SolidColorBrush x:Key="YtOverlayBlockBrush" Color="#9E08090D" />
+            <!-- Decisions: the same in every colour theme (decided on #28). -->
+            <SolidColorBrush x:Key="YtKeepBrush" Color="#1F9D57" />
+            <SolidColorBrush x:Key="YtKeepBarBrush" Color="#2FBF71" />
+            <SolidColorBrush x:Key="YtKeepTextBrush" Color="#5FD393" />
+            <SolidColorBrush x:Key="YtKeepSoftBrush" Color="#1F2FBF71" />
+            <SolidColorBrush x:Key="YtYeetBrush" Color="#D9434A" />
+            <SolidColorBrush x:Key="YtYeetBarBrush" Color="#EF5B5B" />
+            <SolidColorBrush x:Key="YtYeetTextBrush" Color="#FF8A8A" />
+            <SolidColorBrush x:Key="YtYeetSoftBrush" Color="#1FEF5B5B" />
+            <SolidColorBrush x:Key="YtSkipBrush" Color="#D9282A32" />
+            <SolidColorBrush x:Key="YtSkipBarBrush" Color="#7D8291" />
+            <SolidColorBrush x:Key="YtSkipSoftBrush" Color="#14FFFFFF" />
+            <!-- Destructive buttons and warnings. -->
+            <SolidColorBrush x:Key="YtDangerBrush" Color="#1AEF5B5B" />
+            <SolidColorBrush x:Key="YtDangerBorderBrush" Color="#73EF5B5B" />
+            <SolidColorBrush x:Key="YtDangerTextBrush" Color="#FF9C9C" />
+            <SolidColorBrush x:Key="YtWarningBrush" Color="#29F7B23B" />
+            <SolidColorBrush x:Key="YtWarningTextBrush" Color="#F7C36B" />
+            <!-- Placeholders while something loads (#78): light grey bars on the dark pages. -->
+            <SolidColorBrush x:Key="SkeletonBrush" Color="#2AFFFFFF" />
+
+            <!-- Rounding, from the canvas. -->
+            <CornerRadius x:Key="YtCardRadius">20</CornerRadius>
+            <CornerRadius x:Key="YtBigCardRadius">24</CornerRadius>
+            <CornerRadius x:Key="YtDialogRadius">26</CornerRadius>
+            <CornerRadius x:Key="YtControlRadius">12</CornerRadius>
+            <CornerRadius x:Key="YtChipRadius">10</CornerRadius>
+            <CornerRadius x:Key="YtSmallRadius">8</CornerRadius>
+            <CornerRadius x:Key="YtBlockRadius">14</CornerRadius>
+            <CornerRadius x:Key="YtPillRadius">999</CornerRadius>
+            <x:Double x:Key="YtControlHeight">38</x:Double>
+            <x:Double x:Key="YtDisabledOpacity">0.4</x:Double>
+            <x:Double x:Key="YtFadedOpacity">0.6</x:Double>
+        </ResourceDictionary>
+    </Styles.Resources>
+
+    <!-- Icons from Windows' own icon font. -->
+    <Style Selector="TextBlock.icon">
+        <Setter Property="FontFamily" Value="{DynamicResource IconFont}" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+
+    <!-- Pages and windows. -->
+    <Style Selector="Window">
+        <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
+    </Style>
+
+    <!-- Text. -->
+    <Style Selector="TextBlock.h1">
+        <Setter Property="FontSize" Value="30" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style Selector="TextBlock.h2">
+        <Setter Property="FontSize" Value="17" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style Selector="TextBlock.h3">
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style Selector="TextBlock.secondary">
+        <Setter Property="Foreground" Value="{StaticResource YtTextSecondaryBrush}" />
+    </Style>
+    <Style Selector="TextBlock.hint">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Foreground" Value="{StaticResource YtTextSecondaryBrush}" />
+    </Style>
+    <Style Selector="TextBlock.muted">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{StaticResource YtTextMutedBrush}" />
+    </Style>
+    <Style Selector="TextBlock.label">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="{StaticResource YtTextMutedBrush}" />
+    </Style>
+    <Style Selector="TextBlock.problem">
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Foreground" Value="{StaticResource YtDangerTextBrush}" />
+    </Style>
+
+    <!-- Surfaces. -->
+    <Style Selector="Border.glass">
+        <Setter Property="Background" Value="{StaticResource YtCardBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource YtCardBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource YtCardRadius}" />
+        <Setter Property="Padding" Value="18" />
+    </Style>
+    <Style Selector="Border.tile">
+        <Setter Property="Background" Value="{StaticResource YtCardSoftBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource YtLineBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource YtBlockRadius}" />
+        <Setter Property="Padding" Value="12,10" />
+    </Style>
+    <Style Selector="Border.header">
+        <Setter Property="Background" Value="{StaticResource YtHeaderBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource YtLineBrush}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <Setter Property="Padding" Value="24,12" />
+    </Style>
+    <Style Selector="Border.dialog">
+        <Setter Property="Background" Value="{StaticResource YtDialogBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource YtDialogBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource YtDialogRadius}" />
+        <Setter Property="Padding" Value="28" />
+    </Style>
+    <Style Selector="Border.sunken">
+        <Setter Property="Background" Value="{StaticResource YtSunkenBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource YtLineBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource YtBlockRadius}" />
+        <Setter Property="Padding" Value="4" />
+    </Style>
+    <!-- The app mark: a rounded square in the theme colour. -->
+    <Style Selector="Border.logo">
+        <Setter Property="Width" Value="34" />
+        <Setter Property="Height" Value="34" />
+        <Setter Property="CornerRadius" Value="11" />
+        <Setter Property="Background" Value="{DynamicResource YtPrimaryBrush}" />
+    </Style>
+    <!-- A hotkey, written small beside what it does. -->
+    <Style Selector="Border.key">
+        <Setter Property="Background" Value="{StaticResource YtKeyBrush}" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Padding" Value="6,1" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Border.key TextBlock">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="{StaticResource YtTextSecondaryBrush}" />
+    </Style>
+    <!-- A tag on a clip in a list. -->
+    <Style Selector="Border.pill">
+        <Setter Property="Background" Value="{DynamicResource YtTagPillBrush}" />
+        <Setter Property="CornerRadius" Value="7" />
+        <Setter Property="Padding" Value="8,2" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Border.pill TextBlock">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource YtTagPillTextBrush}" />
+    </Style>
+    <Style Selector="Border.pill.warning">
+        <Setter Property="Background" Value="{StaticResource YtWarningBrush}" />
+    </Style>
+    <Style Selector="Border.pill.warning TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource YtWarningTextBrush}" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style Selector="Border.pill.danger">
+        <Setter Property="Background" Value="{StaticResource YtDangerBrush}" />
+    </Style>
+    <Style Selector="Border.pill.danger TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource YtDangerTextBrush}" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style Selector="Border.pill.kept">
+        <Setter Property="Background" Value="{StaticResource YtKeepSoftBrush}" />
+    </Style>
+    <Style Selector="Border.pill.kept TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource YtKeepTextBrush}" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style Selector="Border.pill.yeeted">
+        <Setter Property="Background" Value="{StaticResource YtYeetSoftBrush}" />
+    </Style>
+    <Style Selector="Border.pill.yeeted TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource YtYeetTextBrush}" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style Selector="Border.pill.neutral">
+        <Setter Property="Background" Value="{StaticResource YtSkipSoftBrush}" />
+    </Style>
+    <Style Selector="Border.pill.neutral TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource YtTextSecondaryBrush}" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style Selector="Border.pill.primary">
+        <Setter Property="Background" Value="{DynamicResource YtPrimaryBrush}" />
+    </Style>
+    <Style Selector="Border.pill.primary TextBlock">
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+
+    <!-- Buttons lift a pixel under the pointer and shrink a little when pressed, as on the canvas;
+         Reduce motion turns both off. -->
+    <Style Selector="Button">
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="Button:pointerover">
+        <Setter Property="RenderTransform" Value="translateY(-1px)" />
+    </Style>
+    <Style Selector="Button:pressed">
+        <Setter Property="RenderTransform" Value="scale(0.97)" />
+    </Style>
+    <Style Selector="Button:disabled">
+        <Setter Property="Cursor" Value="Arrow" />
+        <Setter Property="RenderTransform" Value="none" />
+    </Style>
+
+    <!-- A quiet button: faint glass with a thin edge. -->
+    <Style Selector="Button.ghost, Button.primary, Button.danger, Button.iconButton, Button.keep, Button.yeet, Button.skip, Button.segment, Button.chip, Button.link, Button.row">
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.16" />
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.16" />
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.14" Easing="CubicEaseOut" />
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.ghost">
+        <Setter Property="MinHeight" Value="{StaticResource YtControlHeight}" />
+        <Setter Property="Padding" Value="16,0" />
+        <Setter Property="CornerRadius" Value="{StaticResource YtControlRadius}" />
+        <Setter Property="Background" Value="{StaticResource YtControlBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource YtControlBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
+    </Style>
+    <Style Selector="Button.ghost.small">
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="CornerRadius" Value="{StaticResource YtChipRadius}" />
+    </Style>
+    <Style Selector="Button.ghost:pointerover">
+        <Setter Property="Background" Value="{StaticResource YtControlHoverBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
+    </Style>
+    <Style Selector="Button.ghost:pointerover /template/ Border#RootBorder, Button.ghost:pressed /template/ Border#RootBorder">
+        <Setter Property="BorderBrush" Value="{StaticResource YtControlBorderBrush}" />
+    </Style>
+
+    <!-- The main action of a page or dialog, in the theme colour. -->
+    <Style Selector="Button.primary">
+        <Setter Property="MinHeight" Value="{StaticResource YtControlHeight}" />
+        <Setter Property="Padding" Value="18,0" />
+        <Setter Property="CornerRadius" Value="{StaticResource YtControlRadius}" />
+        <Setter Property="Background" Value="{DynamicResource YtPrimaryBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style Selector="Button.primary:pointerover">
+        <Setter Property="Background" Value="{DynamicResource YtPrimaryHoverBrush}" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="Button.primary.small, Button.danger.small">
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="CornerRadius" Value="{StaticResource YtChipRadius}" />
+    </Style>
+    <Style Selector="Button.primary.large, Button.ghost.large, Button.danger.large">
+        <Setter Property="MinHeight" Value="46" />
+        <Setter Property="Padding" Value="22,0" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="CornerRadius" Value="{StaticResource YtBlockRadius}" />
+    </Style>
+
+    <!-- Destructive: red outline on a faint red. -->
+    <Style Selector="Button.danger">
+        <Setter Property="MinHeight" Value="{StaticResource YtControlHeight}" />
+        <Setter Property="Padding" Value="14,0" />
+        <Setter Property="CornerRadius" Value="{StaticResource YtControlRadius}" />
+        <Setter Property="Background" Value="{StaticResource YtDangerBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource YtDangerBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{StaticResource YtDangerTextBrush}" />
+    </Style>
+    <Style Selector="Button.danger:pointerover">
+        <Setter Property="Foreground" Value="{StaticResource YtDangerTextBrush}" />
+        <Setter Property="Background" Value="{StaticResource YtYeetSoftBrush}" />
+    </Style>
+    <Style Selector="Button.danger:pointerover /template/ Border#RootBorder, Button.danger:pressed /template/ Border#RootBorder">
+        <Setter Property="BorderBrush" Value="{StaticResource YtYeetBarBrush}" />
+    </Style>
+    <Style Selector="Button.danger.solid">
+        <Setter Property="Background" Value="{StaticResource YtYeetBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style Selector="Button.danger.solid:pointerover">
+        <Setter Property="Background" Value="{StaticResource YtYeetBarBrush}" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+
+    <!-- A square button with an icon. -->
+    <Style Selector="Button.iconButton">
+        <Setter Property="Width" Value="{StaticResource YtControlHeight}" />
+        <Setter Property="Height" Value="{StaticResource YtControlHeight}" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="CornerRadius" Value="{StaticResource YtControlRadius}" />
+        <Setter Property="Background" Value="{StaticResource YtControlBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource YtCardBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.iconButton:pointerover">
+        <Setter Property="Background" Value="{StaticResource YtControlHoverBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
+    </Style>
+    <Style Selector="Button.iconButton:pointerover /template/ Border#RootBorder, Button.iconButton:pressed /template/ Border#RootBorder">
+        <Setter Property="BorderBrush" Value="{StaticResource YtCardBorderBrush}" />
+    </Style>
+    <!-- Over the video, inside a block: no frame of its own. -->
+    <Style Selector="Button.iconButton.bare">
+        <Setter Property="Width" Value="34" />
+        <Setter Property="Height" Value="34" />
+        <Setter Property="CornerRadius" Value="{StaticResource YtChipRadius}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="Button.iconButton.bare:pointerover">
+        <Setter Property="Background" Value="{StaticResource YtControlHoverBrush}" />
+    </Style>
+    <!-- The round play button, in the theme colour. -->
+    <Style Selector="Button.iconButton.round">
+        <Setter Property="Width" Value="42" />
+        <Setter Property="Height" Value="42" />
+        <Setter Property="CornerRadius" Value="21" />
+        <Setter Property="Background" Value="{DynamicResource YtPrimaryBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="Button.iconButton.round:pointerover">
+        <Setter Property="Background" Value="{DynamicResource YtPrimaryHoverBrush}" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="Button.iconButton.current">
+        <Setter Property="Background" Value="{DynamicResource YtPrimarySoftBrush}" />
+    </Style>
+
+    <!-- A text button with no frame, in the light theme colour. -->
+    <Style Selector="Button.link">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{DynamicResource YtPrimaryLightBrush}" />
+    </Style>
+    <Style Selector="Button.link:pointerover">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
+    </Style>
+
+    <!-- Segmented choices (Session | Explorer, English | Français, Pick one | Pick many) inside a
+         Border.segmented; the current one is filled. -->
+    <Style Selector="Border.segmented">
+        <Setter Property="Background" Value="{StaticResource YtControlBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource YtLineBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource YtBlockRadius}" />
+        <Setter Property="Padding" Value="4" />
+    </Style>
+    <Style Selector="Border.segmented.sunken">
+        <Setter Property="Background" Value="{StaticResource YtSunkenBrush}" />
+    </Style>
+    <Style Selector="Button.segment">
+        <Setter Property="MinHeight" Value="34" />
+        <Setter Property="Padding" Value="14,0" />
+        <Setter Property="CornerRadius" Value="{StaticResource YtChipRadius}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{StaticResource YtTextSecondaryBrush}" />
+    </Style>
+    <Style Selector="Button.segment:pointerover">
+        <Setter Property="Background" Value="{StaticResource YtControlBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
+    </Style>
+    <Style Selector="Button.segment.small">
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="CornerRadius" Value="{StaticResource YtSmallRadius}" />
+    </Style>
+    <!-- The page shown: a soft fill of the theme colour. -->
+    <Style Selector="Button.segment.current">
+        <Setter Property="Background" Value="{DynamicResource YtPrimarySoftBrush}" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+    <!-- A choice made: the full theme colour. -->
+    <Style Selector="Button.segment.chosen">
+        <Setter Property="Background" Value="{DynamicResource YtPrimaryBrush}" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style Selector="Button.segment:disabled">
+        <Setter Property="Opacity" Value="{StaticResource YtFadedOpacity}" />
+    </Style>
+
+    <!-- Keep / Skip / Yeet over the video: large and coloured, with a soft shadow. -->
+    <Style Selector="Button.keep, Button.yeet">
+        <Setter Property="MinWidth" Value="150" />
+        <Setter Property="Height" Value="52" />
+        <Setter Property="Padding" Value="22,0" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.keep">
+        <Setter Property="Background" Value="{StaticResource YtKeepBrush}" />
+    </Style>
+    <Style Selector="Button.keep /template/ Border#RootBorder">
+        <Setter Property="BoxShadow" Value="0 10 26 0 #591F9D57" />
+    </Style>
+    <Style Selector="Button.keep:pointerover">
+        <Setter Property="Background" Value="{StaticResource YtKeepBarBrush}" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="Button.yeet">
+        <Setter Property="Background" Value="{StaticResource YtYeetBrush}" />
+    </Style>
+    <Style Selector="Button.yeet /template/ Border#RootBorder">
+        <Setter Property="BoxShadow" Value="0 10 26 0 #59D9434A" />
+    </Style>
+    <Style Selector="Button.yeet:pointerover">
+        <Setter Property="Background" Value="{StaticResource YtYeetBarBrush}" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="Button.skip">
+        <Setter Property="MinWidth" Value="96" />
+        <Setter Property="Height" Value="42" />
+        <Setter Property="Padding" Value="16,0" />
+        <Setter Property="CornerRadius" Value="{StaticResource YtBlockRadius}" />
+        <Setter Property="Background" Value="{StaticResource YtSkipBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource YtControlBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.skip:pointerover">
+        <Setter Property="Background" Value="#F0373A44" />
+        <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
+    </Style>
+    <Style Selector="Button.skip:pointerover /template/ Border#RootBorder">
+        <Setter Property="BorderBrush" Value="{StaticResource YtControlBorderBrush}" />
+    </Style>
+    <!-- The current decision of a clip opened from the Explorer. -->
+    <Style Selector="Button.keep.current /template/ Border#RootBorder, Button.yeet.current /template/ Border#RootBorder">
+        <Setter Property="BorderBrush" Value="White" />
+        <Setter Property="BorderThickness" Value="3" />
+    </Style>
+    <Style Selector="Button.keep:disabled, Button.yeet:disabled, Button.skip:disabled">
+        <Setter Property="Opacity" Value="{StaticResource YtDisabledOpacity}" />
+    </Style>
+
+    <!-- A tag to pick. Selected: a soft theme fill with a theme-colour edge. Carried over from the
+         previous clip (sticky tags): the same, with the carried mark. -->
+    <Style Selector="Button.chip">
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="CornerRadius" Value="{StaticResource YtChipRadius}" />
+        <Setter Property="Background" Value="{StaticResource YtControlBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource YtCardBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="#D6D9E2" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.chip:pointerover">
+        <Setter Property="Background" Value="{StaticResource YtControlHoverBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
+    </Style>
+    <Style Selector="Button.chip:pointerover /template/ Border#RootBorder, Button.chip:pressed /template/ Border#RootBorder">
+        <Setter Property="BorderBrush" Value="{StaticResource YtControlBorderBrush}" />
+    </Style>
+    <Style Selector="Button.chip.selected">
+        <Setter Property="Background" Value="{DynamicResource YtChipSelectedBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource YtChipSelectedBorderBrush}" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="Button.chip.selected:pointerover /template/ Border#RootBorder, Button.chip.selected:pressed /template/ Border#RootBorder">
+        <Setter Property="BorderBrush" Value="{DynamicResource YtChipSelectedBorderBrush}" />
+    </Style>
+    <Style Selector="Button.chip.small">
+        <Setter Property="Height" Value="28" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="CornerRadius" Value="9" />
+    </Style>
+    <Style Selector="Button.chip.small.selected">
+        <Setter Property="Background" Value="{DynamicResource YtPrimaryBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource YtPrimaryBrush}" />
+    </Style>
+
+    <!-- A row of a list that can be picked (sessions, filters). -->
+    <Style Selector="Button.row">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Padding" Value="12" />
+        <Setter Property="CornerRadius" Value="{StaticResource YtBlockRadius}" />
+        <Setter Property="Background" Value="{StaticResource YtCardSoftBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource YtLineBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
+    </Style>
+    <Style Selector="Button.row:pointerover">
+        <Setter Property="Background" Value="{StaticResource YtControlBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
+    </Style>
+    <Style Selector="Button.row:pointerover /template/ Border#RootBorder, Button.row:pressed /template/ Border#RootBorder">
+        <Setter Property="BorderBrush" Value="{StaticResource YtCardBorderBrush}" />
+    </Style>
+    <Style Selector="Button.row.current">
+        <Setter Property="Background" Value="{DynamicResource YtRowSelectedBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource YtRowSelectedBorderBrush}" />
+    </Style>
+    <Style Selector="Button.row.current:pointerover /template/ Border#RootBorder">
+        <Setter Property="BorderBrush" Value="{DynamicResource YtRowSelectedBorderBrush}" />
+    </Style>
+
+    <!-- Lists: rounded rows, the selected one in the soft theme colour. -->
+    <Style Selector="ListBox">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="ListBox.rows ListBoxItem">
+        <Setter Property="CornerRadius" Value="{StaticResource YtControlRadius}" />
+        <Setter Property="Padding" Value="12,9" />
+        <Setter Property="Margin" Value="0,1" />
+    </Style>
+
+    <!-- Placeholders: a bar in the shape of the text it stands for, that slowly pulses until the
+         content arrives (#78). Height and width are set where it is used. -->
+    <Style Selector="Border.skeleton">
+        <Setter Property="Background" Value="{StaticResource SkeletonBrush}" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Height" Value="12" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Style.Animations>
+            <!-- Slow on purpose: a calm pulse, not a blink. -->
+            <Animation Duration="0:0:1.4" IterationCount="Infinite" PlaybackDirection="Alternate" Easing="SineEaseInOut">
+                <KeyFrame Cue="0%">
+                    <Setter Property="Opacity" Value="0.35" />
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="Opacity" Value="0.8" />
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+    <!-- A thin bar for work that runs while the page stays usable (#78). It fades in only after a
+         moment, so quick work does not flash it. Shown by the "on" class. -->
+    <Style Selector="ProgressBar.busy">
+        <Setter Property="IsIndeterminate" Value="True" />
+        <Setter Property="MinHeight" Value="3" />
+        <Setter Property="Height" Value="3" />
+        <Setter Property="Opacity" Value="0" />
+        <Setter Property="IsHitTestVisible" Value="False" />
+    </Style>
+    <Style Selector="ProgressBar.busy.on">
+        <Style.Animations>
+            <!-- Invisible for the first 300 ms, then fades in. -->
+            <Animation Duration="0:0:0.5" FillMode="Forward">
+                <KeyFrame Cue="0%">
+                    <Setter Property="Opacity" Value="0" />
+                </KeyFrame>
+                <KeyFrame Cue="60%">
+                    <Setter Property="Opacity" Value="0" />
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="Opacity" Value="1" />
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+
+    <!-- Reduce motion (Settings › Appearance): set on every window by Appearance.cs. No press motion. -->
+    <Style Selector=":is(Window).reduceMotion Button:pointerover, :is(Window).reduceMotion Button:pressed">
+        <Setter Property="RenderTransform" Value="none" />
+    </Style>
+</Styles>

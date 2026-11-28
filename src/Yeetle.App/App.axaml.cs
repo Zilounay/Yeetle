@@ -2,10 +2,12 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using Yeetle.App.Theming;
 using Yeetle.App.ViewModels;
 using Yeetle.App.Views;
 using Yeetle.Application.Data;
 using Yeetle.Application.Diagnostics;
+using Yeetle.Application.Settings;
 using Yeetle.Application.Tagging;
 
 namespace Yeetle.App;
@@ -16,7 +18,8 @@ public sealed record AppServices(
     TagFileImport TagFiles,
     IAppActivation Activation,
     Func<MainWindowViewModel> CreateMainViewModel,
-    Func<RecoveryViewModel> CreateRecoveryViewModel);
+    Func<RecoveryViewModel> CreateRecoveryViewModel,
+    SettingsService Settings);
 
 public partial class App : Avalonia.Application
 {
@@ -29,6 +32,9 @@ public partial class App : Avalonia.Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var services = Services ?? throw new InvalidOperationException($"{nameof(Services)} must be set before the app starts.");
+            // The colours, before any window opens, and live after each change (#69).
+            Appearance.Instance.Apply(services.Settings.Values.Appearance);
+            services.Settings.Changed += (_, _) => Appearance.Instance.Apply(services.Settings.Values.Appearance);
             services.Activation.ActivationRequested += (_, _) => Dispatcher.UIThread.Post(() => BringForward(desktop.MainWindow));
             _ = StartAsync(desktop, services);
         }

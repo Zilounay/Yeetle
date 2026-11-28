@@ -54,10 +54,10 @@ internal static class Program
                     services.GetRequiredService<Application.Tagging.TagFileImport>(),
                     services.GetRequiredService<Application.Diagnostics.IAppActivation>(),
                     services.GetRequiredService<MainWindowViewModel>,
-                    services.GetRequiredService<RecoveryViewModel>),
+                    services.GetRequiredService<RecoveryViewModel>,
+                    services.GetRequiredService<SettingsService>()),
             })
             .UsePlatformDetect()
-            .WithInterFont()
             .LogToTrace();
 
     // The designer runs alongside the real app, so it must not take the single-instance lock.

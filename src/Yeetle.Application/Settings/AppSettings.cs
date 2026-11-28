@@ -19,6 +19,8 @@ public sealed class AppSettings
 
     public GeneralSettings General { get; set; } = new();
 
+    public AppearanceSettings Appearance { get; set; } = new();
+
     // Action name to the keys that trigger it; see HotkeyDefaults for how keys are written.
     public Dictionary<string, List<string>> Hotkeys { get; set; } = HotkeyDefaults.Create();
 }
@@ -86,6 +88,27 @@ public sealed class GeneralSettings
 
     // The update check at startup (spec §12); Settings can also check at any time.
     public bool CheckForUpdatesAtStartup { get; set; } = true;
+}
+
+// The colours of buttons, selected tags, the seek bar and the background glow (spec §11, decided on
+// #69). Keep stays green, Yeet red and Skip grey in every theme.
+public enum ColourTheme
+{
+    SukiBlue,
+    NeonViolet,
+    Ember,
+}
+
+// Spec §11, Appearance (#69). Applies at once, like every setting.
+public sealed class AppearanceSettings
+{
+    public ColourTheme ColourTheme { get; set; } = ColourTheme.SukiBlue;
+
+    // The slow-moving glow behind the pages; off saves graphics power.
+    public bool AnimatedBackground { get; set; } = true;
+
+    // Shorter, gentler transitions, no drifting glow and no flash on Keep or Yeet.
+    public bool ReduceMotion { get; set; }
 }
 
 // How many backups each pool keeps (spec §10).
