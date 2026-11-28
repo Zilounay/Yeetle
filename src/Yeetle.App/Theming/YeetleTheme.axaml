@@ -1,5 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:suki="clr-namespace:SukiUI.Controls;assembly=SukiUI">
     <!-- The Yeetle look (#69): SukiUI underneath, with the colours, cards and controls of ZiL's canvas
          "Yeetle · SukiUI look". Colours that follow the colour theme (Settings › Appearance) are
          put in the application resources by Appearance.cs and used here as DynamicResource. -->
@@ -626,6 +627,18 @@
     </Style>
     <Style Selector="Button.card.current:pointerover /template/ Border#RootBorder">
         <Setter Property="BorderBrush" Value="{DynamicResource YtPrimaryLightBrush}" />
+    </Style>
+
+    <!-- A text box drawn inside a field of its own (the Explorer search): no frame, no glass. -->
+    <Style Selector="TextBox.bare">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0,6" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="FontSize" Value="15" />
+    </Style>
+    <Style Selector="TextBox.bare /template/ suki|GlassCard /template/ Border.GlassCardBorderPartCard">
+        <Setter Property="IsVisible" Value="False" />
     </Style>
 
     <!-- Lists: rounded rows, the selected one in the soft theme colour. -->

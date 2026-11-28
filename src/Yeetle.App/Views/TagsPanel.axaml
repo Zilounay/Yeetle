@@ -5,67 +5,33 @@
              x:Class="Yeetle.App.Views.TagsPanel"
              x:DataType="vm:TagPanelViewModel">
     <UserControl.Resources>
-        <SolidColorBrush x:Key="PanelBrush" Color="#15181D" />
-        <SolidColorBrush x:Key="PanelLineBrush" Color="#23272E" />
-        <SolidColorBrush x:Key="ChipBrush" Color="#1C2026" />
-        <SolidColorBrush x:Key="ChipLineBrush" Color="#3A414B" />
-        <SolidColorBrush x:Key="SelectedChipBrush" Color="#2F6FD6" />
-        <SolidColorBrush x:Key="CarriedLineBrush" Color="#9CC0FF" />
-        <SolidColorBrush x:Key="WarningBrush" Color="#E5534B" />
-        <SolidColorBrush x:Key="WarningTextBrush" Color="#FF9A92" />
-        <SolidColorBrush x:Key="WarningBackBrush" Color="#14E5534B" />
-        <SolidColorBrush x:Key="KeyBrush" Color="#24FFFFFF" />
-        <x:Double x:Key="SecondaryTextOpacity">0.7</x:Double>
+        <SolidColorBrush x:Key="WarningBackBrush" Color="#14EF5B5B" />
     </UserControl.Resources>
 
     <UserControl.Styles>
         <Style Selector="Button.chip">
-            <Setter Property="Height" Value="32" />
-            <Setter Property="Padding" Value="10,0" />
-            <Setter Property="CornerRadius" Value="16" />
-            <Setter Property="Background" Value="{StaticResource ChipBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource ChipLineBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Margin" Value="0,0,6,6" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
         <Style Selector="Button.chip TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
-        <Style Selector="Button.chip.selected /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource SelectedChipBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource SelectedChipBrush}" />
-        </Style>
-        <!-- Carried over from the previous clip (sticky tags): a lighter outline. Avalonia has no
-             dashed border, so the carried-over mark and the remove cross say it too. -->
-        <Style Selector="Button.chip.carried /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="BorderBrush" Value="{StaticResource CarriedLineBrush}" />
-            <Setter Property="BorderThickness" Value="2" />
-        </Style>
-        <Style Selector="Border.key">
-            <Setter Property="Background" Value="{StaticResource KeyBrush}" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="CornerRadius" Value="4" />
-            <Setter Property="Padding" Value="5,1" />
-        </Style>
         <Style Selector="TextBlock.boxTitle">
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Opacity" Value="{StaticResource SecondaryTextOpacity}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="#E3E5EC" />
         </Style>
     </UserControl.Styles>
 
-    <Border Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource PanelLineBrush}" BorderThickness="1"
-            CornerRadius="12" Padding="14">
+    <Border Classes="glass">
         <DockPanel>
-            <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,12">
-                <TextBlock FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Text="{res:Tr Tags}" />
-                <Button Grid.Column="1" Command="{Binding OpenTypeTagCommand}" ToolTip.Tip="{res:Tr TypeTagTip}"
+            <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,14">
+                <TextBlock Classes="h2" VerticalAlignment="Center" Text="{res:Tr Tags}" />
+                <Button Grid.Column="1" Classes="ghost small" Command="{Binding OpenTypeTagCommand}" ToolTip.Tip="{res:Tr TypeTagTip}"
                         AutomationProperties.Name="{res:Tr TypeTag}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Classes="icon" FontSize="14" Text="{StaticResource IconSearch}" />
                         <TextBlock Text="{res:Tr TypeTag}" VerticalAlignment="Center" />
-                        <Border Classes="key"><TextBlock FontSize="11" Text="T" /></Border>
+                        <Border Classes="key"><TextBlock Text="T" /></Border>
                     </StackPanel>
                 </Button>
             </Grid>
@@ -84,24 +50,25 @@
             </StackPanel>
 
             <TextBlock DockPanel.Dock="Top" Text="{Binding Message}" TextWrapping="Wrap" Margin="0,0,0,10"
-                       Foreground="{StaticResource WarningTextBrush}"
+                       Foreground="{StaticResource YtDangerTextBrush}"
                        IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             <TextBlock DockPanel.Dock="Top" Text="{res:Tr NoTagsYet}" TextWrapping="Wrap"
-                       Opacity="{StaticResource SecondaryTextOpacity}" IsVisible="{Binding IsEmpty}" />
+                       Classes="hint" IsVisible="{Binding IsEmpty}" />
 
-            <TextBlock DockPanel.Dock="Bottom" FontSize="12" Opacity="{StaticResource SecondaryTextOpacity}" TextWrapping="Wrap"
+            <TextBlock DockPanel.Dock="Bottom" Classes="muted" TextWrapping="Wrap"
                        Margin="0,10,0,0" Text="{res:Tr CarriedOverHint}" IsVisible="{Binding HasCarriedOver}" />
 
             <ScrollViewer>
                 <ItemsControl ItemsSource="{Binding Groups}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="vm:ChipGroupViewModel">
-                            <Border Margin="0,0,0,10" Padding="8" CornerRadius="10" BorderThickness="2"
+                            <Border Margin="0,0,0,8" Padding="0,4" CornerRadius="12" BorderThickness="1"
                                     BorderBrush="Transparent" Classes.warning="{Binding ShowRequiredWarning}">
                                 <Border.Styles>
                                     <Style Selector="Border.warning">
-                                        <Setter Property="BorderBrush" Value="{StaticResource WarningBrush}" />
+                                        <Setter Property="BorderBrush" Value="{StaticResource YtDangerBorderBrush}" />
                                         <Setter Property="Background" Value="{StaticResource WarningBackBrush}" />
+                                        <Setter Property="Padding" Value="10,8" />
                                     </Style>
                                 </Border.Styles>
                                 <StackPanel Spacing="8">
@@ -118,12 +85,12 @@
                                                         Classes.carried="{Binding IsCarriedOver}" Command="{Binding Toggle}"
                                                         AutomationProperties.Name="{Binding Name}">
                                                     <StackPanel Orientation="Horizontal" Spacing="6">
-                                                        <TextBlock Text="↻" IsVisible="{Binding IsCarriedOver}" />
+                                                        <TextBlock Classes="icon" FontSize="12" Text="{StaticResource IconCarried}" IsVisible="{Binding IsCarriedOver}" />
                                                         <Ellipse Width="10" Height="10" VerticalAlignment="Center"
                                                                  Fill="{Binding ColourBrush}" IsVisible="{Binding HasColour}" />
                                                         <TextBlock Text="{Binding Name}" />
-                                                        <Border Classes="key" IsVisible="{Binding HasHotkey}">
-                                                            <TextBlock FontSize="11" Text="{Binding Hotkey}" />
+                                                        <Border Classes="key" Background="Transparent" Padding="0" IsVisible="{Binding HasHotkey}">
+                                                            <TextBlock Opacity="0.7" Text="{Binding Hotkey}" />
                                                         </Border>
                                                         <TextBlock Text="×" IsVisible="{Binding IsCarriedOver}"
                                                                    ToolTip.Tip="{res:Tr RemoveTagTip}" />
@@ -132,7 +99,7 @@
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
-                                    <TextBlock FontSize="12" Foreground="{StaticResource WarningTextBrush}" TextWrapping="Wrap"
+                                    <TextBlock FontSize="12" Foreground="{StaticResource YtDangerTextBrush}" TextWrapping="Wrap"
                                                Text="{res:Tr RequiredBoxEmpty}" IsVisible="{Binding ShowRequiredWarning}" />
                                 </StackPanel>
                             </Border>
