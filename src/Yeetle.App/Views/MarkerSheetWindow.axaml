@@ -5,13 +5,13 @@
         Title="{res:Tr MarkerSheetTitle}"
         Width="560" Height="480" MinWidth="360" MinHeight="240"
         ShowInTaskbar="False" WindowStartupLocation="CenterOwner"
-        RequestedThemeVariant="Dark">
+        RequestedThemeVariant="Dark" Classes="dialog">
     <!-- Spec §7 and the #9 layout: the text block and a Copy all button. Nothing is written to disk. -->
     <DockPanel Margin="16">
         <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" Margin="0,12,0,0">
             <TextBlock x:Name="CopiedText" VerticalAlignment="Center" Opacity="0.7" />
-            <Button Grid.Column="1" x:Name="CopyButton" Classes="accent" Content="{res:Tr CopyAll}" />
-            <Button Grid.Column="2" x:Name="CloseButton" Content="{res:Tr Close}" IsCancel="True" />
+            <Button Grid.Column="1" x:Name="CopyButton" Classes="primary" Content="{res:Tr CopyAll}" />
+            <Button Classes="ghost" Grid.Column="2" x:Name="CloseButton" Content="{res:Tr Close}" IsCancel="True" />
         </Grid>
         <TextBox x:Name="SheetText" IsReadOnly="True" AcceptsReturn="True" TextWrapping="NoWrap"
                  FontFamily="Consolas,monospace" />

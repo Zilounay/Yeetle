@@ -120,4 +120,28 @@ public sealed class JsonSettingsStoreTests : IDisposable
         Assert.Equal([Domain.Clips.Decision.Kept], values.LibraryView.DefaultDecisions);
         Assert.Null(values.LibraryView.LastUsed);
     }
+
+    // Appearance arrived with the visual pass (#69).
+    [Fact]
+    public void A_file_from_before_appearance_gets_suki_blue_and_the_moving_glow()
+    {
+        Write("""{ "general": { "language": "fr" } }""");
+
+        var appearance = new JsonSettingsStore(SettingsPath).Load().Values.Appearance;
+
+        Assert.Equal(ColourTheme.SukiBlue, appearance.ColourTheme);
+        Assert.True(appearance.AnimatedBackground);
+        Assert.False(appearance.ReduceMotion);
+    }
+
+    [Fact]
+    public void The_colour_theme_is_read_by_name()
+    {
+        Write("""{ "appearance": { "colourTheme": "Ember", "reduceMotion": true } }""");
+
+        var appearance = new JsonSettingsStore(SettingsPath).Load().Values.Appearance;
+
+        Assert.Equal(ColourTheme.Ember, appearance.ColourTheme);
+        Assert.True(appearance.ReduceMotion);
+    }
 }

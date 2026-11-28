@@ -7,97 +7,82 @@
         Title="{res:Tr SessionSummaryTitle}"
         Width="760" Height="640" MinWidth="560" MinHeight="420"
         ShowInTaskbar="False" WindowStartupLocation="CenterOwner"
-        RequestedThemeVariant="Dark" Background="#0E1013">
+        RequestedThemeVariant="Dark" Classes="dialog">
     <!-- Layout decided in #9, lists simplified in #62 (spec §5): count cards, a list per category,
          then Discard or Commit. -->
-    <Window.Resources>
-        <SolidColorBrush x:Key="CardBrush" Color="#15181D" />
-        <SolidColorBrush x:Key="KeepBrush" Color="#2E7D32" />
-        <SolidColorBrush x:Key="YeetBrush" Color="#C62828" />
-        <SolidColorBrush x:Key="SkipBrush" Color="#37474F" />
-        <x:Double x:Key="SecondaryTextOpacity">0.7</x:Double>
-    </Window.Resources>
-
     <Window.Styles>
+        <!-- The four counts (#9): a tinted tile each, the number large. -->
         <Style Selector="Border.count">
-            <Setter Property="Background" Value="{StaticResource CardBrush}" />
-            <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="Padding" Value="14,10" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="Padding" Value="14" />
             <Setter Property="Margin" Value="0,0,10,0" />
-            <Setter Property="BorderThickness" Value="0,0,0,3" />
+            <Setter Property="Background" Value="{StaticResource YtSkipSoftBrush}" />
         </Style>
         <Style Selector="TextBlock.number">
-            <Setter Property="FontSize" Value="26" />
+            <Setter Property="FontSize" Value="30" />
             <Setter Property="FontWeight" Value="Bold" />
-        </Style>
-        <Style Selector="TextBlock.secondary">
-            <Setter Property="Opacity" Value="{StaticResource SecondaryTextOpacity}" />
         </Style>
         <Style Selector="TextBlock.category">
-            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontSize" Value="14" />
             <Setter Property="FontWeight" Value="Bold" />
-        </Style>
-        <Style Selector="Button.commit /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource KeepBrush}" />
-            <Setter Property="Foreground" Value="White" />
         </Style>
     </Window.Styles>
 
     <!-- One file per line in smaller text; its tags and markers show on hover (#62). -->
     <Window.DataTemplates>
         <DataTemplate DataType="vm:SummaryClipViewModel" x:DataType="vm:SummaryClipViewModel">
-            <TextBlock FontSize="13" Text="{Binding FileName}" TextTrimming="CharacterEllipsis" Margin="0,1"
+            <TextBlock FontSize="13" Foreground="#D6D9E2" Text="{Binding FileName}" TextTrimming="CharacterEllipsis" Margin="0,3"
                        ToolTip.Tip="{Binding Details}" />
         </DataTemplate>
     </Window.DataTemplates>
 
-    <DockPanel Margin="24">
-        <StackPanel DockPanel.Dock="Top" Spacing="4" Margin="0,0,0,16">
-            <TextBlock FontSize="20" FontWeight="Bold" Text="{res:Tr SessionSummaryTitle}" />
-            <TextBlock Classes="secondary" TextWrapping="Wrap" Text="{res:Tr SessionSummaryHint}" />
+    <DockPanel Margin="28">
+        <StackPanel DockPanel.Dock="Top" Spacing="6" Margin="0,0,0,20">
+            <TextBlock Classes="h1" Text="{res:Tr SessionSummaryTitle}" />
+            <TextBlock Classes="hint" FontSize="15" Text="{res:Tr SessionSummaryHint}" />
         </StackPanel>
 
-        <UniformGrid DockPanel.Dock="Top" Columns="4" Margin="0,0,0,16">
-            <Border Classes="count">
+        <UniformGrid DockPanel.Dock="Top" Columns="4" Margin="0,0,0,20">
+            <Border Classes="count" Background="{DynamicResource YtRowSelectedBrush}">
                 <StackPanel>
                     <TextBlock Classes="number" Text="{Binding Reviewed}" />
-                    <TextBlock Classes="secondary" Text="{res:Tr ReviewedLabel}" />
+                    <TextBlock FontSize="13" Foreground="{DynamicResource YtTagPillTextBrush}" Text="{res:Tr ReviewedLabel}" />
                 </StackPanel>
             </Border>
-            <Border Classes="count" BorderBrush="{StaticResource KeepBrush}">
+            <Border Classes="count" Background="{StaticResource YtKeepSoftBrush}">
                 <StackPanel>
-                    <TextBlock Classes="number" Text="{Binding KeptCount}" />
-                    <TextBlock Classes="secondary" Text="{res:Tr KeptLabel}" />
+                    <TextBlock Classes="number" Foreground="{StaticResource YtKeepTextBrush}" Text="{Binding KeptCount}" />
+                    <TextBlock FontSize="13" Classes="secondary" Text="{res:Tr KeptLabel}" />
                 </StackPanel>
             </Border>
-            <Border Classes="count" BorderBrush="{StaticResource YeetBrush}">
+            <Border Classes="count" Background="{StaticResource YtYeetSoftBrush}">
                 <StackPanel>
-                    <TextBlock Classes="number" Text="{Binding YeetedCount}" />
-                    <TextBlock Classes="secondary" Text="{res:Tr YeetedLabel}" />
+                    <TextBlock Classes="number" Foreground="{StaticResource YtYeetTextBrush}" Text="{Binding YeetedCount}" />
+                    <TextBlock FontSize="13" Classes="secondary" Text="{res:Tr YeetedLabel}" />
                 </StackPanel>
             </Border>
-            <Border Classes="count" BorderBrush="{StaticResource SkipBrush}" Margin="0">
+            <Border Classes="count" Margin="0">
                 <StackPanel>
                     <TextBlock Classes="number" Text="{Binding SkippedCount}" />
-                    <TextBlock Classes="secondary" Text="{res:Tr SkippedLabel}" />
+                    <TextBlock FontSize="13" Classes="secondary" Text="{res:Tr SkippedLabel}" />
                 </StackPanel>
             </Border>
         </UniformGrid>
 
-        <Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8" Margin="0,16,0,0">
-            <Button x:Name="BackButton" Content="{res:Tr BackToSession}" IsCancel="True" />
-            <Button x:Name="DiscardButton" Grid.Column="2" Content="{res:Tr DiscardSession}" />
-            <Button x:Name="CommitButton" Grid.Column="3" Classes="commit" Content="{Binding CommitLabel}" IsDefault="True" />
+        <Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10" Margin="0,20,0,0">
+            <Button x:Name="BackButton" Classes="link" Content="{res:Tr BackToSession}" IsCancel="True" />
+            <Button x:Name="DiscardButton" Grid.Column="2" Classes="ghost large" Content="{res:Tr DiscardSession}" />
+            <Button x:Name="CommitButton" Grid.Column="3" Classes="primary large" Content="{Binding CommitLabel}" IsDefault="True" />
         </Grid>
 
         <ScrollViewer>
             <StackPanel Spacing="16">
                 <StackPanel Spacing="4" IsVisible="{Binding HasKept}">
-                    <TextBlock Classes="category" Text="{Binding KeptTitle}" />
+                    <TextBlock Classes="category" Foreground="{StaticResource YtKeepTextBrush}" Text="{Binding KeptTitle}" />
                     <ItemsControl ItemsSource="{Binding Kept}" />
                 </StackPanel>
                 <StackPanel Spacing="4" IsVisible="{Binding HasYeeted}">
-                    <TextBlock Classes="category" Text="{Binding YeetedTitle}" />
+                    <TextBlock Classes="category" Foreground="{StaticResource YtYeetTextBrush}" Text="{Binding YeetedTitle}" />
                     <ItemsControl ItemsSource="{Binding Yeeted}" />
                 </StackPanel>
                 <StackPanel Spacing="4" IsVisible="{Binding HasSkipped}">

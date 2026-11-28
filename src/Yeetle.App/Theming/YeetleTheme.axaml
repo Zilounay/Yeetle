@@ -75,6 +75,10 @@
     <Style Selector="Window">
         <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
     </Style>
+    <!-- A dialog window (session end, prompts, results): the dark of the canvas dialogs. -->
+    <Style Selector="Window.dialog">
+        <Setter Property="Background" Value="#15171E" />
+    </Style>
 
     <!-- Text. -->
     <Style Selector="TextBlock.h1">
