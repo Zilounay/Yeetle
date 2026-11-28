@@ -95,14 +95,14 @@
                 <!-- Clips | Sessions (#72): the library as it is now, or what each past session decided. -->
                 <Border DockPanel.Dock="Top" Classes="segmented sunken" Margin="0,0,0,14" ToolTip.Tip="{res:Tr ExplorerModeTip}">
                     <UniformGrid Rows="1" ColumnSpacing="4">
-                        <Button Classes="segment" Classes.chosen="{Binding IsClipsMode}" HorizontalAlignment="Stretch"
+                        <Button Classes="segment" Classes.chosen="{Binding IsClipsMode}" HorizontalAlignment="Stretch" AutomationProperties.Name="{res:Tr ExplorerModeClips}"
                                 HorizontalContentAlignment="Center" Command="{Binding ShowClipsCommand}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <TextBlock Classes="icon" FontSize="14" Text="{StaticResource IconVideo}" />
                                 <TextBlock VerticalAlignment="Center" Text="{res:Tr ExplorerModeClips}" />
                             </StackPanel>
                         </Button>
-                        <Button Classes="segment" Classes.chosen="{Binding IsSessionsMode}" HorizontalAlignment="Stretch"
+                        <Button Classes="segment" Classes.chosen="{Binding IsSessionsMode}" HorizontalAlignment="Stretch" AutomationProperties.Name="{res:Tr ExplorerModeSessions}"
                                 HorizontalContentAlignment="Center" Command="{Binding ShowSessionsCommand}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <TextBlock Classes="icon" FontSize="14" Text="{StaticResource IconHistory}" />

@@ -27,7 +27,11 @@ public enum SettingsSection
     General,
 }
 
-public sealed record SettingsSectionItem(SettingsSection Section, string Label);
+// Read aloud by screen readers by its label.
+public sealed record SettingsSectionItem(SettingsSection Section, string Label)
+{
+    public override string ToString() => Label;
+}
 
 public sealed record BackupChoice(BackupInfo Backup, string Label);
 

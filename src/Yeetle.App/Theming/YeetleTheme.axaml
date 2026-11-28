@@ -63,10 +63,12 @@
         </ResourceDictionary>
     </Styles.Resources>
 
-    <!-- Icons from Windows' own icon font. -->
+    <!-- Icons from Windows' own icon font. Its lines are very tall, which would stretch any button
+         holding an icon: the line is held to the height of a line of text. -->
     <Style Selector="TextBlock.icon">
         <Setter Property="FontFamily" Value="{DynamicResource IconFont}" />
         <Setter Property="FontSize" Value="16" />
+        <Setter Property="LineHeight" Value="20" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Center" />
     </Style>
@@ -81,15 +83,19 @@
     </Style>
 
     <!-- Text. -->
+    <!-- SukiUI gives its own h1-h5 wide margins; Yeetle spaces its headings with the panels around them. -->
     <Style Selector="TextBlock.h1">
+        <Setter Property="Margin" Value="0" />
         <Setter Property="FontSize" Value="30" />
         <Setter Property="FontWeight" Value="Bold" />
     </Style>
     <Style Selector="TextBlock.h2">
+        <Setter Property="Margin" Value="0" />
         <Setter Property="FontSize" Value="17" />
         <Setter Property="FontWeight" Value="Bold" />
     </Style>
     <Style Selector="TextBlock.h3">
+        <Setter Property="Margin" Value="0" />
         <Setter Property="FontSize" Value="15" />
         <Setter Property="FontWeight" Value="Bold" />
     </Style>
@@ -241,7 +247,7 @@
     </Style>
 
     <!-- A quiet button: faint glass with a thin edge. -->
-    <Style Selector="Button.ghost, Button.primary, Button.danger, Button.iconButton, Button.keep, Button.yeet, Button.skip, Button.segment, Button.chip, Button.link, Button.row">
+    <Style Selector="Button.ghost, Button.primary, Button.danger, Button.iconButton, Button.keep, Button.yeet, Button.skip, Button.segment, Button.chip, Button.link">
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="Transitions">
@@ -253,7 +259,7 @@
         </Setter>
     </Style>
     <Style Selector="Button.ghost">
-        <Setter Property="MinHeight" Value="{StaticResource YtControlHeight}" />
+        <Setter Property="Height" Value="{StaticResource YtControlHeight}" />
         <Setter Property="Padding" Value="16,0" />
         <Setter Property="CornerRadius" Value="{StaticResource YtControlRadius}" />
         <Setter Property="Background" Value="{StaticResource YtControlBrush}" />
@@ -262,7 +268,7 @@
         <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
     </Style>
     <Style Selector="Button.ghost.small">
-        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Height" Value="32" />
         <Setter Property="Padding" Value="12,0" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="CornerRadius" Value="{StaticResource YtChipRadius}" />
@@ -277,7 +283,7 @@
 
     <!-- The main action of a page or dialog, in the theme colour. -->
     <Style Selector="Button.primary">
-        <Setter Property="MinHeight" Value="{StaticResource YtControlHeight}" />
+        <Setter Property="Height" Value="{StaticResource YtControlHeight}" />
         <Setter Property="Padding" Value="18,0" />
         <Setter Property="CornerRadius" Value="{StaticResource YtControlRadius}" />
         <Setter Property="Background" Value="{DynamicResource YtPrimaryBrush}" />
@@ -290,13 +296,13 @@
         <Setter Property="Foreground" Value="White" />
     </Style>
     <Style Selector="Button.primary.small, Button.danger.small">
-        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Height" Value="32" />
         <Setter Property="Padding" Value="12,0" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="CornerRadius" Value="{StaticResource YtChipRadius}" />
     </Style>
     <Style Selector="Button.primary.large, Button.ghost.large, Button.danger.large">
-        <Setter Property="MinHeight" Value="46" />
+        <Setter Property="Height" Value="46" />
         <Setter Property="Padding" Value="22,0" />
         <Setter Property="FontSize" Value="15" />
         <Setter Property="CornerRadius" Value="{StaticResource YtBlockRadius}" />
@@ -304,7 +310,7 @@
 
     <!-- Destructive: red outline on a faint red. -->
     <Style Selector="Button.danger">
-        <Setter Property="MinHeight" Value="{StaticResource YtControlHeight}" />
+        <Setter Property="Height" Value="{StaticResource YtControlHeight}" />
         <Setter Property="Padding" Value="14,0" />
         <Setter Property="CornerRadius" Value="{StaticResource YtControlRadius}" />
         <Setter Property="Background" Value="{StaticResource YtDangerBrush}" />
@@ -405,7 +411,7 @@
         <Setter Property="Background" Value="{StaticResource YtSunkenBrush}" />
     </Style>
     <Style Selector="Button.segment">
-        <Setter Property="MinHeight" Value="34" />
+        <Setter Property="Height" Value="34" />
         <Setter Property="Padding" Value="14,0" />
         <Setter Property="CornerRadius" Value="{StaticResource YtChipRadius}" />
         <Setter Property="Background" Value="Transparent" />
@@ -417,7 +423,7 @@
         <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
     </Style>
     <Style Selector="Button.segment.small">
-        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Height" Value="28" />
         <Setter Property="Padding" Value="10,0" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="FontWeight" Value="Bold" />
@@ -537,32 +543,6 @@
         <Setter Property="BorderBrush" Value="{DynamicResource YtPrimaryBrush}" />
     </Style>
 
-    <!-- A row of a list that can be picked (sessions, filters). -->
-    <Style Selector="Button.row">
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        <Setter Property="Padding" Value="12" />
-        <Setter Property="CornerRadius" Value="{StaticResource YtBlockRadius}" />
-        <Setter Property="Background" Value="{StaticResource YtCardSoftBrush}" />
-        <Setter Property="BorderBrush" Value="{StaticResource YtLineBrush}" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
-    </Style>
-    <Style Selector="Button.row:pointerover">
-        <Setter Property="Background" Value="{StaticResource YtControlBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource YtTextBrush}" />
-    </Style>
-    <Style Selector="Button.row:pointerover /template/ Border#RootBorder, Button.row:pressed /template/ Border#RootBorder">
-        <Setter Property="BorderBrush" Value="{StaticResource YtCardBorderBrush}" />
-    </Style>
-    <Style Selector="Button.row.current">
-        <Setter Property="Background" Value="{DynamicResource YtRowSelectedBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource YtRowSelectedBorderBrush}" />
-    </Style>
-    <Style Selector="Button.row.current:pointerover /template/ Border#RootBorder">
-        <Setter Property="BorderBrush" Value="{DynamicResource YtRowSelectedBorderBrush}" />
-    </Style>
-
     <!-- A list of sections or pages to pick from (Settings): ListBox.Void with a Border.navRow per
          item; the selected row gets the soft theme colour and a dot. -->
     <Style Selector="Border.navRow">
@@ -601,8 +581,21 @@
         <Setter Property="Fill" Value="{DynamicResource YtPrimaryLightBrush}" />
     </Style>
 
-    <!-- A large choice card (colour themes): the chosen one has a theme-colour edge. -->
+    <!-- A large choice card (colour themes): the chosen one has a theme-colour edge. A plain template,
+         so its text can wrap (SukiUI's button lays its content out in a row). -->
     <Style Selector="Button.card">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="RootBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}"
+                        Padding="{TemplateBinding Padding}">
+                    <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
         <Setter Property="Padding" Value="14" />
         <Setter Property="CornerRadius" Value="16" />
         <Setter Property="Background" Value="{StaticResource YtCardSoftBrush}" />

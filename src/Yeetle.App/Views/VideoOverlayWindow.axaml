@@ -53,7 +53,7 @@
         </Style>
         <Style Selector="Button.speed">
             <Setter Property="MinWidth" Value="0" />
-            <Setter Property="MinHeight" Value="30" />
+            <Setter Property="Height" Value="30" />
             <Setter Property="Padding" Value="9,0" />
             <Setter Property="FontSize" Value="13" />
             <Setter Property="FontWeight" Value="Bold" />
@@ -201,14 +201,14 @@
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12" IsVisible="{Binding IsEditorPage}">
                 <Button Classes="skip" Content="{res:Tr BackToLibrary}" Command="{Binding Editor.CloseCommand}"
                         ToolTip.Tip="{res:Tr BackToLibraryTip}" />
-                <Button Classes="yeet" Classes.current="{Binding Editor.IsYeeted}"
+                <Button Classes="yeet" Classes.current="{Binding Editor.IsYeeted}" AutomationProperties.Name="{res:Tr Yeet}"
                         Command="{Binding Editor.YeetCommand}" IsVisible="{Binding ShowControls}">
                         <StackPanel Orientation="Horizontal" Spacing="10">
                             <TextBlock Classes="icon" Foreground="White" Text="{StaticResource IconClose}" />
                             <TextBlock VerticalAlignment="Center" Text="{res:Tr Yeet}" />
                         </StackPanel>
                         </Button>
-                <Button Classes="keep" Classes.current="{Binding Editor.IsKept}"
+                <Button Classes="keep" Classes.current="{Binding Editor.IsKept}" AutomationProperties.Name="{res:Tr Keep}"
                         Command="{Binding Editor.KeepCommand}" ToolTip.Tip="{res:Tr EditorSavedHint}" IsVisible="{Binding ShowControls}">
                         <StackPanel Orientation="Horizontal" Spacing="10">
                             <TextBlock Classes="icon" Foreground="White" Text="{StaticResource IconCheck}" />
@@ -217,19 +217,19 @@
                         </Button>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12" IsVisible="{Binding IsSessionPage}">
-                <Button Classes="yeet" Command="{Binding Session.YeetCommand}" ToolTip.Tip="{res:Tr YeetTip}">
+                <Button Classes="yeet" Command="{Binding Session.YeetCommand}" AutomationProperties.Name="{res:Tr Yeet}" ToolTip.Tip="{res:Tr YeetTip}">
                         <StackPanel Orientation="Horizontal" Spacing="10">
                             <TextBlock Classes="icon" Foreground="White" Text="{StaticResource IconClose}" />
                             <TextBlock VerticalAlignment="Center" Text="{res:Tr Yeet}" />
                         </StackPanel>
                         </Button>
-                <Button Classes="skip" Command="{Binding Session.SkipCommand}" ToolTip.Tip="{res:Tr SkipTip}">
+                <Button Classes="skip" Command="{Binding Session.SkipCommand}" AutomationProperties.Name="{res:Tr Skip}" ToolTip.Tip="{res:Tr SkipTip}">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <TextBlock VerticalAlignment="Center" Text="{res:Tr Skip}" />
                             <TextBlock Classes="icon" FontSize="13" Text="{StaticResource IconForward}" />
                         </StackPanel>
                         </Button>
-                <Button Classes="keep" Command="{Binding Session.KeepCommand}" ToolTip.Tip="{res:Tr KeepTip}">
+                <Button Classes="keep" Command="{Binding Session.KeepCommand}" AutomationProperties.Name="{res:Tr Keep}" ToolTip.Tip="{res:Tr KeepTip}">
                         <StackPanel Orientation="Horizontal" Spacing="10">
                             <TextBlock Classes="icon" Foreground="White" Text="{StaticResource IconCheck}" />
                             <TextBlock VerticalAlignment="Center" Text="{res:Tr Keep}" />
